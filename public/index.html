@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>qlinks - Quick Links</title>
+
+    <!-- almighty jquery -->
+    <script src="/lib/jquery/jquery-3.5.1.slim.min.js"></script>
+
+    <!-- popper -->
+    <script src="/lib/popper/popper.min.js"></script>
+
+    <!-- bootstrap -->
+    <script src="/lib/bootstrap/4.5.2/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/lib/bootstrap/4.5.2/bootstrap.min.css">
+
+    <!-- babel -->
+    <script src="/lib/babel/7/babel.min.js"></script>
+
+    <!-- almighty react -->
+    <script src="/lib/react/16/react.production.min.js"></script>
+    <script src="/lib/react/16/react-dom.production.min.js"></script>
+    <link rel="stylesheet" href="/css/index.css">
+
+    <script type='text/babel' src="/js/components/Login.jsx"></script>
+    <script type='text/babel' src="/js/components/Nav.jsx"></script>
+    <script type='text/babel' src="/js/components/Shortener.jsx"></script>
+    <script type='text/babel' src="/js/components/Home.jsx"></script>
+
+    <script src="/js/index.js"></script>
+</head>
+<body>
+<!-- index -->
+<div id="root"></div>
+<script type="text/babel">
+    class App extends React.Component {
+        getLoggedInUser = () => {
+            let user = localStorage.getItem("user");
+            user = user && JSON.parse(localStorage.getItem("user"));
+            if (user) {
+                // Check if remaining session is at-least 5 seconds in future else consider non logged in.
+                if ((new Date(user.expireAt) - new Date()) > 5000) {
+                    return user;
+                } else {
+                    localStorage.removeItem("user");
+                }
+            }
+        }
+
+        state = {
+            loggedInUser: this.getLoggedInUser()
+        }
+
+        loginSuccess = (loggedInUser) => {
+            this.setState({
+                loggedInUser: loggedInUser
+            })
+        }
+
+        logout = () => {
+            localStorage.removeItem("user");
+            this.setState({});
+        }
+
+        render = () => {
+            if (this.state.loggedInUser) {
+                silentUrlChangeTo(VALID_PATHS.HOME);
+                return (
+                    <div className="app center">
+                        <Home logout={this.logout} loggedInUser={this.state.loggedInUser}/>
+                    </div>
+                )
+            } else {
+                silentUrlChangeTo(VALID_PATHS.LOGIN);
+                return (
+                    <div className="app box center">
+                        <Login loginSuccess={this.loginSuccess}/>
+                    </div>
+                )
+            }
+        }
+    }
+
+    ReactDOM.render(<App/>, document.getElementById('root'));
+    fillLogo();
+</script>
+
+
+<div id="snackbar"></div>
+</body>
+</html>
+
+<!--
+Notes
+
+div {
+  width: 300px;
+  border: 15px solid green;
+  padding: 50px; // between border and content
+  margin: 20px; // If this is the content, then allowed space to border (outside)
+
+
+Border Ki bhi Border
+outline-style
+    dotted - Defines a dotted outline
+    dashed - Defines a dashed outline
+    solid - Defines a solid outline
+    double - Defines a double outline
+    groove - Defines a 3D grooved outline
+    ridge - Defines a 3D ridged outline
+    inset - Defines a 3D inset outline
+    outset - Defines a 3D outset outline
+    none - Defines no outline
+    hidden - Defines a hidden outline
+outline-color
+outline-width
+outline-offset
+outline
+
+}
+
+
+-->

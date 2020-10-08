@@ -1,4 +1,8 @@
 class Shortener extends React.Component {
+    state = {
+        shorts: this.getPastShorts()
+    }
+
     getPastShorts() {
         const pastShorts = localStorage.getItem("qlinks_shorts");
         if (pastShorts) {
@@ -10,10 +14,6 @@ class Shortener extends React.Component {
         } else {
             return [];
         }
-    }
-
-    state = {
-        shorts: this.getPastShorts()
     }
 
     createShortUrl = (event) => {

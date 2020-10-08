@@ -14,12 +14,12 @@ app.use(express.static('public'));
 app.use(express.json());
 
 app.get(['/', '/login', '/home', '/logout', '/fe/*'], (req, res) => {
-  res.sendFile(path.join(__dirname + '/public/index.html'));
+    res.sendFile(path.join(__dirname + '/public/index.html'));
 });
 
 app.get('/@:short_name', (req, res) => {
     let short_name = req.params['short_name'];
-    core.getShortIdValidated(short_name).then(data=> {
+    core.getShortIdValidated(short_name).then(data => {
         res.redirect(data.long_url);
     })
 });
@@ -34,7 +34,7 @@ app.use((req, res) => {
     const queryObj = req.query;
     let queryString = '';
     Object.keys(queryObj).forEach(key => {
-        queryString = `${queryString}${queryString.length === 0 ? '?' : '&' }${key}=${queryObj[key]}`
+        queryString = `${queryString}${queryString.length === 0 ? '?' : '&'}${key}=${queryObj[key]}`
     })
     res.redirect('/');
 });

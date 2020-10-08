@@ -1,8 +1,8 @@
-// loads .env property file.
-const dotenv = require('dotenv');
+const dotenv = require("dotenv");
 dotenv.config();
 const express = require('express');
 const path = require('path');
+const db = require('./src/db');
 
 const core = require('./src/core');
 
@@ -24,10 +24,19 @@ app.get('/@:short_name', (req, res) => {
     })
 });
 
-app.use('/api', apiRoute);
+app.get('/merchant/:mid', (req, res) => {
+    let mid = req.params['mid'];
+    db.getMerchant(mid, (data)=> res.send(data), (err) => res.send(err));
+});
 
-app.get(['/', '/login', '/home', '/logout', '/fe/*'], (req, res) => {
-    res.sendFile(path.join(__dirname + '/public/index.html'));
+app.get('/merchant/:mid/products', (req, res) => {
+    let mid = req.params['mid'];
+    db.getMerchantProducts(mid, (data)=> res.send(data), (err) => res.send(err));
+});
+
+app.get('/merchant/products/:id', (req, res) => {
+    let id = req.params['id'];
+    db.getProduct(id, (data)=> res.send(data), (err) => res.send(err));
 });
 
 app.use((req, res) => {
@@ -41,5 +50,5 @@ app.use((req, res) => {
 
 /******************************/
 app.listen(port, () => {
-    console.log(`qlinks running on ${port}!`)
+    console.log(`acemarket running on ${port}!`)
 });

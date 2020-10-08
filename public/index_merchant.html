@@ -34,8 +34,32 @@
 <div id="root"></div>
 <script type="text/babel">
     class App extends React.Component {
-        state = {
+        getLoggedInUser = () => {
+            let user = localStorage.getItem("user");
+            user = user && JSON.parse(localStorage.getItem("user"));
+            if (user) {
+                // Check if remaining session is at-least 5 seconds in future else consider non logged in.
+                if ((new Date(user.expireAt) - new Date()) > 5000) {
+                    return user;
+                } else {
+                    localStorage.removeItem("user");
+                }
+            }
+        }
 
+        state = {
+            loggedInUser: this.getLoggedInUser()
+        }
+
+        loginSuccess = (loggedInUser) => {
+            this.setState({
+                loggedInUser: loggedInUser
+            })
+        }
+
+        logout = () => {
+            localStorage.removeItem("user");
+            this.setState({});
         }
 
         render = () => {

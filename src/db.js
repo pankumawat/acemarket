@@ -13,7 +13,13 @@ const url = 'mongodb://localhost:27017';
 const dbName = 'acemarket';
 
 // Create a new MongoClient
-const client = new MongoClient(url, {useUnifiedTopology: true}, {useNewUrlParser: true}, {connectTimeoutMS: 30000}, {keepAlive: 1});
+const client = new MongoClient(
+    url,
+    {useUnifiedTopology: true},
+    {useNewUrlParser: true},
+    {connectTimeoutMS: 30000},
+    {keepAlive: 1}
+);
 
 function query(collection_name, query, success, failure, fetchMulti = false) {
     client.connect(function (err) {
@@ -63,6 +69,7 @@ exports.getProducts = (success, failure, queryObj) => {
     const price_range = queryObj['price_range'];
     const string_keys = queryObj['string_keys'];
     const rating_minimum = queryObj['rating_minimum'] ? parseInt(queryObj['rating_minimum']) : 0;
+    const mid = queryObj['mid'];
     if (price_range) {
         const priceParts = price_range.split('_');
         const dash_index = price_range.indexOf('_');
@@ -95,6 +102,9 @@ exports.getProducts = (success, failure, queryObj) => {
                 "price": -1
             }
         ]
+    }
+    if (mid) {
+        queryStr["mid"] = mid;
     }
     query(COLLECTIONS.PRODUCTS, queryStr, (data) => {
         let filtered = data;

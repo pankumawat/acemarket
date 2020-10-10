@@ -1,4 +1,4 @@
-class Shortener extends React.Component {
+class ProductShort extends React.Component {
     state = {
     }
 

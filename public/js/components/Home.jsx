@@ -3,7 +3,7 @@ const Home = (props) => {
         <div>
             <Nav/>
             <div className="center box">
-                <Shortener/>
+                <ProductDetailed/>
             </div>
         </div>
     )

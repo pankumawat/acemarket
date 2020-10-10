@@ -134,3 +134,7 @@ form.shortener {
         opacity: 0;
     }
 }
+
+.star-filled {
+    color: orange;
+}

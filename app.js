@@ -26,17 +26,26 @@ app.get('/@:short_name', (req, res) => {
 
 app.get('/merchant/:mid', (req, res) => {
     let mid = req.params['mid'];
-    db.getMerchant(mid, (data)=> res.send(data), (err) => res.send(err));
+    db.getMerchant(mid, (data) => res.send(data), (err) => res.send(err));
 });
 
 app.get('/merchant/:mid/products', (req, res) => {
     let mid = req.params['mid'];
-    db.getMerchantProducts(mid, (data)=> res.send(data), (err) => res.send(err));
+    db.getMerchantProducts(mid, (data) => {
+        data.map(item => {
+            item['rating_number'] = db.getRating(item.rating);
+            return item;
+        });
+        res.send(data);
+    }, (err) => res.send(err));
 });
 
 app.get('/products/:id', (req, res) => {
     let id = req.params['id'];
-    db.getProduct(id, (data)=> res.send(data), (err) => res.send(err));
+    db.getProduct(id, (item) => {
+        item['rating_number'] = db.getRating(item.rating);
+        res.send(item)
+    }, (err) => res.send(err));
 });
 
 /*
@@ -49,7 +58,13 @@ app.get('/products', (req, res) => {
     Object.keys(req.query).forEach(key => {
         queryObj[key] = (typeof req.query[key] !== 'object') ? req.query[key] : req.query[key][0];
     })
-    db.getProducts((data)=> res.send(data), (err) => res.send(err), queryObj);
+    db.getProducts((data) => {
+        data.map(item => {
+            item['rating_number'] = db.getRating(item.rating);
+            return item;
+        });
+        res.send(data);
+    }, (err) => res.send(err), queryObj);
 });
 
 app.use((req, res) => {

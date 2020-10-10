@@ -1,11 +1,21 @@
 const MongoClient = require('mongodb').MongoClient;
-const assert = require('assert');
+
 const COLLECTIONS = {
     MERCHANT: "merchant",
     SUBSCRIPTION: "subscription",
     PRODUCTS: "products"
 }
 
+/*
+db.products.createIndex( { id: -1 } )
+db.products.createIndex( { mid: -1 } )
+
+dbo.collection("customers").find().sort(mysort).toArray(function(err, result) {
+    if (err) throw err;
+    console.log(result);
+    db.close();
+  });
+ */
 // Connection URL
 const url = 'mongodb://localhost:27017';
 
@@ -49,6 +59,15 @@ function query(collection_name, query, success, failure, fetchMulti = false) {
             }
         }
     });
+}
+
+exports.getRating = (ratingObj) => {
+    const i1 = ratingObj[1] || 0;
+    const i2 = ratingObj[2] || 0;
+    const i3 = ratingObj[3] || 0;
+    const i4 = ratingObj[4] || 0;
+    const i5 = ratingObj[5] || 0;
+    return parseFloat(((i1 + i2 + i3 + i4 + i5) === 0 ? -1 : ((i1 + i2 * 2 + i3 * 3 + i4 * 4 + i5 * 5) / (i1 + i2 + i3 + i4 + i5))).toFixed(2));
 }
 
 exports.getMerchant = (mid, success, failure) => {
@@ -110,13 +129,7 @@ exports.getProducts = (success, failure, queryObj) => {
         let filtered = data;
         if (rating_minimum && Number.isInteger(rating_minimum))
             filtered = filtered.filter(item => {
-                const i1 = item.rating[1] || 1;
-                const i2 = item.rating[2] || 2;
-                const i3 = item.rating[3] || 3;
-                const i4 = item.rating[4] || 4;
-                const i5 = item.rating[5] || 5;
-                const rating = (i1 + i2 * 2 + i3 * 3 + i4 * 4 + i5 * 5) / (i1 + i2 + i3 + i4 + i5);
-                return rating >= rating_minimum;
+                return this.getRating(item.rating) >= rating_minimum;
             })
 
         if (string_keys) {

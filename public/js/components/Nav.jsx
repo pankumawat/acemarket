@@ -9,7 +9,7 @@ const Nav = (props) => {
             <div className="container">
                 <a className="navbar-brand" href={VALID_PATHS.HOME} onClick={quiteRedirect}>
                     <div className="logo" style={{display: "inline"}}></div>
-                    <div style={{display: "inline", color: "#00CC00", "font-size": "20px"}}>
+                    <div style={{display: "inline", color: "#00CC00", "fontSize": "20px"}}>
                         <strong>www.AceMarket.in</strong></div>
                 </a>
                 <ul className="navbar-nav ml-auto">

@@ -34,9 +34,22 @@ app.get('/merchant/:mid/products', (req, res) => {
     db.getMerchantProducts(mid, (data)=> res.send(data), (err) => res.send(err));
 });
 
-app.get('/merchant/products/:id', (req, res) => {
+app.get('/products/:id', (req, res) => {
     let id = req.params['id'];
     db.getProduct(id, (data)=> res.send(data), (err) => res.send(err));
+});
+
+/*
+ * price_range e.g. 100_1200
+ * string_keys e.g. chocolate_pastry_juice
+ * rating_minimum e.g.
+ */
+app.get('/products', (req, res) => {
+    let queryObj = {};
+    Object.keys(req.query).forEach(key => {
+        queryObj[key] = (typeof req.query[key] !== 'object') ? req.query[key] : req.query[key][0];
+    })
+    db.getProducts((data)=> res.send(data), (err) => res.send(err), queryObj);
 });
 
 app.use((req, res) => {

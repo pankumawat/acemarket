@@ -34,26 +34,14 @@
 <div id="root"></div>
 <script type="text/babel">
     class App extends React.Component {
-        state = {
-
-        }
+        state = {}
 
         render = () => {
-            if (this.state.loggedInUser) {
-                silentUrlChangeTo(VALID_PATHS.HOME);
-                return (
-                    <div className="app center">
-                        <Home logout={this.logout} loggedInUser={this.state.loggedInUser}/>
-                    </div>
-                )
-            } else {
-                silentUrlChangeTo(VALID_PATHS.LOGIN);
-                return (
-                    <div className="app box center">
-                        <Login loginSuccess={this.loginSuccess}/>
-                    </div>
-                )
-            }
+            return (
+                <div className="app center">
+                    <Home/>
+                </div>
+            )
         }
     }
 

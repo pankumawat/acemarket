@@ -1,9 +1,9 @@
 const Home = (props) => {
     return (
         <div>
-            <Nav logout={props.logout} loggedInUser={props.loggedInUser}/>
+            <Nav/>
             <div className="center box">
-                <Shortener loggedInUser={props.loggedInUser}/>
+                <Shortener/>
             </div>
         </div>
     )

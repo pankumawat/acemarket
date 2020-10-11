@@ -23,38 +23,40 @@ const url = 'mongodb://localhost:27017';
 const dbName = 'acemarket';
 
 // Create a new MongoClient
-const client = new MongoClient(
-    url,
-    {useUnifiedTopology: true},
-    {useNewUrlParser: true},
-    {connectTimeoutMS: 30000},
-    {keepAlive: 1}
-);
-
 function query(collection_name, query, success, failure, fetchMulti = false) {
+    const client = new MongoClient(
+        url,
+        {useUnifiedTopology: true},
+        {useNewUrlParser: true},
+        {connectTimeoutMS: 3000},
+        {keepAlive: 1}
+    );
     client.connect(function (err) {
         const dbo = client.db(dbName);
         if (err != null) {
+            console.error(err);
             failure("Mongo failed to connect.")
         } else {
             const collection = dbo.collection(collection_name);
             if (fetchMulti) {
                 collection.find(query).toArray(function (err, items) {
                     if (err) {
+                        console.error(err);
                         failure(err.message);
                     } else {
                         success(items);
                     }
-                    //client.close();
+                    client.close();
                 });
             } else {
                 collection.findOne(query, function (err, item) {
                     if (err) {
+                        console.error(err);
                         failure(err.message);
                     } else {
                         success(item);
                     }
-                    //client.close();
+                    client.close();
                 });
             }
         }
@@ -131,7 +133,6 @@ exports.getProducts = (success, failure, queryObj) => {
             filtered = filtered.filter(item => {
                 return this.getRating(item.rating) >= rating_minimum;
             })
-
         if (string_keys) {
             filtered = filtered.filter((item) => {
                 const keysArr = string_keys.toLowerCase().split('_');

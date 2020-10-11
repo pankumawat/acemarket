@@ -17,19 +17,25 @@
     <!-- babel -->
     <script src="/lib/babel/7/babel.min.js"></script>
 
-    <!-- almighty react
+    <!-- almighty react -->
     <script src="/lib/react/16/react.production.min.js"></script>
-    <script src="/lib/react/16/react-dom.production.min.js"></script> -->
+    <script src="/lib/react/16/react-dom.production.min.js"></script>
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+          integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <!--
     <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+     -->
 
     <link href="/css/index.css" rel="stylesheet">
     <link href="/css/whlimits.css" rel="stylesheet">
+    <link href="/css/nav.css" rel="stylesheet">
 
     <script src="/js/components/Login.jsx" type='text/babel'></script>
     <script src="/js/components/Nav.jsx" type='text/babel'></script>
     <script src="/js/components/ProductDetailed.jsx" type='text/babel'></script>
+    <script src="/js/components/ProductShort.jsx" type='text/babel'></script>
     <script src="/js/components/Home.jsx" type='text/babel'></script>
 
     <script src="/js/index.js"></script>
@@ -39,12 +45,70 @@
 <div id="root"></div>
 <script type="text/babel">
     class App extends React.Component {
-        state = {}
+        getState = () => {
+            if (localStorage && localStorage.getItem(MEM_KEYS.STATE_BASE)) {
+                return JSON.parse(localStorage.getItem(MEM_KEYS.STATE_BASE));
+            } else {
+                return {
+                    "cart": {
+                        quantity: {},
+                        total: 4,
+                        products: {}
+                    },
+                    products: []
+                }
+            }
+        }
+        state = this.getState();
+
+        setProducts = (products) => {
+            if (products) {
+                const newState = {...this.state, products: products};
+                if (localStorage) {
+                    localStorage.setItem(MEM_KEYS.STATE_BASE, JSON.stringify(newState))
+                }
+                this.setState(newState);
+            }
+        }
+
+        addProduct(product, quantity) {
+            const cart = {...this.state.cart};
+            if (!cart.quantity[product.id]) {
+                cart.quantity[product.id] = Number.parseInt(quantity);
+                cart.products[product.id] = {...product};
+            } else {
+                cart.quantity[product.id] = cart.quantity[product.id] + Number.parseInt(quantity);
+            }
+            cart.total = cart.total + Number.parseInt(quantity);
+            const newState = {...this.state, cart: cart};
+            if (localStorage) {
+                localStorage.setItem(MEM_KEYS.STATE_BASE, JSON.stringify(newState))
+            }
+            this.setState(newState);
+        }
+
+        remProduct(product, quantity) {
+            const cart = {...this.state.cart};
+            if (cart.quantity[product.id]) {
+                cart.quantity[product.id] = cart.quantity[product.id] - Number.parseInt(quantity);
+                if (cart.quantity[product.id] <= 0) {
+                    delete cart.quantity[product.id];
+                    delete cart.products[product.id];
+                }
+                cart.total = cart.total - Number.parseInt(quantity);
+                cart.total = cart.total <= 0 ? 0 : cart.total;
+                const newState = {...this.state, cart: cart};
+                if (localStorage) {
+                    localStorage.setItem(MEM_KEYS.STATE_BASE, JSON.stringify(newState))
+                }
+                this.setState(newState);
+            }
+        }
 
         render = () => {
             return (
                 <div className="center">
-                    <Home/>
+                    <Home data={this.state}/>
                 </div>
             )
         }

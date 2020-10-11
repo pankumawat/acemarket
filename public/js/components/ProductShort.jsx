@@ -1,71 +1,80 @@
 class ProductShort extends React.Component {
     state = {
+        product: this.props.product,
     }
 
-    createShortUrl = (event) => {
-        event.preventDefault();
-        const shortener_form = event.target;
-        const short_name = shortener_form.elements.namedItem("short_name").value;
-        const long_url = shortener_form.elements.namedItem("long_url").value;
-        const guest = this.props.loggedInUser.isGuest ? true : false;
-
-        fetch('/api/short', {
-            method: 'post',
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                short_name,
-                long_url,
-                guest
-            })
-        }).then((response) => response.json()).then((response) => {
-            if (response.success) {
-                showSuccess('Wow.. Link Generated..', 1000);
-                this.state.shorts.push({...response.data, expireAt: Date.now()});
-                localStorage.setItem("qlinks_shorts", JSON.stringify(this.state.shorts));
-                this.setState(this.state);
-                shortener_form.elements.namedItem("long_url").value = "";
-            } else {
-                showError(response.error, 3000);
-            }
-        }).catch((error) => {
-            showError(`Something went wrong. details: ${error}`, 3000);
-        });
-    }
-
-    copyToClipboard = (event) => {
-        event.preventDefault();
-        event.target.select();
-        event.target.setSelectionRange(0, 99999);
-        document.execCommand("copy");
-        showSuccess(event.target.value + " copied to clipboard.", 3000);
-    }
-
-    render = () => (
-        <div className="shortener box center">
-            <form class="shortener" id="shortener_form" onSubmit={this.createShortUrl}>
-                <div className="form-group">
-                    <div className="input-group">
-                    <textarea type="url" className="form-control" name="long_url"
-                              placeholder="Long URL" required="required" rows="5"/>
-                    </div>
-                </div>
-
-                <div className="form-group">
-                    <div className="row">
-                        <div className="col-xs-8 col-sm-8 col-md-8 col-lg-8">
-                            <div className="input-group">
+    render = () => {
+        console.dir(this.state);
+        return (
+            <div className="container-fluid h400 w400" style={{margin: "10px", "border-style": "dotted"}}>
+                <div className="row">
+                    <div className="col-md-12">
+                        <div className="row">
+                            <div className="col-md-4">
+                                <img src={this.state.product.img} className="img-thumbnail h100"
+                                     alt="Product Image"/>
+                            </div>
+                            <div className="col-md-8">
+                                <div className="row">
+                                    <div className="col-md-12">
+                                        <h2>{this.state.product.name}</h2>
+                                        <span className="fas fa-star"
+                                              style={{color: this.state.product.rating_number > 0.5 ? "orange" : "grey"}}/>
+                                        <span className="fas fa-star"
+                                              style={{color: this.state.product.rating_number > 1.5 ? "orange" : "grey"}}/>
+                                        <span className="fas fa-star"
+                                              style={{color: this.state.product.rating_number > 2.5 ? "orange" : "grey"}}/>
+                                        <span className="fas fa-star"
+                                              style={{color: this.state.product.rating_number > 3.5 ? "orange" : "grey"}}/>
+                                        <span className="fas fa-star"
+                                              style={{color: this.state.product.rating_number > 4.5 ? "orange" : "grey"}}/>
+                                        <span> {this.state.product.rating_number}</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div className="col-xs-4 col-sm-4 col-md-4 col-lg-4">
-                            <div className="input-group">
-                                <button type="submit" className="btn btn-success form-control">Generate</button>
+                        <div className="row">
+                            <div className="col-md-12 overflow-auto">
+                                <div className="row">
+                                    <div className="col-md-12">
+                                        {`${this.state.product.description.substr(0, 150)}${this.state.product.description.length > 150 ? '...' : ''}`}
+                                        <buttom type='button' className="btn btn-info">
+                                            Details
+                                        </buttom>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-md-12">
+                                        <hr/>
+                                        {this.state.product.keys.map(key => (
+                                            <button type='button' className='btn btn-info'
+                                                    style={{margin: "5px"}}
+                                                    disabled>{key}</button>
+                                        ))}
+                                        <hr/>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-md-6" style={{"font-size": "30px", "font-family": "Helvetica"}}>
+                                        {this.state.product.price && Number.isInteger(this.state.product.price) && parseInt(this.state.product.price) > 0 ?
+                                            <div>{this.state.product.price_without_discount ?
+                                                <s className="text-danger">₹{this.state.product.price_without_discount}</s> : ''}
+                                                <b className="text-info">&nbsp;&nbsp;{this.state.product.price ? `₹${this.state.product.price}  ` : ''}</b>
+                                            </div>
+                                            :
+                                            <b className="text-info" style={{"font-size": "20px"}}>Price on enquiry</b>}
+                                    </div>
+                                    <div className="col-md-6">
+                                        <buttom type='button' class="btn btn-success">
+                                            Add to basket
+                                        </buttom>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </form>
-        </div>
-    )
+            </div>
+        )
+    }
 }

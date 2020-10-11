@@ -13,10 +13,6 @@ const port = process.env.PORT;
 app.use(express.static('public'));
 app.use(express.json());
 
-app.get(['/', '/login', '/home', '/logout', '/fe/*'], (req, res) => {
-    res.sendFile(path.join(__dirname + '/public/index.html'));
-});
-
 app.get('/@:short_name', (req, res) => {
     let short_name = req.params['short_name'];
     core.getShortIdValidated(short_name).then(data => {
@@ -26,26 +22,26 @@ app.get('/@:short_name', (req, res) => {
 
 app.get('/merchant/:mid', (req, res) => {
     let mid = req.params['mid'];
-    db.getMerchant(mid, (data) => res.send(data), (err) => res.send(err));
+    db.getMerchant(mid, (data) => res.json(core.getSuccessResponse(data)), (err) => res.json(core.getErrorResponse(err)));
 });
 
 app.get('/merchant/:mid/products', (req, res) => {
     let mid = req.params['mid'];
     db.getMerchantProducts(mid, (data) => {
-        data.map(item => {
+        const _data = data.map(item => {
             item['rating_number'] = db.getRating(item.rating);
             return item;
         });
-        res.send(data);
-    }, (err) => res.send(err));
+        res.json(core.getSuccessResponse(data));
+    }, (err) => res.json(core.getErrorResponse(err)));
 });
 
 app.get('/products/:id', (req, res) => {
     let id = req.params['id'];
     db.getProduct(id, (item) => {
         item['rating_number'] = db.getRating(item.rating);
-        res.send(item)
-    }, (err) => res.send(err));
+        res.json(core.getSuccessResponse(item));
+    }, (err) => res.json(core.getErrorResponse(err)));
 });
 
 /*
@@ -59,12 +55,16 @@ app.get('/products', (req, res) => {
         queryObj[key] = (typeof req.query[key] !== 'object') ? req.query[key] : req.query[key][0];
     })
     db.getProducts((data) => {
-        data.map(item => {
+        const _data = data.map(item => {
             item['rating_number'] = db.getRating(item.rating);
             return item;
         });
-        res.send(data);
-    }, (err) => res.send(err), queryObj);
+        res.json(core.getSuccessResponse(_data));
+    }, (err) => res.json(core.getErrorResponse(err)), queryObj);
+});
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname + '/public/index.html'));
 });
 
 app.use((req, res) => {

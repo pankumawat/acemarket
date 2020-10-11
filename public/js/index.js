@@ -44,9 +44,13 @@ const getUrlPath = (url) => {
 }
 
 const VALID_PATHS = {
-    "HOME": "/home",
-    "LOGIN": "/login",
-    "LOGOUT": "/logout",
+    "HOME": "#home",
+    "LOGIN": "#login",
+    "LOGOUT": "#logout",
+}
+
+const MEM_KEYS = {
+    STATE_BASE : "acemarket_root_state"
 }
 
 const SVG = {

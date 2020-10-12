@@ -138,3 +138,8 @@ form.shortener {
 .star-filled {
     color: orange;
 }
+
+* {
+    font-family: 'Archivo';
+    color: #555555
+}

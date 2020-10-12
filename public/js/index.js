@@ -6,7 +6,6 @@ const alertStyle = {
     "justify-content": "center",
     "align-items": "center",
     "text-align": "center",
-    "color": "black",
     "margin": "20px"
 }
 const successAlert = {
@@ -40,7 +39,15 @@ const silentUrlChangeTo = (url) => {
 }
 
 const getUrlPath = (url) => {
-    return new URL(window.location.href).pathname;
+    return new URL(url || window.location.href).pathname;
+}
+
+const getQueries = (url) => {
+    const retObj = {};
+    for ([key, value] of new URLSearchParams(new URL(url || window.location.href).search).entries()) {
+        retObj[key] = value;
+    }
+    return retObj;
 }
 
 const VALID_PATHS = {
@@ -50,7 +57,7 @@ const VALID_PATHS = {
 }
 
 const MEM_KEYS = {
-    STATE_BASE : "acemarket_root_state"
+    STATE_CART: "acemarket_cart_state"
 }
 
 const SVG = {

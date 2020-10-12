@@ -11,8 +11,9 @@ const Nav = (props) => {
     }
     return (
         <div className="topnav">
-            <a className="active" href="#home">
+            <a href="#home">
                 <strong>AceMarket.in</strong></a>
+            <a className="active" href="#home">Home</a>
             <a href="#about">About</a>
             <a href="#cart">Cart<sup>{props.incart > 0 ? <span className="badge badge-dark">{props.incart}</span> : ''}</sup></a>
             <input type="text" placeholder="Search.." onKeyUp={this.search}/>

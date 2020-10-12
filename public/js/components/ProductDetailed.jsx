@@ -41,22 +41,56 @@ class ProductDetailed extends React.Component {
         "sold_units": 89,
         "price_without_discount": 1400
     }
-    state = {
-        product: this.product,
-        imgs: [this.product.img, ...this.product.imgs],
-        currentImg: this.product.img,
-        suggestedProducts: []
+
+    constructor(props) {
+        super(props);
+        console.log(`******* this.props.product ${this.props.product}`);
+        if (this.props.product)
+            console.log("Opened with " + this.props.product.id);
+        this.state = {
+            product: (this.props.product || this.product),
+            imgs: [this.product.img, ...this.product.imgs],
+            currentImg: this.product.img,
+            suggestedProducts: []
+        }
+        this.loadSuggestedProducts();
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!nextProps.product)
+            return true;
+        if (!this.state.product || nextState.product.id !== nextProps.product.id) {
+            this.setState({
+                product: nextProps.product,
+                imgs: [nextProps.product.img, ...nextProps.product.imgs],
+                currentImg: nextProps.product.img,
+                suggestedProducts: []
+            })
+            this.loadSuggestedProducts();
+            // Since we called setState, we are sure that shouldComponentUpdate will be called again, so we will rerender at that time.
+            return false;
+        } else {
+            return true;
+        }
     }
 
     setCurrentImg = (event) => {
         this.setState({...this.state, currentImg: event.target.getAttribute("src")})
     }
 
+    addToCart = () => {
+        this.props.functions.addProduct(this.state.product, 1);
+    }
+
     loadSuggestedProducts = () => {
+        console.log("this.loadSuggestedProducts();");
         const _keys = this.state.product.keys.reduce((a, c) => `${a}_${c}`)
         fetch(`/products?string_keys=${_keys}`).then((response) => response.json()).then((response) => {
             if (response.success) {
-                this.setState({...this.state, suggestedProducts: [...response.data, ...response.data, ...response.data]})
+                this.setState({
+                    ...this.state,
+                    suggestedProducts: [...response.data, ...response.data, ...response.data]
+                })
             } else {
                 showError(`Something went wrong while fetching recommendations. ${response.error}`, 3000);
             }
@@ -66,7 +100,6 @@ class ProductDetailed extends React.Component {
     }
 
     render = () => {
-        this.loadSuggestedProducts();
         return (
             <div className="container-fluid" style={{margin: "20px"}}>
                 <div className="row">
@@ -126,16 +159,17 @@ class ProductDetailed extends React.Component {
                                         </div>
                                         <div className="row">
                                             <div className="col-md-8"
-                                                 style={{"font-size": "30px", "font-family": "Helvetica"}}>
+                                                 style={{"font-size": "30px"}}>
                                                 <div>{this.product.price_without_discount ?
                                                     <s className="text-danger">₹{this.product.price_without_discount}</s> : ''}
                                                     <b className="text-info">&nbsp;&nbsp;{this.product.price ? `₹${this.product.price}  ` : ''}</b>
                                                 </div>
                                             </div>
                                             <div className="col-md-4">
-                                                <buttom type='button' class="btn btn-success">
+                                                <button type='button' className="btn btn-success"
+                                                        onClick={this.addToCart}>
                                                     Add to basket
-                                                </buttom>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -156,17 +190,19 @@ class ProductDetailed extends React.Component {
                                 </div>
                             </div>
                         </div>
-                        <div className="row">
-                            <div className="col-md-12">
-                                <div className="container horizontal-scrollable">
-                                    <div className="row text-center">
-                                    {this.state.suggestedProducts ?
-                                        this.state.suggestedProducts.map(product => <div className="col-xs-4"><ProductShort product={product}/></div>)
-                                    :
-                                    ''}
-                                    </div>
-                                </div>
-                            </div>
+                        <hr/>
+                        <h2><u>Similar items</u></h2>
+                        <div className="row horizontal-scrollable text-center" style={{width: "100%"}}>
+                            {this.state.suggestedProducts ?
+                                this.state.suggestedProducts.map(product => (true || product.id !== this.state.product.id ?
+                                    <div className="col-xs-4"><ProductShort product={product}
+                                                                            functions={{
+                                                                                ...this.props.functions,
+                                                                                showProductDetailsPage: this.showProductDetailsPage
+                                                                            }}/>
+                                    </div> : ''))
+                                :
+                                ''}
                         </div>
                     </div>
                 </div>

@@ -3,10 +3,19 @@ class ProductShort extends React.Component {
         product: this.props.product,
     }
 
+    addToCart = () => {
+        this.props.functions.addProduct(this.state.product, 1);
+    }
+
+    showDetails = () => {
+        silentUrlChangeTo(`details?pid=${this.state.product.id}`)
+        this.props.functions.showProductDetails(this.state.product);
+    }
+
     render = () => {
-        console.dir(this.state);
         return (
-            <div className="container-fluid h400 w400" style={{margin: "10px", "border-style": "dotted"}}>
+            <div className="container-fluid h350 w400"
+                 style={{margin: "10px", padding: "10px", "box-shadow": "6px 6px 10px rgba(50, 50, 50, 0.75)"}}>
                 <div className="row">
                     <div className="col-md-12">
                         <div className="row">
@@ -38,8 +47,8 @@ class ProductShort extends React.Component {
                                 <div className="row">
                                     <div className="col-md-12">
                                         {`${this.state.product.description.substr(0, 150)}${this.state.product.description.length > 150 ? '...' : ''}`}
-                                        <buttom type='button' className="btn btn-info">
-                                            Details
+                                        <buttom type='button' className="btn btn-info" onClick={this.showDetails}>
+                                            Detailsss
                                         </buttom>
                                     </div>
                                 </div>
@@ -55,7 +64,7 @@ class ProductShort extends React.Component {
                                     </div>
                                 </div>
                                 <div className="row">
-                                    <div className="col-md-6" style={{"font-size": "30px", "font-family": "Helvetica"}}>
+                                    <div className="col-md-6" style={{"font-size": "30px"}}>
                                         {this.state.product.price && Number.isInteger(this.state.product.price) && parseInt(this.state.product.price) > 0 ?
                                             <div>{this.state.product.price_without_discount ?
                                                 <s className="text-danger">₹{this.state.product.price_without_discount}</s> : ''}
@@ -65,8 +74,8 @@ class ProductShort extends React.Component {
                                             <b className="text-info" style={{"font-size": "20px"}}>Price on enquiry</b>}
                                     </div>
                                     <div className="col-md-6">
-                                        <buttom type='button' class="btn btn-success">
-                                            Add to basket
+                                        <buttom type='button' class="btn btn-success" onClick={this.addToCart}>
+                                            Add to cart
                                         </buttom>
                                     </div>
                                 </div>

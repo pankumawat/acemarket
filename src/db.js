@@ -90,6 +90,7 @@ exports.getProducts = (success, failure, queryObj) => {
     const price_range = queryObj['price_range'];
     const string_keys = queryObj['string_keys'];
     const rating_minimum = queryObj['rating_minimum'] ? parseInt(queryObj['rating_minimum']) : 0;
+    const recommended = queryObj['recommended'] ? true: false;
     const mid = queryObj['mid'];
     if (price_range) {
         const priceParts = price_range.split('_');
@@ -154,6 +155,10 @@ exports.getProducts = (success, failure, queryObj) => {
                     }
                 }
             })
+        }
+        if(recommended) {
+            // TODO
+            // order by factor of total sold, and rating..
         }
         success(filtered);
     }, failure, true);

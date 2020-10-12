@@ -17,16 +17,18 @@
     <!-- babel -->
     <script src="/lib/babel/7/babel.min.js"></script>
 
-    <!-- almighty react -->
-    <script src="/lib/react/16/react.production.min.js"></script>
-    <script src="/lib/react/16/react-dom.production.min.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Archivo' rel='stylesheet'>
 
+    <!-- almighty react
+<script src="/lib/react/16/react.production.min.js"></script>
+<script src="/lib/react/16/react-dom.production.min.js"></script>
+-->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
           integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
-    <!--
+
     <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-     -->
+
 
     <link href="/css/index.css" rel="stylesheet">
     <link href="/css/whlimits.css" rel="stylesheet">
@@ -34,8 +36,8 @@
 
     <script src="/js/components/Login.jsx" type='text/babel'></script>
     <script src="/js/components/Nav.jsx" type='text/babel'></script>
-    <script src="/js/components/ProductDetailed.jsx" type='text/babel'></script>
     <script src="/js/components/ProductShort.jsx" type='text/babel'></script>
+    <script src="/js/components/ProductDetailed.jsx" type='text/babel'></script>
     <script src="/js/components/Home.jsx" type='text/babel'></script>
 
     <script src="/js/index.js"></script>
@@ -45,28 +47,27 @@
 <div id="root"></div>
 <script type="text/babel">
     class App extends React.Component {
-        getState = () => {
-            if (localStorage && localStorage.getItem(MEM_KEYS.STATE_BASE)) {
-                return JSON.parse(localStorage.getItem(MEM_KEYS.STATE_BASE));
-            } else {
-                return {
-                    "cart": {
-                        quantity: {},
-                        total: 4,
-                        products: {}
-                    },
-                    products: []
-                }
-            }
+        constructor(props) {
+            super(props);
+            this.addProduct = this.addProduct.bind(this);
+            this.remProduct = this.remProduct.bind(this);
+            this.setProducts = this.setProducts.bind(this);
         }
-        state = this.getState();
+
+        state = {
+            "cart": localStorage && localStorage.getItem(MEM_KEYS.STATE_CART)
+                ? JSON.parse(localStorage.getItem(MEM_KEYS.STATE_CART)) :
+                {
+                    quantity: {},
+                    total: 0,
+                    products: {}
+                },
+            products: []
+        }
 
         setProducts = (products) => {
             if (products) {
                 const newState = {...this.state, products: products};
-                if (localStorage) {
-                    localStorage.setItem(MEM_KEYS.STATE_BASE, JSON.stringify(newState))
-                }
                 this.setState(newState);
             }
         }
@@ -82,9 +83,10 @@
             cart.total = cart.total + Number.parseInt(quantity);
             const newState = {...this.state, cart: cart};
             if (localStorage) {
-                localStorage.setItem(MEM_KEYS.STATE_BASE, JSON.stringify(newState))
+                localStorage.setItem(MEM_KEYS.STATE_CART, JSON.stringify(cart))
             }
             this.setState(newState);
+            showSuccess(`${product.name} added successfully!`);
         }
 
         remProduct(product, quantity) {
@@ -99,7 +101,7 @@
                 cart.total = cart.total <= 0 ? 0 : cart.total;
                 const newState = {...this.state, cart: cart};
                 if (localStorage) {
-                    localStorage.setItem(MEM_KEYS.STATE_BASE, JSON.stringify(newState))
+                    localStorage.setItem(MEM_KEYS.STATE_CART, JSON.stringify(cart))
                 }
                 this.setState(newState);
             }
@@ -108,7 +110,11 @@
         render = () => {
             return (
                 <div className="center">
-                    <Home data={this.state}/>
+                    <Home data={this.state}
+                          functions={{
+                              addProduct: this.addProduct,
+                              remProduct: this.remProduct
+                          }}/>
                 </div>
             )
         }

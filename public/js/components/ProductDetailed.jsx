@@ -125,46 +125,30 @@ class ProductDetailed extends React.Component {
                             <div className="col-md-7">
                                 <div className="row">
                                     <div className="col-md-12">
-                                        <h2>{this.product.name}</h2>
-                                        <span className="fas fa-star"
-                                              style={{color: this.product.rating_number > 0.5 ? "orange" : "grey"}}/>
-                                        <span className="fas fa-star"
-                                              style={{color: this.product.rating_number > 1.5 ? "orange" : "grey"}}/>
-                                        <span className="fas fa-star"
-                                              style={{color: this.product.rating_number > 2.5 ? "orange" : "grey"}}/>
-                                        <span className="fas fa-star"
-                                              style={{color: this.product.rating_number > 3.5 ? "orange" : "grey"}}/>
-                                        <span className="fas fa-star"
-                                              style={{color: this.product.rating_number > 4.5 ? "orange" : "grey"}}/>
-                                        <span> {this.product.rating_number}</span>
+                                        <h2>{this.state.product.name}</h2>
+                                        <Rating rating={this.state.product.rating_number}/>
                                     </div>
                                 </div>
                                 <div className="row">
                                     <div className="col-md-7 overflow-auto h300">
                                         <div className="row">
                                             <div className="col-md-12">
-                                                {this.product.description}
+                                                {this.state.product.description}
                                             </div>
                                         </div>
                                         <div className="row">
                                             <div className="col-md-12">
                                                 <hr/>
-                                                {this.product.keys.map(key => (
-                                                    <button type='button' className='btn btn-info'
-                                                            style={{margin: "5px"}}
+                                                {this.state.product.keys.map(key => (
+                                                    <button type='button' className='margin6 btn btn-info'
                                                             disabled>{key}</button>
                                                 ))}
                                                 <hr/>
                                             </div>
                                         </div>
                                         <div className="row">
-                                            <div className="col-md-8"
-                                                 style={{"font-size": "30px"}}>
-                                                <div>{this.product.price_without_discount ?
-                                                    <s className="text-danger">₹{this.product.price_without_discount}</s> : ''}
-                                                    <b className="text-info">&nbsp;&nbsp;{this.product.price ? `₹${this.product.price}  ` : ''}</b>
-                                                </div>
-                                            </div>
+                                            <Price price={this.state.product.price}
+                                                   price_without_discount={this.state.product.price_without_discount}/>
                                             <div className="col-md-4">
                                                 <button type='button' className="btn btn-success"
                                                         onClick={this.addToCart}>
@@ -177,10 +161,11 @@ class ProductDetailed extends React.Component {
                                         <div className="h300 overflow-auto">
                                             <table className="table table-bordered">
                                                 <tbody>
-                                                {Object.keys(this.product.properties).map(key => (
-                                                    <tr>
-                                                        <th className="right p-1">{key}</th>
-                                                        <td className="left p-1">{this.product.properties[key]}</td>
+                                                {Object.keys(this.state.product.properties).map((key, index) => (
+                                                    <tr key={index + 'tr'}>
+                                                        <th className="right p-1" key={index + 'th'}>{key}</th>
+                                                        <td className="left p-1"
+                                                            key={index + 'td'}>{this.state.product.properties[key]}</td>
                                                     </tr>
                                                 ))}
                                                 </tbody>
@@ -192,18 +177,10 @@ class ProductDetailed extends React.Component {
                         </div>
                         <hr/>
                         <h2><u>Similar items</u></h2>
-                        <div className="row horizontal-scrollable text-center" style={{width: "100%"}}>
-                            {this.state.suggestedProducts ?
-                                this.state.suggestedProducts.map(product => (true || product.id !== this.state.product.id ?
-                                    <div className="col-xs-4"><ProductShort product={product}
-                                                                            functions={{
-                                                                                ...this.props.functions,
-                                                                                showProductDetailsPage: this.showProductDetailsPage
-                                                                            }}/>
-                                    </div> : ''))
-                                :
-                                ''}
-                        </div>
+                        <Rail products={this.state.suggestedProducts} hide_ids={[this.state.product.id]} functions={{
+                            ...this.props.functions,
+                            showProductDetailsPage: this.showProductDetailsPage
+                        }}/>
                     </div>
                 </div>
             </div>

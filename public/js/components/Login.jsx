@@ -75,8 +75,8 @@ class Login extends React.Component {
                         </div>
                     </div>
                     <div className="right">
-                        <a href="#" data-toggle="tooltip" data-placement="top"
-                           title="Login as a Guest user. Limited features only." style={{color: "grey"}}
+                        <a href="#" data-toggle="tooltip" data-placement="top" className="grey"
+                           title="Login as a Guest user. Limited features only."
                            onClick={this.guestLogin}>Login as Guest</a>
                     </div>
                 </form>

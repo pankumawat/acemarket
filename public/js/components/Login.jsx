@@ -5,29 +5,17 @@ class Login extends React.Component {
         const username = loginForm.elements.namedItem("username").value;
         const password = loginForm.elements.namedItem("password").value;
 
-        fetch('/api/login', {
-            method: 'post',
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                username,
-                password
-            })
-        }).then((response) => response.json()).then((response) => {
-            if (response.success) {
-                const loggedInUser = response.data
-                localStorage.setItem("user", JSON.stringify(loggedInUser));
-                showSuccess('Login successful.', 1000);
-                setTimeout(() => {
-                    this.props.loginSuccess(loggedInUser)
-                }, 1000);
-            } else {
-                showError(response.error, 3000);
-            }
-        }).catch((error) => {
-            showError(`Something is not right... ${error.message}`, 5000);
-        });
+        makePostCall('/api/login', {
+            username,
+            password
+        }, (response) => {
+            const loggedInUser = response.data
+            localStorage.setItem("user", JSON.stringify(loggedInUser));
+            showSuccess('Login successful.', 1000);
+            setTimeout(() => {
+                this.props.loginSuccess(loggedInUser)
+            }, 1000);
+        })
     }
 
     guestLogin = (event) => {

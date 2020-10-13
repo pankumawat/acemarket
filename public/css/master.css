@@ -566,3 +566,11 @@
     display: inline-block;
     white-space: nowrap;
 }
+
+.railml {
+    width: 100%;
+    overflow: scroll;
+    overflow-x: scroll;
+    overflow-y: scroll;
+    display: inline-block;
+}

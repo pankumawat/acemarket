@@ -71,6 +71,43 @@ const fillLogo = () => {
     }
 }
 
+const makeGetCall = (url, success, failure) => {
+    fetch(url).then((response) => response.json()).then((response) => {
+        if (response.success) {
+            success(response);
+        } else {
+            if (failure)
+                failure(response);
+            else
+                showError(`Something went wrong. ${response.error}`, 3000);
+        }
+    }).catch((error) => {
+        showError(`Something is not right... ${error.message}`, 5000);
+    });
+}
+
+const makePostCall = (url, body, success, failure) => {
+    fetch(url, {
+        method: 'post',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+    }).then((response) => response.json()).then((response) => {
+        if (response.success) {
+            if (success)
+                success(response);
+        } else {
+            if (failure)
+                failure(response);
+            else
+                showError(response.error, 3000);
+        }
+    }).catch((error) => {
+        showError(`Something is not right. ${error.message}`, 5000);
+    });
+}
+
 $(function () {
     $('[data-toggle="tooltip"]').tooltip()
 })

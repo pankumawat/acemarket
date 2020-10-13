@@ -80,19 +80,12 @@ class ProductDetailed extends React.Component {
     }
 
     loadSuggestedProducts = () => {
-        console.log("this.loadSuggestedProducts();");
         const _keys = this.state.product.keys.reduce((a, c) => `${a}_${c}`)
-        fetch(`/products?string_keys=${_keys}`).then((response) => response.json()).then((response) => {
-            if (response.success) {
-                this.setState({
-                    ...this.state,
-                    suggestedProducts: [...response.data, ...response.data, ...response.data]
-                })
-            } else {
-                showError(`Something went wrong while fetching recommendations. ${response.error}`, 3000);
-            }
-        }).catch((error) => {
-            showError(`Something is not right... ${error.message}`, 5000);
+        makeGetCall(`/products?string_keys=${_keys}`, (response) => {
+            this.setState({
+                ...this.state,
+                suggestedProducts: [...response.data, ...response.data, ...response.data]
+            })
         });
     }
 
@@ -172,7 +165,7 @@ class ProductDetailed extends React.Component {
                         </div>
                         <hr/>
                         <h2><u>Similar items</u></h2>
-                        <Rail products={this.state.suggestedProducts} hide_ids={[this.state.product.id]} functions={{
+                        <Shorts products={this.state.suggestedProducts} hide_ids={[this.state.product.id]} functions={{
                             ...this.props.functions,
                             showProductDetailsPage: this.showProductDetailsPage
                         }}/>

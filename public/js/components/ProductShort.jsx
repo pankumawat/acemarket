@@ -36,19 +36,16 @@ class ProductShort extends React.Component {
                                 {`${this.state.product.description.substr(0, 150)}${this.state.product.description.length > 150 ? '...' : ''}`}
                                 <br/>
                                 <buttom type='button' className="btn btn-info" onClick={this.showDetails}>
-                                    Details
+                                    Show Details
                                 </buttom>
                             </div>
                         </div>
                         <div className="row">
                             <div className="col-md-12">
-                                <hr/>
+                                <br/>
                                 {this.state.product.keys.map(key => (
-                                    <button type='button' className='btn btn-info'
-                                            style={{margin: "5px"}}
-                                            disabled>{key}</button>
+                                    <span className="badge badge-dark margin6 fs15">{key}</span>
                                 ))}
-                                <hr/>
                             </div>
                         </div>
                         <div className="row">

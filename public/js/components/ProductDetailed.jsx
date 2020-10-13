@@ -44,9 +44,6 @@ class ProductDetailed extends React.Component {
 
     constructor(props) {
         super(props);
-        console.log(`******* this.props.product ${this.props.product}`);
-        if (this.props.product)
-            console.log("Opened with " + this.props.product.id);
         this.state = {
             product: (this.props.product || this.product),
             imgs: [this.product.img, ...this.product.imgs],
@@ -95,7 +92,7 @@ class ProductDetailed extends React.Component {
                 showError(`Something went wrong while fetching recommendations. ${response.error}`, 3000);
             }
         }).catch((error) => {
-            showError(`Something went wrong while fetching recommendations. ${error}`, 3000);
+            showError(`Something is not right... ${error.message}`, 5000);
         });
     }
 
@@ -138,12 +135,10 @@ class ProductDetailed extends React.Component {
                                         </div>
                                         <div className="row">
                                             <div className="col-md-12">
-                                                <hr/>
+                                                <br/>
                                                 {this.state.product.keys.map(key => (
-                                                    <button type='button' className='margin6 btn btn-info'
-                                                            disabled>{key}</button>
+                                                    <span className="badge badge-dark margin6 fs15">{key}</span>
                                                 ))}
-                                                <hr/>
                                             </div>
                                         </div>
                                         <div className="row">

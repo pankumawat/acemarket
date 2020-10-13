@@ -26,7 +26,7 @@ class Login extends React.Component {
                 showError(response.error, 3000);
             }
         }).catch((error) => {
-            showError(`Something went wrong. details: ${error}`, 3000);
+            showError(`Something is not right... ${error.message}`, 5000);
         });
     }
 

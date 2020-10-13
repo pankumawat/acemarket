@@ -5,10 +5,7 @@ class Home extends React.Component {
         this.silentNav = this.silentNav.bind(this);
         this.searchQuery = this.searchQuery.bind(this);
         this.showProductDetails = this.showProductDetails.bind(this);
-
-        if (getUrlPath().includes(VALID_PATHS.DETAILS) &&  getQueries().pid && getQueries().pid == product.id) {
-            this.setState({...this.state, product: product})
-        }
+        this.showProductDetails();
     }
 
     silentNav = (event) => {
@@ -23,9 +20,28 @@ class Home extends React.Component {
     }
 
     showProductDetails = (product) => {
-        if (product && getQueries().pid && getQueries().pid == product.id) {
-            this.setState({...this.state, product: product})
+        if (getUrlPath().includes(VALID_PATHS.DETAILS) && getQueries().pid) {
+            console.log(JSON.stringify(this.state));
+            if(this.state.product && this.state.product.id == getQueries().pid) {
+                return;
+            }
+            if (product)
+                this.setState({...this.state, product: product})
+            else
+                makeGetCall(`/products/${getQueries().pid}`, (response) => {
+                    if (response.data) {
+                        this.setState({...this.state, product: response.data})
+                        console.log(JSON.stringify(this.state));
+                    }
+                })
+        } else {
+            if(getUrlPath().includes(VALID_PATHS.HOME))
+                this.searchQuery({});
         }
+    }
+
+    componentDidUpdate() {
+        setTimeout(this.showProductDetails, 1000);
     }
 
     /*

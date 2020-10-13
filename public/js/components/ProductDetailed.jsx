@@ -45,12 +45,8 @@ class ProductDetailed extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            product: (this.props.product || this.product),
-            imgs: [this.product.img, ...this.product.imgs],
-            currentImg: this.product.img,
-            suggestedProducts: []
+            product: (this.props.product || this.product)
         }
-        this.loadSuggestedProducts();
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -59,12 +55,8 @@ class ProductDetailed extends React.Component {
         if (!this.state.product || nextState.product.id !== nextProps.product.id) {
             this.setState({
                 product: nextProps.product,
-                imgs: [nextProps.product.img, ...nextProps.product.imgs],
-                currentImg: nextProps.product.img,
                 suggestedProducts: []
             })
-            this.loadSuggestedProducts();
-            // Since we called setState, we are sure that shouldComponentUpdate will be called again, so we will rerender at that time.
             return false;
         } else {
             return true;
@@ -79,16 +71,6 @@ class ProductDetailed extends React.Component {
         this.props.functions.addProduct(this.state.product, 1);
     }
 
-    loadSuggestedProducts = () => {
-        const _keys = this.state.product.keys.reduce((a, c) => `${a}_${c}`)
-        makeGetCall(`/products?string_keys=${_keys}`, (response) => {
-            this.setState({
-                ...this.state,
-                suggestedProducts: [...response.data, ...response.data, ...response.data]
-            })
-        });
-    }
-
     render = () => {
         return (
             <div className="container-fluid" style={{margin: "20px"}}>
@@ -96,12 +78,12 @@ class ProductDetailed extends React.Component {
                     <div className="col-md-12">
                         <div className="row">
                             <div className="col-md-1 overflow-auto h400">
-                                {this.state.imgs.map((img, key) => (<div className="row">
+                                {[...this.product.imgs, this.product.img].map((img, key) => (<div className="row">
                                     <div className="row" key={key}>
                                         <div className="col-md-12" key={key}>
                                             <img src={img} className="img-fluid img-thumbnail"
                                                  alt="Product Image"
-                                                 style={this.state.currentImg == img ? {border: "5px solid orange"} : {}}
+                                                 style={this.state.product.img == img ? {border: "5px solid orange"} : {}}
                                                  key={key} onClick={this.setCurrentImg}/>
                                         </div>
                                     </div>
@@ -109,7 +91,7 @@ class ProductDetailed extends React.Component {
                                 }
                             </div>
                             <div className="col-md-4">
-                                <img src={this.state.currentImg} className="img-thumbnail h400"
+                                <img src={this.state.product.img} className="img-thumbnail h400"
                                      alt="Product Image"/>
                             </div>
                             <div className="col-md-7">
@@ -165,7 +147,9 @@ class ProductDetailed extends React.Component {
                         </div>
                         <hr/>
                         <h2><u>Similar items</u></h2>
-                        <Shorts products={this.state.suggestedProducts} hide_ids={[this.state.product.id]} functions={this.props.functions}/>
+                        <Shorts hide_ids={[this.state.product.id]}
+                                functions={this.props.functions}
+                                query={{"string_keys": this.state.product.keys.reduce((a, c) => `${a}_${c}`)}}/>
                     </div>
                 </div>
             </div>

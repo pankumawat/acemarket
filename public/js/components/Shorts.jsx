@@ -14,29 +14,30 @@ class Shorts extends React.Component {
     // railml ? class railml
     constructor(props) {
         super(props);
-        this.state = {...props}
-
-        if (!this.state.products) {
+        this.state = {...this.props};
+        if (!this.props.products) {
             let url = '/products?';
             //query will be a map of key value
-            if (this.state.query)
-                Object.keys(this.state.query).forEach(key => {
-                    url = `${url}${key}=${this.state.query(key)}&`
+            if (this.props.query)
+                Object.keys(this.props.query).forEach(key => {
+                    url = `${url}${key}=${this.props.query[key]}&`
                 });
-            makeGetCall(url, (response) => this.setState({
-                ...this.state, products: response.data
-            }))
+            makeGetCall(url, (response) => {
+                this.setState({
+                    ...this.state, products: response.data
+                });
+            })
         }
     }
 
     render() {
         return (
-            <div className={`h400 ${this.state.railml ? "railml" : "rail"}`}>
+            <div className={`h400 ${this.props.railml ? "railml" : "rail"}`}>
                 {this.state.products ?
-                    this.state.products.map(product => ((!this.state.hide_ids || this.state.hide_ids.length == 0 || !this.state.hide_ids.includes(product.id)) ?
+                    this.state.products.map(product => ((!this.props.hide_ids || this.props.hide_ids.length == 0 || !this.props.hide_ids.includes(product.id)) ?
                         <ProductShort product={product}
                                       functions={{
-                                          ...this.state.functions,
+                                          ...this.props.functions,
                                       }}/>
                         : ''))
                     :

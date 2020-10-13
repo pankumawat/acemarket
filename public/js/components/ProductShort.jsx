@@ -35,9 +35,9 @@ class ProductShort extends React.Component {
                             <div className="col-md-12">
                                 {`${this.state.product.description.substr(0, 150)}${this.state.product.description.length > 150 ? '...' : ''}`}
                                 <br/>
-                                <buttom type='button' className="btn btn-info" onClick={this.showDetails}>
+                                <button type='button' className="btn btn-info" onClick={this.showDetails}>
                                     Show Details
-                                </buttom>
+                                </button>
                             </div>
                         </div>
                         <div className="row">
@@ -52,9 +52,9 @@ class ProductShort extends React.Component {
                             <Price price={this.state.product.price}
                                    price_without_discount={this.state.product.price_without_discount}/>
                             <div className="col-md-6">
-                                <buttom type='button' class="btn btn-success" onClick={this.addToCart}>
+                                <button type='button' class="btn btn-success" onClick={this.addToCart}>
                                     Add to cart
-                                </buttom>
+                                </button>
                             </div>
                         </div>
                     </div>

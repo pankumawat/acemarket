@@ -51,9 +51,12 @@ const getQueries = (url) => {
 }
 
 const VALID_PATHS = {
-    "HOME": "#home",
-    "LOGIN": "#login",
-    "LOGOUT": "#logout",
+    "HOME": "/home",
+    "DETAILS": "/details",
+    "LOGIN": "/login",
+    "LOGOUT": "/logout",
+    "ABOUT": "/about",
+    "CART": "/cart"
 }
 
 const MEM_KEYS = {

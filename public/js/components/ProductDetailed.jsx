@@ -165,10 +165,7 @@ class ProductDetailed extends React.Component {
                         </div>
                         <hr/>
                         <h2><u>Similar items</u></h2>
-                        <Shorts products={this.state.suggestedProducts} hide_ids={[this.state.product.id]} functions={{
-                            ...this.props.functions,
-                            showProductDetailsPage: this.showProductDetailsPage
-                        }}/>
+                        <Shorts products={this.state.suggestedProducts} hide_ids={[this.state.product.id]} functions={this.props.functions}/>
                     </div>
                 </div>
             </div>

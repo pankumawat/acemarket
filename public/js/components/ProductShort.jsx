@@ -13,7 +13,7 @@ class ProductShort extends React.Component {
     showDetails = (event) => {
         event.target.setAttribute('disabled', true);
         this.props.functions.updateState({product: this.product});
-        this.props.functions.silentNav(`${VALID_PATHS.DETAILS}?pid=${this.state.product.id}`);
+        this.props.functions.silentNav(undefined, `${VALID_PATHS.DETAILS}?pid=${this.state.product.id}`);
     }
 
     componentDidUpdate() {

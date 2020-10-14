@@ -135,6 +135,11 @@ class App extends React.Component {
                     if (hasProductButDiffId || !this.state.product) {
                         makeGetCall(`/products/${queryObj.pid}`, (response) => {
                             this.updateState({page: page, product: response.data});
+
+                            const qs = response.data.keys.reduce((a, c) => `${a}_${c}`);
+                            makeGetCall(`/products/?search_strings=${qs}`, (response) => {
+                                this.updateState({products: [...response.data]});
+                            });
                         });
                     }
                 }
@@ -201,6 +206,7 @@ class App extends React.Component {
                                     <hr/>
                                     <h2><u>Similar items</u></h2>
                                     <Shorts functions={this.props.functions}
+                                            products={this.state.products}
                                             recommended_for={!!this.state.product ? this.state.product.id : undefined}
                                     />
                                 </div>

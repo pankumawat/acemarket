@@ -68,8 +68,9 @@ class App extends React.Component {
         if (!!event)
             event.preventDefault();
         silentUrlChangeTo(path || event.target.href);
-        if (!this.state.page || this.state.page != getPageName()) {
+        if (!this.state.page || this.state.url != path) {
             this.handleNavigation();
+            this.state = {...this.state, url: path};
         }
     }
 

@@ -18,26 +18,6 @@ class Login extends React.Component {
         })
     }
 
-    guestLogin = (event) => {
-        event.preventDefault();
-        const expireAt = new Date();
-        expireAt.setMinutes(expireAt.getMinutes() + 30);
-        const guestObj = {
-            isGuest: true,
-            user: {
-                username: "Guest",
-                name: "Guest",
-            },
-            expireAt: expireAt,
-            accessToken: "GUEST"
-        }
-        localStorage.setItem("user", JSON.stringify(guestObj));
-        showSuccess('Login successful.', 1000);
-        setTimeout(() => {
-            this.props.loginSuccess(guestObj)
-        }, 1000);
-    }
-
     render() {
         return (
                 <form className="login" id="login_form" onSubmit={this.login}>
@@ -62,9 +42,7 @@ class Login extends React.Component {
                         </div>
                     </div>
                     <div className="right">
-                        <a href="#" data-toggle="tooltip" data-placement="top" className="grey"
-                           title="Login as a Guest user. Limited features only."
-                           onClick={this.guestLogin}>Login as Guest</a>
+                        <a href={VALID_PATHS.HOME} data-toggle="tooltip" data-placement="top" className="grey">Login as Guest</a>
                     </div>
                 </form>
         )

@@ -8,13 +8,16 @@ class Home extends React.Component {
         this.showProductDetails();
     }
 
-    silentNav = (event) => {
-        event.preventDefault();
-        silentUrlChangeTo(event.target.href);
+    silentNav = (event, path) => {
+        console.log("silentNav()");
+        if (!!event)
+            event.preventDefault();
+        silentUrlChangeTo(path || event.target.href);
         if (this.state.product && !getUrlPath().includes(VALID_PATHS.DETAILS) && !getQueries().pid) {
             const _state = {...this.state};
             delete _state["product"];
-            delete _state["query"];
+            if (!path)
+                delete _state["query"];
             this.setState({..._state})
         }
     }
@@ -23,17 +26,24 @@ class Home extends React.Component {
         console.log("showProductDetails()");
         if (getUrlPath().includes(VALID_PATHS.DETAILS) && getQueries().pid) {
             if (this.state.product && this.state.product.id == getQueries().pid) {
+                console.log("HOME showProductDetails return");
                 return;
             }
-            if (product)
+            if (product) {
                 //this.state = {...this.state, product: product};
-                setTimeout(() => this.setState({...this.state, product: product}), 1000);
-            else
+                console.log("HOME showProductDetails product hai");
+                setTimeout(() => {
+                    this.setState({...this.state, product: product})
+                }, 500);
+            }
+            else {
+                console.log("HOME showProductDetails fetching new products");
                 makeGetCall(`/products/${getQueries().pid}`, (response) => {
                     if (response.data) {
                         this.setState({...this.state, product: response.data})
                     }
                 })
+            }
         } else {
             if (getUrlPath().includes(VALID_PATHS.HOME))
                 this.searchQuery({});
@@ -43,13 +53,16 @@ class Home extends React.Component {
     /*
      * query { key: val }
      * price_range e.g. 100_1200
-     * string_keys e.g. chocolate_pastry_juice
+     * search_strings e.g. chocolate_pastry_juice
      * rating_minimum e.g.
      * recommended
      */
     searchQuery = (queryObj) => {
         if (queryObj) {
-            this.setState({...this.state, query: queryObj})
+            const _state = {...this.state, query: queryObj};
+            delete _state["product"];
+            this.setState({..._state});
+            this.silentNav(undefined, VALID_PATHS.SEARCH);
         }
     }
 
@@ -66,9 +79,10 @@ class Home extends React.Component {
                 <Nav incart={this.props.data.cart.total} functions={this.functions}/>
                 <div className="center box">
                     {
-                        (getQueries().pid && this.state.product) ?
+                        (getWAI().page == "DETAILS" && getQueries().pid && this.state.product) ?
                             <ProductDetailed functions={this.functions} product={this.state.product}/> :
-                            <Shorts railml={true} functions={this.functions} product={this.state.product}
+                            <Shorts railml={true} functions={this.functions}
+                                    hide_ids={!!this.state.product ? [this.state.product.id] : []}
                                     query={this.state.query}/>
                     }
                 </div>

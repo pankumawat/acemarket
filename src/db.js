@@ -88,7 +88,7 @@ exports.getProducts = (success, failure, queryObj) => {
     let low = -1;
     let high = 9999999;
     const price_range = queryObj['price_range'];
-    const string_keys = queryObj['string_keys'];
+    const search_strings = queryObj['search_strings'];
     const rating_minimum = queryObj['rating_minimum'] ? parseInt(queryObj['rating_minimum']) : 0;
     const recommended = queryObj['recommended'] ? true: false;
     const mid = queryObj['mid'];
@@ -134,9 +134,9 @@ exports.getProducts = (success, failure, queryObj) => {
             filtered = filtered.filter(item => {
                 return this.getRating(item.rating) >= rating_minimum;
             })
-        if (string_keys) {
+        if (search_strings) {
             filtered = filtered.filter((item) => {
-                const keysArr = string_keys.toLowerCase().split('_');
+                const keysArr = search_strings.toLowerCase().split('_');
                 for (let i = 0; i < keysArr.length; i++) {
                     const searchKey = keysArr[i];
                     if (item.name.toLowerCase().includes(searchKey))

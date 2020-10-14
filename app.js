@@ -46,7 +46,7 @@ app.get('/products/:id', (req, res) => {
 
 /*
  * price_range e.g. 100_1200
- * string_keys e.g. chocolate_pastry_juice
+ * search_strings e.g. chocolate_pastry_juice
  * rating_minimum e.g.
  * recommended
  */
@@ -64,7 +64,7 @@ app.get('/products', (req, res) => {
     }, (err) => res.json(core.getErrorResponse(err)), queryObj);
 });
 
-app.get(['/', '/details', '/login'], (req, res) => {
+app.get(['/', '/details', '/login', '/search'], (req, res) => {
     res.sendFile(path.join(__dirname + '/public/index.html'));
 });
 

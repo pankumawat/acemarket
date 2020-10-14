@@ -147,9 +147,10 @@ class ProductDetailed extends React.Component {
                         </div>
                         <hr/>
                         <h2><u>Similar items</u></h2>
-                        <Shorts hide_ids={[this.state.product.id]}
-                                functions={this.props.functions}
-                                query={{"string_keys": this.state.product.keys.reduce((a, c) => `${a}_${c}`)}}/>
+                        <Shorts functions={this.props.functions}
+                                query={{"search_strings": this.state.product.keys.reduce((a, c) => `${a}_${c}`)}}
+                                recommended_for={this.state.product.id}
+                        />
                     </div>
                 </div>
             </div>

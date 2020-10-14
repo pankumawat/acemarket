@@ -56,7 +56,8 @@ const VALID_PATHS = {
     "LOGIN": "/login",
     "LOGOUT": "/logout",
     "ABOUT": "/about",
-    "CART": "/cart"
+    "CART": "/cart",
+    "SEARCH": "/search"
 }
 
 const getWAI = (url) => {
@@ -99,8 +100,6 @@ const addToGETCache = (url, data) => {
 }
 
 const makeGetCall = (url, success, failure) => {
-    console.log(Object.keys(GETcache))
-    //console.log((Date.now() - GETcache[url].ts));
     if (GETcache[url] && (Date.now() - GETcache[url].ts) <= 5000) {
         setTimeout(() => success(GETcache[url].data), 200);
         console.log(`GET ${url} served from Cache`);

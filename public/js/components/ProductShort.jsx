@@ -8,8 +8,7 @@ class ProductShort extends React.Component {
     }
 
     showDetails = () => {
-        silentUrlChangeTo(`details?pid=${this.state.product.id}`)
-        console.dir(this.props);
+        silentUrlChangeTo(`${VALID_PATHS.DETAILS}?pid=${this.state.product.id}`)
         this.props.functions.showProductDetails(this.state.product);
     }
 

@@ -20,29 +20,24 @@ class Home extends React.Component {
     }
 
     showProductDetails = (product) => {
+        console.log("showProductDetails()");
         if (getUrlPath().includes(VALID_PATHS.DETAILS) && getQueries().pid) {
-            console.log(JSON.stringify(this.state));
-            if(this.state.product && this.state.product.id == getQueries().pid) {
+            if (this.state.product && this.state.product.id == getQueries().pid) {
                 return;
             }
             if (product)
-                this.setState({...this.state, product: product})
+                //this.state = {...this.state, product: product};
+                setTimeout(() => this.setState({...this.state, product: product}), 1000);
             else
                 makeGetCall(`/products/${getQueries().pid}`, (response) => {
                     if (response.data) {
                         this.setState({...this.state, product: response.data})
-                        console.log(JSON.stringify(this.state));
                     }
                 })
         } else {
-            if(getUrlPath().includes(VALID_PATHS.HOME))
+            if (getUrlPath().includes(VALID_PATHS.HOME))
                 this.searchQuery({});
         }
-    }
-
-    componentDidUpdate() {
-        console.log(JSON.stringify(getWAI(), undefined, 4));
-        setTimeout(this.showProductDetails, 1000);
     }
 
     /*

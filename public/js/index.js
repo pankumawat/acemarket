@@ -69,7 +69,8 @@ const getWAI = (url) => {
 }
 
 const MEM_KEYS = {
-    STATE_CART: "acemarket_cart_state"
+    STATE_CART: "acemarket_cart_state",
+    GET_CACHE: "acemarket_get_cache"
 }
 
 const SVG = {
@@ -82,20 +83,43 @@ const fillLogo = () => {
         arr[i].innerHTML = SVG.LOGO;
     }
 }
+/*
+ * { "url" : { "ts", "data" }
+ */
+const GETcache = (localStorage && localStorage.getItem(MEM_KEYS.GET_CACHE)) ? JSON.parse(localStorage.getItem(MEM_KEYS.GET_CACHE)) : {};
+
+const addToGETCache = (url, data) => {
+    GETcache[url] = {
+        ts: Date.now(),
+        data: data
+    }
+    if (localStorage) {
+        localStorage.setItem(MEM_KEYS.GET_CACHE, JSON.stringify(GETcache));
+    }
+}
 
 const makeGetCall = (url, success, failure) => {
-    fetch(url).then((response) => response.json()).then((response) => {
-        if (response.success) {
-            success(response);
-        } else {
-            if (failure)
-                failure(response);
-            else
-                showError(`Something went wrong. ${response.error}`, 3000);
-        }
-    }).catch((error) => {
-        showError(`Something is not right... ${error.message}`, 5000);
-    });
+    console.log(Object.keys(GETcache))
+    //console.log((Date.now() - GETcache[url].ts));
+    if (GETcache[url] && (Date.now() - GETcache[url].ts) <= 5000) {
+        setTimeout(() => success(GETcache[url].data), 200);
+        console.log(`GET ${url} served from Cache`);
+    } else {
+        console.log(`GET ${url}`);
+        fetch(url).then((response) => response.json()).then((response) => {
+            if (response.success) {
+                success(response);
+                addToGETCache(url, response);
+            } else {
+                if (failure)
+                    failure(response);
+                else
+                    showError(`Something went wrong. ${response.error}`, 3000);
+            }
+        }).catch((error) => {
+            showError(`Something is not right... ${error.message}`, 5000);
+        });
+    }
 }
 
 const makePostCall = (url, body, success, failure) => {

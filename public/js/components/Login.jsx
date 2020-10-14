@@ -40,7 +40,6 @@ class Login extends React.Component {
 
     render() {
         return (
-            <div className="login box center" aria-modal="true">
                 <form className="login" id="login_form" onSubmit={this.login}>
                     <div className="form-group">
                         <h3 style={{color: "white"}}>Sign in</h3>
@@ -68,7 +67,6 @@ class Login extends React.Component {
                            onClick={this.guestLogin}>Login as Guest</a>
                     </div>
                 </form>
-            </div>
         )
     }
 }

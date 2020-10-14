@@ -66,6 +66,10 @@ class App extends React.Component {
     }
 
     render = () => {
-        return (<Home data={this.state} functions={this.functions}/>)
+        console.log(getWAI());
+        if(getWAI().page == "LOGIN")
+            return (<div className="box center"><div className="login margin36"><Login data={this.state} functions={this.functions}/></div></div>)
+        else
+            return (<Home data={this.state} functions={this.functions}/>)
     }
 }

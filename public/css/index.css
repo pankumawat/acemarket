@@ -56,6 +56,10 @@ form.login {
     height: 100%;
 }
 
+div.login {
+    border-radius: 50px;
+}
+
 @media screen and (min-width: 600px) {
     .shortener {
         margin: 20px;

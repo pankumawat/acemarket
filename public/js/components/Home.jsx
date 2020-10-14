@@ -23,21 +23,15 @@ class Home extends React.Component {
     }
 
     showProductDetails = (product) => {
-        console.log("showProductDetails()");
         if (getUrlPath().includes(VALID_PATHS.DETAILS) && getQueries().pid) {
             if (this.state.product && this.state.product.id == getQueries().pid) {
-                console.log("HOME showProductDetails return");
                 return;
             }
             if (product) {
-                //this.state = {...this.state, product: product};
-                console.log("HOME showProductDetails product hai");
                 setTimeout(() => {
                     this.setState({...this.state, product: product})
                 }, 500);
-            }
-            else {
-                console.log("HOME showProductDetails fetching new products");
+            } else {
                 makeGetCall(`/products/${getQueries().pid}`, (response) => {
                     if (response.data) {
                         this.setState({...this.state, product: response.data})

@@ -3,7 +3,7 @@ class ProductShort extends React.Component {
         product: this.props.product,
     }
 
-    addToCart = (event) => {
+    addToBasket = (event) => {
         const et = event.target;
         et.setAttribute('disabled', true);
         setTimeout(() => et.removeAttribute('disabled'), 1000);
@@ -56,7 +56,7 @@ class ProductShort extends React.Component {
                             <Price price={this.state.product.price}
                                    price_without_discount={this.state.product.price_without_discount}/>
                             <div className="col-md-6">
-                                <button type='button' class="btn btn-success" onClick={this.addToCart}>
+                                <button type='button' class="btn btn-success" onClick={this.addToBasket}>
                                     Add to Basket
                                 </button>
                             </div>

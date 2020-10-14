@@ -21,9 +21,6 @@ class Shorts extends React.Component {
     }
 
     populateData = () => {
-        console.log("this.populateData();");
-        console.dir(`this.state.products ${JSON.stringify(this.state.products)}`)
-        console.log(`DECISION TO FETCH ${!this.state.products || (!!this.props.query && !this.props.products)}`)
         if ((!this.state.products && !this.props.products)) {
             let url = '/products?';
             //query will be a map of key value
@@ -45,11 +42,6 @@ class Shorts extends React.Component {
     }
 
     componentDidUpdate() {
-        console.log("SHORTS componentDidUpdate  state " + Object.keys(this.state))
-        console.log("SHORTS componentDidUpdate  props " + Object.keys(this.props))
-        console.log("SHORTS componentDidUpdate  hide_ids " + (!!this.props.hide_ids ? JSON.stringify(this.props.hide_ids) : {}))
-        console.log("SHORTS componentDidUpdate  query " + (!!this.props.query ? JSON.stringify(this.props.query) : {}))
-        // console.log(JSON.stringify(this.state, undefined, 2))
         this.populateData();
     }
 

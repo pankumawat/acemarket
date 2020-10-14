@@ -46,17 +46,16 @@ class ProductDetailed extends React.Component {
         super(props);
         this.state = {
             product: (this.props.product || this.product),
-            functions: this.props.functions
+            functions: this.props.functions,
         }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
         if (!nextProps.product)
             return true;
-        if (!this.state.product || nextState.product.id !== nextProps.product.id) {
+        if (!!nextProps.product && this.state.product.id !== nextProps.product.id) {
             this.setState({
-                product: nextProps.product,
-                suggestedProducts: []
+                product: nextProps.product
             })
             return false;
         } else {
@@ -64,91 +63,12 @@ class ProductDetailed extends React.Component {
         }
     }
 
-    setCurrentImg = (event) => {
-        this.setState({...this.state, currentImg: event.target.getAttribute("src")})
-    }
-
-    addToCart = (event) => {
-        const et = event.target;
-        et.setAttribute('disabled', true);
-        setTimeout(() => et.removeAttribute('disabled'), 1000);
-        this.props.functions.addProduct(this.state.product, 1);
-    }
-
     render = () => {
         return (
-            <div className="container-fluid" style={{margin: "20px"}}>
+            <div className="container-fluid margin20">
                 <div className="row">
                     <div className="col-md-12">
-                        <div className="row">
-                            <div className="col-md-1 overflow-auto h400">
-                                {[...this.product.imgs, this.product.img].map((img, key) => (<div className="row">
-                                    <div className="row" key={key}>
-                                        <div className="col-md-12" key={key}>
-                                            <img src={img} className="img-fluid img-thumbnail"
-                                                 alt="Product Image"
-                                                 style={this.state.product.img == img ? {border: "5px solid orange"} : {}}
-                                                 key={key} onClick={this.setCurrentImg}/>
-                                        </div>
-                                    </div>
-                                </div>))
-                                }
-                            </div>
-                            <div className="col-md-4">
-                                <img src={this.state.product.img} className="img-thumbnail h400"
-                                     alt="Product Image"/>
-                            </div>
-                            <div className="col-md-7">
-                                <div className="row">
-                                    <div className="col-md-12">
-                                        <h2>{this.state.product.name}</h2>
-                                        <Rating rating={this.state.product.rating_number}/>
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-md-7 overflow-auto h300">
-                                        <div className="row">
-                                            <div className="col-md-12">
-                                                {this.state.product.description}
-                                            </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="col-md-12">
-                                                <br/>
-                                                {this.state.product.keys.map(key => (
-                                                    <span className="badge badge-dark margin6 fs15">{key}</span>
-                                                ))}
-                                            </div>
-                                        </div>
-                                        <div className="row">
-                                            <Price price={this.state.product.price}
-                                                   price_without_discount={this.state.product.price_without_discount}/>
-                                            <div className="col-md-4">
-                                                <button type='button' className="btn btn-success"
-                                                        onClick={this.addToCart}>
-                                                    Add to basket
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-md-5">
-                                        <div className="h300 overflow-auto">
-                                            <table className="table table-bordered">
-                                                <tbody>
-                                                {Object.keys(this.state.product.properties).map((key, index) => (
-                                                    <tr key={index + 'tr'}>
-                                                        <th className="right p-1" key={index + 'th'}>{key}</th>
-                                                        <td className="left p-1"
-                                                            key={index + 'td'}>{this.state.product.properties[key]}</td>
-                                                    </tr>
-                                                ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <Details product={this.state.product} functions={this.props.functions}/>
                         <hr/>
                         <h2><u>Similar items</u></h2>
                         <Shorts functions={this.props.functions}

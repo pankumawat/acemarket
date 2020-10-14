@@ -59,6 +59,15 @@ const VALID_PATHS = {
     "CART": "/cart"
 }
 
+const getWAI = (url) => {
+    const cPath = getUrlPath(url);
+    const page = Object.keys(VALID_PATHS).filter(key => (cPath.includes(VALID_PATHS[key]) && key))[0];
+    return {
+        "page": page,
+        "query": getQueries(url)
+    }
+}
+
 const MEM_KEYS = {
     STATE_CART: "acemarket_cart_state"
 }

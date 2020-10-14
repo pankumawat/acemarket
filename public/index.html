@@ -42,6 +42,7 @@
     <script src="/js/components/Shorts.jsx" type='text/babel'></script>
     <script src="/js/components/ProductDetailed.jsx" type='text/babel'></script>
     <script src="/js/components/Home.jsx" type='text/babel'></script>
+    <script src="/js/components/App.jsx" type='text/babel'></script>
 
     <script src="/js/index.js"></script>
 </head>
@@ -49,80 +50,6 @@
 <!-- index -->
 <div id="root"></div>
 <script type="text/babel">
-    class App extends React.Component {
-        constructor(props) {
-            super(props);
-            this.addProduct = this.addProduct.bind(this);
-            this.remProduct = this.remProduct.bind(this);
-            this.setProducts = this.setProducts.bind(this);
-        }
-
-        state = {
-            "cart": localStorage && localStorage.getItem(MEM_KEYS.STATE_CART)
-                ? JSON.parse(localStorage.getItem(MEM_KEYS.STATE_CART)) :
-                {
-                    quantity: {},
-                    total: 0,
-                    products: {}
-                },
-            products: []
-        }
-
-        setProducts = (products) => {
-            if (products) {
-                const newState = {...this.state, products: products};
-                this.setState(newState);
-            }
-        }
-
-        addProduct(product, quantity) {
-            const cart = {...this.state.cart};
-            if (!cart.quantity[product.id]) {
-                cart.quantity[product.id] = Number.parseInt(quantity);
-                cart.products[product.id] = {...product};
-            } else {
-                cart.quantity[product.id] = cart.quantity[product.id] + Number.parseInt(quantity);
-            }
-            cart.total = cart.total + Number.parseInt(quantity);
-            const newState = {...this.state, cart: cart};
-            if (localStorage) {
-                localStorage.setItem(MEM_KEYS.STATE_CART, JSON.stringify(cart))
-            }
-            this.setState(newState);
-            showSuccess(`${product.name} added successfully!`);
-        }
-
-        remProduct(product, quantity) {
-            const cart = {...this.state.cart};
-            if (cart.quantity[product.id]) {
-                cart.quantity[product.id] = cart.quantity[product.id] - Number.parseInt(quantity);
-                if (cart.quantity[product.id] <= 0) {
-                    delete cart.quantity[product.id];
-                    delete cart.products[product.id];
-                }
-                cart.total = cart.total - Number.parseInt(quantity);
-                cart.total = cart.total <= 0 ? 0 : cart.total;
-                const newState = {...this.state, cart: cart};
-                if (localStorage) {
-                    localStorage.setItem(MEM_KEYS.STATE_CART, JSON.stringify(cart))
-                }
-                this.setState(newState);
-            }
-        }
-
-        render = () => {
-            return (
-                <div className="center">
-                    <Home data={this.state}
-                          functions={{
-                              addProduct: this.addProduct,
-                              remProduct: this.remProduct
-                          }}/>
-                </div>
-            )
-        }
-    }
-
     ReactDOM.render(<App/>, document.getElementById('root'));
     fillLogo();
 </script>

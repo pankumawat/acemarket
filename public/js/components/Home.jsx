@@ -41,6 +41,7 @@ class Home extends React.Component {
     }
 
     componentDidUpdate() {
+        console.log(JSON.stringify(getWAI(), undefined, 4));
         setTimeout(this.showProductDetails, 1000);
     }
 

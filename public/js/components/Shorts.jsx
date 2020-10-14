@@ -15,13 +15,16 @@ class Shorts extends React.Component {
     constructor(props) {
         super(props);
         this.state = {...this.props};
-
         this.componentDidUpdate();
         this.populateData();
     }
 
     populateData = () => {
-        if ((!this.state.products && !this.props.products)) {
+        if(!!this.state.products && _.isEqual(this.state.query, this.props.query)) {
+            return;
+        }
+
+        if (!this.state.products || (!this.props.products && !!this.props.query)) {
             let url = '/products?';
             //query will be a map of key value
             if (this.props.query)
@@ -30,14 +33,12 @@ class Shorts extends React.Component {
                 });
             makeGetCall(url, (response) => {
                 const _state = {
-                    ...this.state, products: response.data
+                    ...this.state, products: response.data, query: this.props.query
                 }
                 this.setState({
                     ..._state
                 });
             })
-        } else if (!this.state.products) {
-            this.setState({...this.state, products: this.props.products})
         }
     }
 

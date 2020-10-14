@@ -16,6 +16,11 @@ class ProductShort extends React.Component {
         this.props.functions.showProductDetails(this.state.product);
     }
 
+    componentDidUpdate() {
+        if (!!this.props.product && !!this.props.product.id && this.props.product.id != this.state.product.id)
+            this.setState({...this.state, product: this.props.product});
+    }
+
     render = () => {
         return (
             <div className="short">

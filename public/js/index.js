@@ -17,6 +17,11 @@ const failureAlert = {
     "background-color": "#FFCCCC",
 }
 
+const logging = true;
+const logInfo = (str) => logging || console.log(str);
+const logError = (str) => logging || console.error(str);
+const logObj = (obj) => logging || console.log(JSON.stringify(obj, undefined, 2));
+
 const showSnackbar = (isSuccess, message, timeout) => {
     const snackbar = document.getElementById("snackbar")
     snackbar.style["background-color"] = isSuccess ? "#90EE90" : "#FFCCCC";
@@ -60,9 +65,13 @@ const VALID_PATHS = {
     "SEARCH": "/search"
 }
 
-const getWAI = (url) => {
+const getPageName = (url) => {
     const cPath = getUrlPath(url);
-    const page = Object.keys(VALID_PATHS).filter(key => (cPath.includes(VALID_PATHS[key]) && key))[0];
+    const matched = Object.keys(VALID_PATHS).filter(key => (cPath.includes(VALID_PATHS[key]) && key));
+    return (!!matched && matched.length > 0 && matched[0]) || null;
+}
+const getWAI = (url) => {
+    const page = getPageName(url)
     return {
         "page": page,
         "query": getQueries(url)

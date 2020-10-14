@@ -14,7 +14,6 @@ class App extends React.Component {
         this.addProduct = this.addProduct.bind(this);
         this.remProduct = this.remProduct.bind(this);
         this.setProducts = this.setProducts.bind(this);
-        console.dir(this.state);
     }
 
     setProducts = (products) => {
@@ -25,8 +24,6 @@ class App extends React.Component {
     }
 
     addProduct = (product, quantity) => {
-        console.log(`product ${quantity}`)
-        console.log(`this.state ${this.state}`)
         const cart = {...this.state.cart};
         if (!cart.quantity[product.id]) {
             cart.quantity[product.id] = Number.parseInt(quantity);
@@ -68,7 +65,6 @@ class App extends React.Component {
     }
 
     render = () => {
-        console.log(getWAI());
         if (getWAI().page == "LOGIN")
             return (<div className="box center">
                 <div className="login margin36"><Login data={this.state} functions={this.functions}/></div>

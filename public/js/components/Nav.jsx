@@ -1,7 +1,7 @@
 const Nav = (props) => {
     searchProducts = (event) => {
         if (event.which == 13) {
-            props.functions.searchQuery({"search_string": event.target.value})
+            props.functions.searchQuery({"search_strings": event.target.value})
         }
     }
     return (

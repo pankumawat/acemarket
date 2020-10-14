@@ -90,7 +90,7 @@ exports.getProducts = (success, failure, queryObj) => {
     const price_range = queryObj['price_range'];
     const search_strings = queryObj['search_strings'];
     const rating_minimum = queryObj['rating_minimum'] ? parseInt(queryObj['rating_minimum']) : 0;
-    const recommended = queryObj['recommended'] ? true: false;
+    const recommended = queryObj['recommended'] ? true : false;
     const mid = queryObj['mid'];
     if (price_range) {
         const priceParts = price_range.split('_');
@@ -136,14 +136,16 @@ exports.getProducts = (success, failure, queryObj) => {
             })
         if (search_strings) {
             filtered = filtered.filter((item) => {
-                const keysArr = search_strings.toLowerCase().split('_');
+                let keysArr = search_strings.toLowerCase().split('_').filter(item => item.length > 0);
+                if (search_strings.indexOf(' ') !== -1)
+                    keysArr = [...keysArr, ...search_strings.toLowerCase().split(' ').filter(item => item.length > 0)]
                 for (let i = 0; i < keysArr.length; i++) {
                     const searchKey = keysArr[i];
                     if (item.name.toLowerCase().includes(searchKey))
                         return true;
                     else if (item.description.toLowerCase().includes(searchKey))
                         return true;
-                    else if (item.keys.includes(searchKey))
+                    else if (item.keys.filter(item => item.toLowerCase().includes(searchKey)).length > 0)
                         return true;
                     if (item.properties) {
                         const propertyValues = Object.values(item.properties);
@@ -153,10 +155,11 @@ exports.getProducts = (success, failure, queryObj) => {
                                 return true;
                         }
                     }
+                    return false;
                 }
             })
         }
-        if(recommended) {
+        if (recommended) {
             // TODO
             // order by factor of total sold, and rating..
         }

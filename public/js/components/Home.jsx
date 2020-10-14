@@ -8,12 +8,16 @@ class Home extends React.Component {
         this.showProductDetails();
     }
 
-    silentNav = (event, path) => {
-        console.log("silentNav()");
+    silentNav = (event, path, queryObj) => {
+        logInfo("silentNav()");
         if (!!event)
             event.preventDefault();
         silentUrlChangeTo(path || event.target.href);
-        if (this.state.product && !getUrlPath().includes(VALID_PATHS.DETAILS) && !getQueries().pid) {
+        if (getPageName() == "SEARCH" && !!queryObj) {
+            const _state = {...this.state, query: queryObj};
+            delete _state["product"];
+            this.setState({..._state})
+        } else if (this.state.product && !(getPageName() == "DETAILS") && !getQueries().pid) {
             const _state = {...this.state};
             delete _state["product"];
             if (!path)
@@ -56,7 +60,7 @@ class Home extends React.Component {
             const _state = {...this.state, query: queryObj};
             delete _state["product"];
             this.setState({..._state});
-            this.silentNav(undefined, VALID_PATHS.SEARCH);
+            this.silentNav(undefined, VALID_PATHS.SEARCH, queryObj);
         }
     }
 
@@ -77,7 +81,7 @@ class Home extends React.Component {
                             <ProductDetailed functions={this.functions} product={this.state.product}/> :
                             <Shorts railml={true} functions={this.functions}
                                     hide_ids={!!this.state.product ? [this.state.product.id] : []}
-                                    query={this.state.query}/>
+                                    query={{...this.state.query}}/>
                     }
                 </div>
             </div>

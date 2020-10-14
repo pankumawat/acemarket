@@ -1,20 +1,20 @@
 class App extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            "cart": localStorage && localStorage.getItem(MEM_KEYS.STATE_CART)
+                ? JSON.parse(localStorage.getItem(MEM_KEYS.STATE_CART)) :
+                {
+                    quantity: {},
+                    total: 0,
+                    products: {}
+                },
+            products: []
+        }
         this.addProduct = this.addProduct.bind(this);
         this.remProduct = this.remProduct.bind(this);
         this.setProducts = this.setProducts.bind(this);
-    }
-
-    state = {
-        "cart": localStorage && localStorage.getItem(MEM_KEYS.STATE_CART)
-            ? JSON.parse(localStorage.getItem(MEM_KEYS.STATE_CART)) :
-            {
-                quantity: {},
-                total: 0,
-                products: {}
-            },
-        products: []
+        console.dir(this.state);
     }
 
     setProducts = (products) => {
@@ -24,7 +24,9 @@ class App extends React.Component {
         }
     }
 
-    addProduct(product, quantity) {
+    addProduct = (product, quantity) => {
+        console.log(`product ${quantity}`)
+        console.log(`this.state ${this.state}`)
         const cart = {...this.state.cart};
         if (!cart.quantity[product.id]) {
             cart.quantity[product.id] = Number.parseInt(quantity);
@@ -67,8 +69,10 @@ class App extends React.Component {
 
     render = () => {
         console.log(getWAI());
-        if(getWAI().page == "LOGIN")
-            return (<div className="box center"><div className="login margin36"><Login data={this.state} functions={this.functions}/></div></div>)
+        if (getWAI().page == "LOGIN")
+            return (<div className="box center">
+                <div className="login margin36"><Login data={this.state} functions={this.functions}/></div>
+            </div>)
         else
             return (<Home data={this.state} functions={this.functions}/>)
     }

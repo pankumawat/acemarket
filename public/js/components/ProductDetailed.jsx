@@ -45,7 +45,8 @@ class ProductDetailed extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            product: (this.props.product || this.product)
+            product: (this.props.product || this.product),
+            functions: this.props.functions
         }
     }
 
@@ -67,7 +68,10 @@ class ProductDetailed extends React.Component {
         this.setState({...this.state, currentImg: event.target.getAttribute("src")})
     }
 
-    addToCart = () => {
+    addToCart = (event) => {
+        const et = event.target;
+        et.setAttribute('disabled', true);
+        setTimeout(() => et.removeAttribute('disabled'), 1000);
         this.props.functions.addProduct(this.state.product, 1);
     }
 

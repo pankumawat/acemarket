@@ -3,11 +3,15 @@ class ProductShort extends React.Component {
         product: this.props.product,
     }
 
-    addToCart = () => {
+    addToCart = (event) => {
+        const et = event.target;
+        et.setAttribute('disabled', true);
+        setTimeout(() => et.removeAttribute('disabled'), 1000);
         this.props.functions.addProduct(this.state.product, 1);
     }
 
-    showDetails = () => {
+    showDetails = (event) => {
+        event.target.setAttribute('disabled', true);
         silentUrlChangeTo(`${VALID_PATHS.DETAILS}?pid=${this.state.product.id}`)
         this.props.functions.showProductDetails(this.state.product);
     }
@@ -53,7 +57,7 @@ class ProductShort extends React.Component {
                                    price_without_discount={this.state.product.price_without_discount}/>
                             <div className="col-md-6">
                                 <button type='button' class="btn btn-success" onClick={this.addToCart}>
-                                    Add to cart
+                                    Add to Basket
                                 </button>
                             </div>
                         </div>

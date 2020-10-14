@@ -20,7 +20,7 @@ const failureAlert = {
 const logging = true;
 const logInfo = (str) => logging || console.log(str);
 const logError = (str) => logging || console.error(str);
-const logObj = (obj) => logging || console.log(JSON.stringify(obj, undefined, 2));
+const logObj = (obj, title) => logging || console.log(`${!!title ? title : "Object"} ${JSON.stringify(obj, undefined, 2)}`);
 
 const showSnackbar = (isSuccess, message, timeout) => {
     const snackbar = document.getElementById("snackbar")
@@ -68,7 +68,7 @@ const VALID_PATHS = {
 const getPageName = (url) => {
     const cPath = getUrlPath(url);
     const matched = Object.keys(VALID_PATHS).filter(key => (cPath.includes(VALID_PATHS[key]) && key));
-    return (!!matched && matched.length > 0 && matched[0]) || null;
+    return (!!matched && matched.length > 0 && matched[0]) || "ROOT";
 }
 const getWAI = (url) => {
     const page = getPageName(url)

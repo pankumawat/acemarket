@@ -14,48 +14,20 @@ class Shorts extends React.Component {
     // railml ? class railml
     constructor(props) {
         super(props);
-        this.state = {...this.props};
-        this.componentDidUpdate();
-        this.populateData();
-    }
-
-    populateData = () => {
-        if(!!this.state.products && _.isEqual(this.state.query, this.props.query)) {
-            return;
-        }
-
-        if (!this.state.products || (!this.props.products && !!this.props.query)) {
-            let url = '/products?';
-            //query will be a map of key value
-            if (this.props.query)
-                Object.keys(this.props.query).forEach(key => {
-                    url = `${url}${key}=${this.props.query[key]}&`
-                });
-            makeGetCall(url, (response) => {
-                const _state = {
-                    ...this.state, products: response.data, query: this.props.query
-                }
-                this.setState({
-                    ..._state
-                });
-            })
-        }
-    }
-
-    componentDidUpdate() {
-        this.populateData();
     }
 
     render() {
+        console.dir(this.props.products);
+        const hasProducts = !!this.props.products && this.props.products.length > 0;
         return (
-            <div className={`h400 ${this.state.railml ? "railml" : "rail"}`}>
-                {this.state.products ?
-                    this.state.products.map(product => ((!this.props.recommended_for || this.props.recommended_for != product.id) && (!this.state.hide_ids || this.state.hide_ids.length == 0 || !this.state.hide_ids.includes(product.id)) ?
+            <div className={`h400 ${!!this.props.railml ? "railml" : "rail"}`}>
+                {hasProducts ?
+                    this.props.products.map(product => (!this.props.recommended_for || this.props.recommended_for != product.id) ?
                         <ProductShort product={product}
                                       functions={{
-                                          ...this.state.functions,
+                                          ...this.props.functions,
                                       }}/>
-                        : ''))
+                        : '')
                     :
                     ''}
             </div>

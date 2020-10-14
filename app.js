@@ -64,7 +64,8 @@ app.get('/products', (req, res) => {
     }, (err) => res.json(core.getErrorResponse(err)), queryObj);
 });
 
-app.get(['/', '/details', '/login', '/search'], (req, res) => {
+app.get(['/', '/details', '/login', '/search', '/cart'], (req, res) => {
+    console.log(req.url)
     res.sendFile(path.join(__dirname + '/public/index.html'));
 });
 

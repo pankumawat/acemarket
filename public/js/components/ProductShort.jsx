@@ -7,13 +7,13 @@ class ProductShort extends React.Component {
         const et = event.target;
         et.setAttribute('disabled', true);
         setTimeout(() => et.removeAttribute('disabled'), 1000);
-        this.props.functions.addProduct(this.state.product, 1);
+        this.props.functions.addProductToCart(this.state.product, 1);
     }
 
     showDetails = (event) => {
         event.target.setAttribute('disabled', true);
-        silentUrlChangeTo(`${VALID_PATHS.DETAILS}?pid=${this.state.product.id}`)
-        this.props.functions.showProductDetails(this.state.product);
+        this.props.functions.updateState({product: this.product});
+        this.props.functions.silentNav(`${VALID_PATHS.DETAILS}?pid=${this.state.product.id}`);
     }
 
     componentDidUpdate() {

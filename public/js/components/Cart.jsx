@@ -12,7 +12,8 @@ class Cart extends React.Component {
 
     quantityUpdate = (event) => {
         event.preventDefault();
-        const elem = event.target.role ? event.target : event.target.parentElement;
+
+        let elem = event.target.getAttributeNames().includes("role") ? event.target : event.target.parentElement;
         const id = elem.getAttribute("data_id");
         const role = elem.getAttribute('role');
         switch (role) {
@@ -26,7 +27,7 @@ class Cart extends React.Component {
                 this.props.functions.remProductFromCart(this.state.cart.products[id], this.props.cart.quantity[id]);
                 break;
             default:
-                showError("Something went wrong.");
+                showError("Something went wrong. " + elem);
         }
     }
 

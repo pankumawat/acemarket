@@ -71,8 +71,16 @@ class App extends React.Component {
             url = !!event.target.href && event.target.href.length > 0 ? event.target.href : url;
         }
         url = (!!path && path.length > 0) ? path : url;
+        const preSwitchPage = getPageName();
         silentUrlChangeTo(url);
+        const postSwitchPage = getPageName();
+        console.log(`preSwitchPage ${preSwitchPage}`)
+        console.log(`postSwitchPage ${postSwitchPage}`)
         if (this.state.url != url) {
+            if (preSwitchPage == "SEARCH" && postSwitchPage != "SEARCH") {
+                delete this.state["products"];
+            }
+            logInfo("Now proceeding with handleNavigation()");
             this.handleNavigation();
             this.updateState({url: url});
         }
@@ -109,8 +117,7 @@ class App extends React.Component {
                     const stateHasQuery = !!this.state.query;
                     const areUrlAdStateQueryDifferent = !_.isEqual(this.state.query, getQueries());
                     const doNotHaveProducts = !this.state.products || this.state.products.length == 0;
-                    console.log(`CHECK ${(stateHasQuery && areUrlAdStateQueryDifferent) || doNotHaveProducts}`);
-                    if ((stateHasQuery && areUrlAdStateQueryDifferent) || doNotHaveProducts) {
+                    if (!stateHasQuery || (stateHasQuery && areUrlAdStateQueryDifferent) || doNotHaveProducts) {
                         console.log("Confirmed fetching new Data");
                         let url = "/products?";
                         Object.keys(queryObj).forEach(key => {
@@ -182,6 +189,7 @@ class App extends React.Component {
                             console.log("Populating new data..");
                             delete this.state["product"];
                             delete this.state["query"];
+                            console.dir(this.state);
                             this.updateState({products: [...response.data]});
                         }
                     });

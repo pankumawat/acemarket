@@ -1,24 +1,15 @@
 class ProductShort extends React.Component {
-    state = {
-        product: this.props.product,
-    }
-
     addToBasket = (event) => {
+        console.dir(this.props.functions);
         const et = event.target;
         et.setAttribute('disabled', true);
         setTimeout(() => et.removeAttribute('disabled'), 1000);
-        this.props.functions.addProductToCart(this.state.product, 1);
+        this.props.functions.addProductToCart(this.props.product, 1);
     }
 
     showDetails = (event) => {
         event.target.setAttribute('disabled', true);
-        this.props.functions.updateState({product: this.product});
-        this.props.functions.silentNav(undefined, `${VALID_PATHS.DETAILS}?pid=${this.state.product.id}`);
-    }
-
-    componentDidUpdate() {
-        if (!!this.props.product && !!this.props.product.id && this.props.product.id != this.state.product.id)
-            this.setState({...this.state, product: this.props.product});
+        this.props.functions.silentNav(undefined, `${VALID_PATHS.DETAILS}?pid=${this.props.product.id}`);
     }
 
     render = () => {
@@ -26,14 +17,14 @@ class ProductShort extends React.Component {
             <div className="short">
                 <div className="row">
                     <div className="col-md-4">
-                        <img src={this.state.product.img} className="img-thumbnail h100"
+                        <img src={this.props.product.img} className="img-thumbnail h100"
                              alt="Product Image"/>
                     </div>
                     <div className="col-md-8">
                         <div className="row">
                             <div className="col-md-12">
-                                <h2>{this.state.product.name}</h2>
-                                <Rating rating={this.state.product.rating_number}/>
+                                <h2>{this.props.product.name}</h2>
+                                <Rating rating={this.props.product.rating_number}/>
                             </div>
                         </div>
                     </div>
@@ -42,7 +33,7 @@ class ProductShort extends React.Component {
                     <div className="col-md-12 overflow-auto">
                         <div className="row">
                             <div className="col-md-12">
-                                {`${this.state.product.description.substr(0, 150)}${this.state.product.description.length > 150 ? '...' : ''}`}
+                                {`${this.props.product.description.substr(0, 150)}${this.props.product.description.length > 150 ? '...' : ''}`}
                                 <br/>
                                 <button type='button' className="btn btn-info" onClick={this.showDetails}>
                                     Show Details
@@ -52,14 +43,14 @@ class ProductShort extends React.Component {
                         <div className="row">
                             <div className="col-md-12">
                                 <br/>
-                                {this.state.product.keys.map(key => (
+                                {this.props.product.keys.map(key => (
                                     <span className="badge badge-dark margin6 fs15">{key}</span>
                                 ))}
                             </div>
                         </div>
                         <div className="row">
-                            <Price price={this.state.product.price}
-                                   price_without_discount={this.state.product.price_without_discount}/>
+                            <Price price={this.props.product.price}
+                                   price_without_discount={this.props.product.price_without_discount}/>
                             <div className="col-md-6">
                                 <button type='button' class="btn btn-success" onClick={this.addToBasket}>
                                     Add to Basket

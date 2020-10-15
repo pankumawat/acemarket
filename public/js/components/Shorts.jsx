@@ -17,7 +17,6 @@ class Shorts extends React.Component {
     }
 
     render() {
-        console.dir(this.props.products);
         const hasProducts = !!this.props.products && this.props.products.length > 0;
         return (
             <div className={`h400 ${!!this.props.railml ? "railml" : "rail"}`}>

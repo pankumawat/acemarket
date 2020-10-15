@@ -18,9 +18,17 @@ const failureAlert = {
 }
 
 const logging = true;
-const logInfo = (str) => logging || console.log(str);
-const logError = (str) => logging || console.error(str);
-const logObj = (obj, title) => logging || console.log(`${!!title ? title : "Object"} ${JSON.stringify(obj, undefined, 2)}`);
+const logInfo = (str) => {
+    if (logging) console.log(str)
+};
+const logError = (str) => {
+    if (logging) console.err(str)
+};
+const logObj = (obj, title) => {
+    if (logging) {
+        console.log(`${!!title ? title : "Object"} ${JSON.stringify(obj, undefined, 2)}`)
+    }
+};
 
 const showSnackbar = (isSuccess, message, timeout) => {
     const snackbar = document.getElementById("snackbar")
@@ -108,8 +116,16 @@ const addToGETCache = (url, data) => {
     }
 }
 
+setInterval(() => {
+    Object.keys(GETcache).forEach(url => {
+        if ((Date.now() - GETcache[url].ts) >= 10000) {
+            delete GETcache[url];
+        }
+    })
+}, 5000);
+
 const makeGetCall = (url, success, failure) => {
-    if (GETcache[url] && (Date.now() - GETcache[url].ts) <= 5000) {
+    if (GETcache[url]) {
         setTimeout(() => success(GETcache[url].data), 200);
         console.log(`GET ${url} served from Cache`);
     } else {

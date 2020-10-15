@@ -105,6 +105,7 @@ class App extends React.Component {
                     const stateHasQuery = !!this.state.query;
                     const areUrlAdStateQueryDifferent = !_.isEqual(this.state.query, getQueries());
                     const doNotHaveProducts = !this.state.products || this.state.products.length == 0;
+                    console.log(`CHECK ${(stateHasQuery && areUrlAdStateQueryDifferent) || doNotHaveProducts}`);
                     if ((stateHasQuery && areUrlAdStateQueryDifferent) || doNotHaveProducts) {
                         console.log("Confirmed fetching new Data");
                         let url = "/products?";
@@ -113,7 +114,12 @@ class App extends React.Component {
                         });
                         this.state = {...this.state, page: page};
                         makeGetCall(url, (response) => {
-                            this.updateState({query: queryObj, products: [...response.data]});
+                            if (response.data.length === 0) {
+                                showError("No items found matching your query.", 3000)
+                            } else {
+                                delete this.state["product"];
+                                this.updateState({query: queryObj, products: [...response.data]});
+                            }
                         });
                     }
                 }
@@ -162,6 +168,20 @@ class App extends React.Component {
             }
             case "HOME": {
                 this.state = {...this.state, page: page};
+                if (!this.state.products || this.state.products.length === 0) {
+                    console.log("Home is empty thus fetching new data.");
+                    let url = "/products?";
+                    makeGetCall(url, (response) => {
+                        if (response.data.length === 0) {
+                            showError("Failed to fetch items.", 3000)
+                        } else {
+                            console.log("Populating new data..");
+                            delete this.state["product"];
+                            delete this.state["query"];
+                            this.updateState({products: [...response.data]});
+                        }
+                    });
+                }
                 break;
             }
             default : {
@@ -202,10 +222,10 @@ class App extends React.Component {
                         <div className="container-fluid margin20">
                             <div className="row">
                                 <div className="col-md-12">
-                                    <Details product={this.state.product} functions={this.props.functions}/>
+                                    <Details product={this.state.product} functions={this.functions}/>
                                     <hr/>
                                     <h2><u>Similar items</u></h2>
-                                    <Shorts functions={this.props.functions}
+                                    <Shorts functions={this.functions}
                                             products={this.state.products}
                                             recommended_for={!!this.state.product ? this.state.product.id : undefined}
                                     />
@@ -223,7 +243,7 @@ class App extends React.Component {
                     <div>
                         <Nav incart={this.state.cart.total} functions={this.functions}/>
                         <Shorts railml={true} functions={this.functions}
-                                products={{...this.state.products}}/>
+                                products={[...this.state.products]}/>
                     </div>
                 );
             }

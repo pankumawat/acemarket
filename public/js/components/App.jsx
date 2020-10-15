@@ -2,12 +2,12 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            "cart": localStorage && localStorage.getItem(MEM_KEYS.STATE_CART)
+            cart: localStorage && localStorage.getItem(MEM_KEYS.STATE_CART)
                 ? JSON.parse(localStorage.getItem(MEM_KEYS.STATE_CART)) :
                 {
                     quantity: {},
                     total: 0,
-                    products: {}
+                    products: {},
                 },
             products: [],
             product: undefined,
@@ -17,24 +17,17 @@ class App extends React.Component {
         this.handleNavigation = this.handleNavigation.bind(this);
         this.addProductToCart = this.addProductToCart.bind(this);
         this.remProductFromCart = this.remProductFromCart.bind(this);
-        this.setProducts = this.setProducts.bind(this);
         this.silentNav = this.silentNav.bind(this);
         this.getMainRenderBody = this.getMainRenderBody.bind(this);
         this.updateState = this.updateState.bind(this);
         this.handleNavigation();
     }
 
-    setProducts = (products) => {
-        if (products) {
-            this.updateState({products: products});
-        }
-    }
-
     addProductToCart = (product, quantity) => {
         const cart = {...this.state.cart};
         if (!cart.quantity[product.id]) {
             cart.quantity[product.id] = Number.parseInt(quantity);
-            cart.products[product.id] = {...product};
+            cart.products[product.id] = {id: product.id, mid: product.mid};
         } else {
             cart.quantity[product.id] = cart.quantity[product.id] + Number.parseInt(quantity);
         }
@@ -42,24 +35,25 @@ class App extends React.Component {
         if (localStorage) {
             localStorage.setItem(MEM_KEYS.STATE_CART, JSON.stringify(cart))
         }
-        this.updateState({cart: cart})
-        showSuccess(`${product.name} added successfully!`);
+        this.updateState({cart: cart}, false, true);
+        if (!!product.name)
+            showSuccess(`${product.name} added successfully!`);
     }
 
-    remProductFromCart(product, quantity) {
+    remProductFromCart = (product, quantity) => {
         const cart = {...this.state.cart};
         if (cart.quantity[product.id]) {
+            cart.total = cart.total - (cart.quantity[product.id] < cart.quantity[product.id] ? cart.quantity[product.id] : Number.parseInt(quantity));
             cart.quantity[product.id] = cart.quantity[product.id] - Number.parseInt(quantity);
             if (cart.quantity[product.id] <= 0) {
                 delete cart.quantity[product.id];
                 delete cart.products[product.id];
             }
-            cart.total = cart.total - Number.parseInt(quantity);
             cart.total = cart.total <= 0 ? 0 : cart.total;
             if (localStorage) {
                 localStorage.setItem(MEM_KEYS.STATE_CART, JSON.stringify(cart))
             }
-            this.updateState({cart: cart})
+            this.updateState({cart: cart}, false, true);
         }
     }
 
@@ -188,7 +182,6 @@ class App extends React.Component {
                             console.log("Populating new data..");
                             delete this.state["product"];
                             delete this.state["query"];
-                            console.dir({...this.state, products: [...response.data]});
                             this.updateState({products: [...response.data]}, false, true);
                         }
                     });

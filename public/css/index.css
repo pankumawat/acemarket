@@ -89,13 +89,14 @@ form.shortener {
     visibility: hidden;
     min-width: 250px;
     margin-left: -125px;
+    margin-right: 10px;
     text-align: center;
     border-radius: 2px;
     padding: 16px;
     position: fixed;
     z-index: 1;
-    left: 50%;
-    bottom: 30px;
+    left: 90%;
+    top: 70px;
     font-size: 17px;
     color: black;
 }
@@ -108,33 +109,33 @@ form.shortener {
 
 @-webkit-keyframes fadein {
     from {
-        bottom: 0;
+        top: 0;
         opacity: 0;
     }
     to {
-        bottom: 30px;
+        top: 70px;
         opacity: 1;
     }
 }
 
 @keyframes fadein {
     from {
-        bottom: 0;
+        top: 0;
         opacity: 0;
     }
     to {
-        bottom: 30px;
+        top: 70px;
         opacity: 1;
     }
 }
 
 @-webkit-keyframes fadeout {
     from {
-        bottom: 30px;
+        top: 70px;
         opacity: 1;
     }
     to {
-        bottom: 0;
+        top: 0;
         opacity: 0;
     }
 }

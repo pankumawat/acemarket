@@ -1,6 +1,5 @@
 class ProductShort extends React.Component {
     addToBasket = (event) => {
-        console.dir(this.props.functions);
         const et = event.target;
         et.setAttribute('disabled', true);
         setTimeout(() => et.removeAttribute('disabled'), 1000);

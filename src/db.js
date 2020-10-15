@@ -1,6 +1,7 @@
 const MongoClient = require('mongodb').MongoClient;
 const Errors = require('./Errors');
 
+
 const COLLECTIONS = {
     MERCHANT: "merchant",
     SUBSCRIPTION: "subscription",
@@ -8,8 +9,9 @@ const COLLECTIONS = {
 }
 
 /*
-db.products.createIndex( { id: -1 } )
-db.products.createIndex( { mid: -1 } )
+
+db.products.createIndex( { id: -1}, {unique:true} )
+db.merchant.createIndex( { mid: -1}, {unique:true} )
 
 dbo.collection("customers").find().sort(mysort).toArray(function(err, result) {
     if (err) throw err;

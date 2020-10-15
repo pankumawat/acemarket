@@ -65,12 +65,16 @@ class App extends React.Component {
 
     silentNav = (event, path) => {
         logInfo("silentNav()");
-        if (!!event)
+        let url = "";
+        if (!!event) {
             event.preventDefault();
-        silentUrlChangeTo(path || event.target.href);
-        if (!this.state.page || this.state.url != path) {
+            url = !!event.target.href && event.target.href.length > 0 ? event.target.href : url;
+        }
+        url = (!!path && path.length > 0) ? path : url;
+        silentUrlChangeTo(url);
+        if (this.state.url != url) {
             this.handleNavigation();
-            this.state = {...this.state, url: path};
+            this.updateState({url: url});
         }
     }
 
@@ -211,7 +215,7 @@ class App extends React.Component {
                 return (
                     <div>
                         <Nav incart={this.state.cart.total} functions={this.functions}/>
-                        <Cart functions={this.functions} cart={{...this.cart}}/>
+                        <Cart functions={this.functions} cart={{...this.state.cart}}/>
                     </div>
                 )
             }

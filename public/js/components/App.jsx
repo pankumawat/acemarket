@@ -64,38 +64,37 @@ class App extends React.Component {
     }
 
     silentNav = (event, path) => {
-        logInfo("silentNav()");
-        let url = "";
+        let url = "HOME";
         if (!!event) {
             event.preventDefault();
             url = !!event.target.href && event.target.href.length > 0 ? event.target.href : url;
         }
         url = (!!path && path.length > 0) ? path : url;
+        console.log(`silentNav("${url}")`);
         const preSwitchPage = getPageName();
         silentUrlChangeTo(url);
         const postSwitchPage = getPageName();
-        console.log(`preSwitchPage ${preSwitchPage}`)
-        console.log(`postSwitchPage ${postSwitchPage}`)
-        if (this.state.url != url) {
+        if (this.state.url != url || preSwitchPage !== postSwitchPage) {
             if (preSwitchPage == "SEARCH" && postSwitchPage != "SEARCH") {
                 delete this.state["products"];
             }
-            logInfo("Now proceeding with handleNavigation()");
+            console.log("Now proceeding with handleNavigation()");
             this.handleNavigation();
             this.updateState({url: url});
         }
     }
 
-    updateState = (states, onlyThis = false) => {
+    updateState = (states, onlyThis = false, instant = false) => {
         if (onlyThis)
-            setTimeout(() => this.setState({...states}), 200);
+            setTimeout(() => this.setState({...states}), instant ? 0 : 200);
         else {
-            setTimeout(() => this.setState({...this.state, ...states}), 200);
+            setTimeout(() => this.setState({...this.state, ...states}), instant ? 0 : 200);
         }
     }
 
     handleNavigation = () => {
         const page = getPageName();
+        console.log(`page ${page}`);
         switch (page) {
             case "ROOT": {
                 this.silentNav(undefined, VALID_PATHS.HOME);
@@ -119,7 +118,7 @@ class App extends React.Component {
                     const doNotHaveProducts = !this.state.products || this.state.products.length == 0;
                     if (!stateHasQuery || (stateHasQuery && areUrlAdStateQueryDifferent) || doNotHaveProducts) {
                         console.log("Confirmed fetching new Data");
-                        let url = "/products?";
+                        let url = "/api/search?";
                         Object.keys(queryObj).forEach(key => {
                             url = `${url}${key}=${queryObj[key]}&`
                         });
@@ -129,7 +128,7 @@ class App extends React.Component {
                                 showError("No items found matching your query.", 3000)
                             } else {
                                 delete this.state["product"];
-                                this.updateState({query: queryObj, products: [...response.data]});
+                                this.updateState({query: queryObj, products: [...response.data]}, false, true);
                             }
                         });
                     }
@@ -150,12 +149,12 @@ class App extends React.Component {
                 } else {
                     const hasProductButDiffId = !!this.state.product && queryObj.pid !== this.state.product;
                     if (hasProductButDiffId || !this.state.product) {
-                        makeGetCall(`/products/${queryObj.pid}`, (response) => {
-                            this.updateState({page: page, product: response.data});
+                        makeGetCall(`/api/product/${queryObj.pid}`, (response) => {
+                            this.updateState({page: page, product: response.data}, false, true);
 
                             const qs = response.data.keys.reduce((a, c) => `${a}_${c}`);
-                            makeGetCall(`/products/?search_strings=${qs}`, (response) => {
-                                this.updateState({products: [...response.data]});
+                            makeGetCall(`/api/search/?search_strings=${qs}`, (response) => {
+                                this.updateState({products: [...response.data]}, false, true);
                             });
                         });
                     }
@@ -181,7 +180,7 @@ class App extends React.Component {
                 this.state = {...this.state, page: page};
                 if (!this.state.products || this.state.products.length === 0) {
                     console.log("Home is empty thus fetching new data.");
-                    let url = "/products?";
+                    let url = "/api/search?";
                     makeGetCall(url, (response) => {
                         if (response.data.length === 0) {
                             showError("Failed to fetch items.", 3000)
@@ -189,8 +188,8 @@ class App extends React.Component {
                             console.log("Populating new data..");
                             delete this.state["product"];
                             delete this.state["query"];
-                            console.dir(this.state);
-                            this.updateState({products: [...response.data]});
+                            console.dir({...this.state, products: [...response.data]});
+                            this.updateState({products: [...response.data]}, false, true);
                         }
                     });
                 }
@@ -255,7 +254,7 @@ class App extends React.Component {
                     <div>
                         <Nav incart={this.state.cart.total} functions={this.functions}/>
                         <Shorts railml={true} functions={this.functions}
-                                products={[...this.state.products]}/>
+                                products={!!this.state.products ? [...this.state.products] : []}/>
                     </div>
                 );
             }

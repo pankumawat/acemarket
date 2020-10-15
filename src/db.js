@@ -1,4 +1,5 @@
 const MongoClient = require('mongodb').MongoClient;
+const Errors = require('./Errors');
 
 const COLLECTIONS = {
     MERCHANT: "merchant",
@@ -35,7 +36,7 @@ function query(collection_name, query, success, failure, fetchMulti = false) {
         const dbo = client.db(dbName);
         if (err != null) {
             console.error(err);
-            failure("Mongo failed to connect.")
+            failure(Errors.MONGO_CONNECTION_FAILURE);
         } else {
             const collection = dbo.collection(collection_name);
             if (fetchMulti) {
@@ -64,25 +65,65 @@ function query(collection_name, query, success, failure, fetchMulti = false) {
 }
 
 exports.getRating = (ratingObj) => {
-    const i1 = ratingObj[1] || 0;
-    const i2 = ratingObj[2] || 0;
-    const i3 = ratingObj[3] || 0;
-    const i4 = ratingObj[4] || 0;
-    const i5 = ratingObj[5] || 0;
+    const i1 = (!!ratingObj && ratingObj[1]) || 0;
+    const i2 = (!!ratingObj && ratingObj[2]) || 0;
+    const i3 = (!!ratingObj && ratingObj[3]) || 0;
+    const i4 = (!!ratingObj && ratingObj[4]) || 0;
+    const i5 = (!!ratingObj && ratingObj[5]) || 0;
     return parseFloat(((i1 + i2 + i3 + i4 + i5) === 0 ? -1 : ((i1 + i2 * 2 + i3 * 3 + i4 * 4 + i5 * 5) / (i1 + i2 + i3 + i4 + i5))).toFixed(2));
 }
 
 exports.getMerchant = (mid, success, failure) => {
-    query(COLLECTIONS.MERCHANT, {mid: mid}, success, failure);
+    const _mid = /^\d+$/.test(mid.trim()) ? Number.parseInt(mid) : undefined;
+    if (_mid === undefined)
+        failure(Errors.INVALID_PARAM_MID);
+    else
+        query(COLLECTIONS.MERCHANT, {mid: _mid}, success, failure);
 }
 
 exports.getMerchantProducts = (mid, success, failure) => {
-    query(COLLECTIONS.PRODUCTS, {mid: mid}, success, failure, true);
+    const _mid = /^\d+$/.test(mid.trim()) ? Number.parseInt(mid) : undefined;
+    if (_mid === undefined)
+        failure(Errors.INVALID_PARAM_MID);
+    else
+        query(COLLECTIONS.PRODUCTS, {mid: _mid}, success, failure, true);
 }
 
 exports.getProduct = (id, success, failure) => {
-    query(COLLECTIONS.PRODUCTS, {id: id}, success, failure, false);
+    const _id = /^\d+$/.test(id.trim()) ? Number.parseInt(id) : undefined;
+    if (_id === undefined)
+        failure(Errors.INVALID_PARAM_ID);
+    else
+        query(COLLECTIONS.PRODUCTS, {id: _id}, success, failure, false);
 }
+
+exports.getProductsMulti = (IdArr, success, failure) => {
+    if (!IdArr || IdArr.length === 0) {
+        failure(Errors.INVALID_PARAM_IDS);
+    } else {
+        let intArr = IdArr.filter(id => (/^\d+$/.test(id.trim()))).map(id => Number.parseInt(id));
+        if (!intArr || intArr.length === 0) {
+            failure(Errors.INVALID_PARAM_IDS);
+        } else {
+            query(COLLECTIONS.PRODUCTS, {id: {$in: intArr}}, success, failure, true);
+        }
+    }
+}
+
+exports.getMerchantsMulti = (IdArr, success, failure) => {
+    if (!IdArr || IdArr.length === 0) {
+        failure(Errors.INVALID_PARAM_MIDS);
+    } else {
+        let intArr = IdArr.filter(id => (/^\d+$/.test(id.trim()))).map(id => Number.parseInt(id));
+        if (!intArr || intArr.length === 0) {
+            failure(Errors.INVALID_PARAM_MIDS);
+        } else {
+            query(COLLECTIONS.MERCHANT, {mid: {$in: intArr}}, success, failure, true);
+        }
+    }
+}
+
+
 // priceRange should match following format only: _high, low_, or low_high
 exports.getProducts = (success, failure, queryObj) => {
     let low = -1;

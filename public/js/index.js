@@ -17,19 +17,6 @@ const failureAlert = {
     "background-color": "#FFCCCC",
 }
 
-const logging = true;
-const logInfo = (str) => {
-    if (logging) console.log(str)
-};
-const logError = (str) => {
-    if (logging) console.err(str)
-};
-const logObj = (obj, title) => {
-    if (logging) {
-        console.log(`${!!title ? title : "Object"} ${JSON.stringify(obj, undefined, 2)}`)
-    }
-};
-
 const showSnackbar = (isSuccess, message, timeout) => {
     const snackbar = document.getElementById("snackbar")
     snackbar.style["background-color"] = isSuccess ? "#90EE90" : "#FFCCCC";

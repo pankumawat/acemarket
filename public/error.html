@@ -299,17 +299,38 @@
                 color: transparent;
             }
         }
+
+        .btn {
+            background-color: rgb(237, 55, 116);
+            border-color: rgb(237, 55, 116);
+            border-radius: 5px;
+            color: white;
+            font-size: 20px
+        }
+
+        .btn:hover {
+            color: white;
+            font-size: 25px;
+            cursor: pointer;
+        }
     </style>
+
+    <script type="text/javascript">
+        if (!!localStorage) {
+            localStorage.setItem("acemarket_error", "1");
+        }
+    </script>
 </head>
 
 <body>
-    <div id="error">
-        <div id="box"></div>
-        <h3>ERROR 500</h3>
-        <p>Things are a little <span>unstable</span> here</p>
-        <p>I suggest you come back later or <a href="/"><strong>Try again</strong></a></p>
-        <p><i>*गलतियां होती हैं तो हमें सुधार करने का अवसर मिलता है!</i></p>
-    </div>
-
+<div id="error">
+    <div id="box"></div>
+    <h3>ERROR 500</h3>
+    <p>Things are a little <span>unstable</span> here</p>
+    <p>I suggest you come back later or <a href="/">
+        <button class="btn">&nbsp;Retry&nbsp;</button>
+    </a></p>
+    <p><i>*गलतियां होती हैं तो हमें सुधार करने का अवसर मिलता है!</i></p>
+</div>
 </body>
 </html>

@@ -21,6 +21,9 @@ class App extends React.Component {
         this.getMainRenderBody = this.getMainRenderBody.bind(this);
         this.updateState = this.updateState.bind(this);
         this.handleNavigation();
+        if(document.referrer.endsWith('error.html')) {
+            showSuccess("Told you, we would recover.. :)", 3000)
+        }
     }
 
     addProductToCart = (product, quantity) => {

@@ -15,6 +15,7 @@ const mailOptions = {
     //html: '<h1>Welcome</h1><p>That was easy!</p>'
 };
 
+// Check for html https://nodemailer.com/message/
 exports.sendEmail = (to, subject, html, success, failure) => {
     const options = {
         ...mailOptions,

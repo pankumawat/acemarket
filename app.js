@@ -8,7 +8,9 @@ const apiRoute = require('./src/api-router');
 const app = express();
 const port = process.env.PORT;
 
-app.use(express.static('public'));
+app.use(express.static('public', {
+    dotfiles: 'allow'
+}));
 app.use(express.json());
 
 app.use('/api/', apiRoute);

@@ -44,3 +44,5 @@ app.use((req, res) => {
 app.listen(port, () => {
     console.log(`acemarket running on ${port}!`)
 });
+
+module.exports = app;

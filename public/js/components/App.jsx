@@ -35,7 +35,7 @@ class App extends React.Component {
         if (localStorage) {
             localStorage.setItem(MEM_KEYS.STATE_CART, JSON.stringify(cart))
         }
-        this.updateState({cart: cart}, false, true);
+        this.updateState({cart: cart}, false);
         if (!!product.name)
             showSuccess(`${product.name} added successfully!`);
     }
@@ -53,7 +53,7 @@ class App extends React.Component {
             if (localStorage) {
                 localStorage.setItem(MEM_KEYS.STATE_CART, JSON.stringify(cart))
             }
-            this.updateState({cart: cart}, false, true);
+            this.updateState({cart: cart}, false);
         }
     }
 
@@ -64,7 +64,7 @@ class App extends React.Component {
             url = !!event.target.href && event.target.href.length > 0 ? event.target.href : url;
         }
         url = (!!path && path.length > 0) ? path : url;
-        console.log(`silentNav("${url}")`);
+        console.debug(`silentNav("${url}")`);
         const preSwitchPage = getPageName();
         silentUrlChangeTo(url);
         const postSwitchPage = getPageName();
@@ -72,13 +72,12 @@ class App extends React.Component {
             if (preSwitchPage == "SEARCH" && postSwitchPage != "SEARCH") {
                 delete this.state["products"];
             }
-            console.log("Now proceeding with handleNavigation()");
             this.handleNavigation();
-            this.updateState({url: url});
+            this.updateState({url: url}, false, false);
         }
     }
 
-    updateState = (states, onlyThis = false, instant = false) => {
+    updateState = (states, onlyThis = false, instant = true) => {
         if (onlyThis)
             setTimeout(() => this.setState({...states}), instant ? 0 : 200);
         else {
@@ -88,7 +87,6 @@ class App extends React.Component {
 
     handleNavigation = () => {
         const page = getPageName();
-        console.log(`page ${page}`);
         switch (page) {
             case "ROOT": {
                 this.silentNav(undefined, VALID_PATHS.HOME);
@@ -106,12 +104,10 @@ class App extends React.Component {
                 if (queryObj.size === 0) {
                     this.silentNav(undefined, VALID_PATHS.HOME);
                 } else {
-                    console.log("Fetch new Data");
                     const stateHasQuery = !!this.state.query;
                     const areUrlAdStateQueryDifferent = !_.isEqual(this.state.query, getQueries());
                     const doNotHaveProducts = !this.state.products || this.state.products.length == 0;
                     if (!stateHasQuery || (stateHasQuery && areUrlAdStateQueryDifferent) || doNotHaveProducts) {
-                        console.log("Confirmed fetching new Data");
                         let url = "/api/search?";
                         Object.keys(queryObj).forEach(key => {
                             url = `${url}${key}=${queryObj[key]}&`
@@ -122,7 +118,7 @@ class App extends React.Component {
                                 showError("No items found matching your query.", 3000)
                             } else {
                                 delete this.state["product"];
-                                this.updateState({query: queryObj, products: [...response.data]}, false, true);
+                                this.updateState({query: queryObj, products: [...response.data]}, false);
                             }
                         });
                     }
@@ -144,11 +140,11 @@ class App extends React.Component {
                     const hasProductButDiffId = !!this.state.product && queryObj.pid !== this.state.product;
                     if (hasProductButDiffId || !this.state.product) {
                         makeGetCall(`/api/product/${queryObj.pid}`, (response) => {
-                            this.updateState({page: page, product: response.data}, false, true);
+                            this.updateState({page: page, product: response.data}, false);
 
                             const qs = response.data.keys.reduce((a, c) => `${a}_${c}`);
                             makeGetCall(`/api/search/?search_strings=${qs}`, (response) => {
-                                this.updateState({products: [...response.data]}, false, true);
+                                this.updateState({products: [...response.data]}, false);
                             });
                         });
                     }
@@ -173,16 +169,14 @@ class App extends React.Component {
             case "HOME": {
                 this.state = {...this.state, page: page};
                 if (!this.state.products || this.state.products.length === 0) {
-                    console.log("Home is empty thus fetching new data.");
                     let url = "/api/search?";
                     makeGetCall(url, (response) => {
                         if (response.data.length === 0) {
                             showError("Failed to fetch items.", 3000)
                         } else {
-                            console.log("Populating new data..");
                             delete this.state["product"];
                             delete this.state["query"];
-                            this.updateState({products: [...response.data]}, false, true);
+                            this.updateState({products: [...response.data]}, false);
                         }
                     });
                 }

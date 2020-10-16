@@ -116,9 +116,9 @@ const makeGetCall = (url, success, failure) => {
     const backupObj = {...GETcache[url]};
     if (GETcache[url]) {
         setTimeout(() => success(backupObj.data), 200);
-        console.log(`GET ${url} served from Cache`);
+        console.debug(`GET ${url} served from Cache`);
     } else {
-        console.log(`GET ${url}`);
+        console.debug(`GET ${url}`);
         fetch(url).then((response) => response.json()).then((response) => {
             if (response.success) {
                 success(response);

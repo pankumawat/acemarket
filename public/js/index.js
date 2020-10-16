@@ -51,6 +51,7 @@ const getQueries = (url) => {
 }
 
 const VALID_PATHS = {
+    "ERROR": "/error.html",
     "HOME": "/home",
     "DETAILS": "/details",
     "LOGIN": "/login",
@@ -112,8 +113,9 @@ setInterval(() => {
 }, 5000);
 
 const makeGetCall = (url, success, failure) => {
+    const backupObj = {...GETcache[url]};
     if (GETcache[url]) {
-        setTimeout(() => success(GETcache[url].data), 200);
+        setTimeout(() => success(backupObj.data), 200);
         console.log(`GET ${url} served from Cache`);
     } else {
         console.log(`GET ${url}`);
@@ -153,6 +155,23 @@ const makePostCall = (url, body, success, failure) => {
     }).catch((error) => {
         showError(`Something is not right. ${error.message}`, 5000);
     });
+}
+
+window.onerror = function (msg, path, line) {
+    console.error(JSON.stringify({
+        msg,
+        url: getUrlPath(),
+        line,
+    }, undefined, 4))
+
+    const url = (!!path && path.length > 0) ? path : "/home";
+    if (getUrlPath(window.location.href) !== VALID_PATHS.HOME) {
+        showError(`Something went wrong ${msg}`, 3000);
+        setTimeout(() => window.location.href = VALID_PATHS.HOME, 3000);
+    } else {
+        showError(`Something went wrong ${msg}`, 3000);
+        setTimeout(() => window.location.href = VALID_PATHS.ERROR, 3000);
+    }
 }
 
 $(function () {

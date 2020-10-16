@@ -87,7 +87,9 @@ class Cart extends React.Component {
                                                                 <div className="row">
                                                                     <div className="col-md-4">
                                                                         <img src={product.img} className="img-thumbnail"
-                                                                             alt="Product Image"/>
+                                                                             alt="Product Image" onClick={() => {
+                                                                            this.props.functions.silentNav(undefined, `${VALID_PATHS.DETAILS}?pid=${product.id}`);
+                                                                        }}/>
                                                                     </div>
                                                                     <div className="col-md-8">
                                                                         <h2>{product.name}</h2>

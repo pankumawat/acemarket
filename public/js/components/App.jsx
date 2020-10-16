@@ -58,7 +58,7 @@ class App extends React.Component {
     }
 
     silentNav = (event, path) => {
-        let url = "HOME";
+        let url = "/home";
         if (!!event) {
             event.preventDefault();
             url = !!event.target.href && event.target.href.length > 0 ? event.target.href : url;

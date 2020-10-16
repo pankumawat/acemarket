@@ -1,7 +1,6 @@
 const MongoClient = require('mongodb').MongoClient;
 const Errors = require('./Errors');
 
-
 const COLLECTIONS = {
     MERCHANT: "merchant",
     SUBSCRIPTION: "subscription",
@@ -80,7 +79,18 @@ exports.getMerchant = (mid, success, failure) => {
     if (_mid === undefined)
         failure(Errors.INVALID_PARAM_MID);
     else
-        query(COLLECTIONS.MERCHANT, {mid: _mid}, success, failure);
+        query(COLLECTIONS.MERCHANT, {mid: _mid}, (item) => {
+            if (!!item)
+                delete item["password"];
+            success(item)
+        }, failure);
+}
+
+exports.getMerchantForLogin = (username, success, failure) => {
+    if (username === undefined)
+        failure(Errors.INVALID_PARAM_USERNAME);
+    else
+        query(COLLECTIONS.MERCHANT, {username: username}, success, failure);
 }
 
 exports.getMerchantProducts = (mid, success, failure) => {
@@ -120,7 +130,17 @@ exports.getMerchantsMulti = (IdArr, success, failure) => {
         if (!intArr || intArr.length === 0) {
             failure(Errors.INVALID_PARAM_MIDS);
         } else {
-            query(COLLECTIONS.MERCHANT, {mid: {$in: intArr}}, success, failure, true);
+            query(COLLECTIONS.MERCHANT, {mid: {$in: intArr}},
+                (items) => {
+                    let _items = [...items];
+                    if (!!_items && _items.length > 0)
+                        _items = _items.map(item => {
+                            delete item["password"];
+                            return item;
+                        })
+                    success(_items)
+                }
+                , failure, true);
         }
     }
 }

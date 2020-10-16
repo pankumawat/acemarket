@@ -2,14 +2,14 @@ const apiRoute = require('express').Router();
 const db = require('./db');
 const core = require('./core');
 const parseUserAgent = core.parseUserAgent;
+const Errors = require('./Errors');
 
 // Functions
 const getSuccessResponse = core.getSuccessResponse;
 const getErrorResponse = core.getErrorResponse;
-const getShortIdValidated = core.getShortIdValidated;
 const getJwtToken = core.getJwtToken;
 
-apiRoute.get('/', (req, res) => {
+apiRoute.get('/health', (req, res) => {
     res.status(200).json({message: 'Connected!'});
 });
 
@@ -17,109 +17,148 @@ apiRoute.post('/login', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
     if (username && password) {
-        db.fetchUser(username).then(function (user) {
-            if (user.password == password) {
-                getJwtToken(
-                    {username: username, ...user}
-                ).then(tokenObj => {
-                    const localUsrObj = {...user}
-                    delete localUsrObj.password;
-                    return res.json(getSuccessResponse({
-                        user: {username: username, ...localUsrObj},
-                        ...tokenObj
-                    }))
-                }).catch(error => {
-                    console.log(error.stack)
-                    return res.status(500).json(getErrorResponse(error.message));
-                });
-            } else {
-                return res.status(401).json(getErrorResponse(`Incorrect username or password`));
+        db.getMerchantForLogin(username,
+            (merchant) => {
+                if (!merchant) {
+                    return res.status(400).json(getErrorResponse(Errors.INVALID_LOGIN_USERNAME));
+                } else {
+                    const fetched_password = merchant.password;
+                    const user = {
+                        mid: merchant.mid,
+                        username: merchant.username,
+                        tag: merchant.tag,
+                        name: merchant.name,
+                        fullname: merchant.fullname,
+                        email: merchant.email,
+                        contact_no: merchant.contact_no,
+                    }
+                    if (true || fetched_password == password) {
+                        getJwtToken(
+                            {username: username, ...user}
+                        ).then(tokenObj => {
+                            const localUsrObj = {...user}
+                            return res.json(getSuccessResponse({
+                                user: {username: username, ...localUsrObj},
+                                ...tokenObj
+                            }))
+                        }, error => {
+                            console.log(error.stack)
+                            return res.status(500).json(getErrorResponse(error.message));
+                        });
+                    } else {
+                        return res.status(401).json(getErrorResponse(Errors.INVALID_LOGIN_PASSWORD));
+                    }
+                }
             }
-        }).catch(function (error) {
-            console.log(error.message)
-            return res.status(500).json(
-                getErrorResponse(error.message));
-        });
+            ,
+            (error) => res.status(401).json(getErrorResponse(`Incorrect username or password ${error}`))
+        )
+        ;
     } else {
         return res.status(400).json({user: username, pass: password});
     }
 });
 
-apiRoute.get('/short/:short_name', (req, res) => {
-    const short_name = req.params['short_name'];
-    getShortIdValidated(short_name).then(data => {
-        res.status(200).json(getSuccessResponse(data))
-    }).catch(error => {
-        res.status(500).json(
-            getErrorResponse(error.message)
-        )
-    })
+apiRoute.get('/merchant/:mid', (req, res) => {
+    const mid = req.params['mid'];
+    db.getMerchant(mid, (data) => res.json(core.getSuccessResponse(data)), (err) => res.json(core.getErrorResponse(err)));
 });
 
-apiRoute.post('/short', (req, res) => {
-    let short_name = req.body.short_name;
-    let long_url = req.body.long_url;
-    const isGuest = true; //req.body.guest; // Currently all are guests since no auth is in place.
+//mid=0, 1, or 0_1_2
+apiRoute.get('/merchants/:mids', (req, res) => {
+    const mids = req.params['mids'];
+    db.getMerchantsMulti(mids.split('_'), (items) => res.json(core.getSuccessResponse(items))
+        , (err) => res.json(core.getErrorResponse(err)));
+});
 
-    // Sanitize input url
-    try {
-        let final_url = long_url;
-        if (!long_url.startsWith('http')) {
-            if (!long_url.split('.')[0].includes('://')) {
-                const possible_valid_value = `http://${long_url}`;
-                new URL(possible_valid_value);
-                final_url = possible_valid_value;
-            }
-        }
-        new URL(final_url);
-        long_url = final_url;
-    } catch (error) {
-        res.status(400).json(
-            getErrorResponse("Please enter a valid url."))
-    }
+apiRoute.get('/merchant/:mid/products', (req, res) => {
+    const mid = req.params['mid'];
+    db.getMerchantProducts(mid, (data) => {
+        const _data = data.map(item => {
+            item['rating_number'] = db.getRating(item.rating);
+            return item;
+        });
+        res.json(core.getSuccessResponse(_data));
+    }, (err) => res.json(core.getErrorResponse(err)));
+});
 
-    if (core.StringConstants.ME_URL.includes(new URL(long_url).hostname)) {
-        res.status(400).json(
-            getErrorResponse("Our urls are already short."))
-    } else if (long_url.length > 1980) {
-        res.status(400).json(
-            getErrorResponse(`URL Exceeding allowed length by ${long_url.length - 1980} characters.`))
-    } else {
-        getShortIdValidated(isGuest ? undefined : short_name, isGuest ? 5 : 3).then(response => {
-            if (response.available) {
-                db.addLink({
-                    short_name: response.short_name,
-                    long_url,
-                    owner: (isGuest ? "Guest" : "SOME_USER")
-                }).then(() => {
-                    res.status(200).json(
-                        getSuccessResponse({
-                            ...response,
-                            long_url: long_url,
-                        })
-                    )
-                }).catch(error => {
-                    res.status(500).json(
-                        getErrorResponse(error.message)
-                    )
-                })
+apiRoute.get('/product/:id', (req, res) => {
+    const id = req.params['id'];
+    db.getProduct(id, (item) => {
+        item['rating_number'] = db.getRating(item.rating);
+        res.json(core.getSuccessResponse(item));
+    }, (err) => res.json(core.getErrorResponse(err)));
+});
 
-            } else {
-                res.status(200).json(
-                    getErrorResponse("This short name has already been taken", response))
-            }
-        }).catch(error => {
-            res.status(500).json(
-                getErrorResponse(error.message)
-            )
+//id=100_101_209 or 101
+apiRoute.get('/products/:ids', (req, res) => {
+    const ids = req.params['ids'];
+    db.getProductsMulti(ids.split('_'), (items) => {
+        const _items = items.map(item => {
+            item['rating_number'] = db.getRating(item.rating);
+            return item;
         })
+        res.json(core.getSuccessResponse(_items));
+    }, (err) => res.json(core.getErrorResponse(err)));
+});
+
+//ids=100_101_209 or 101
+//mids=0_1 or 1
+apiRoute.get('/data/cart', (req, res) => {
+    const ids = req.query['ids'];
+    const mids = req.query['mids'];
+    if (!ids || !mids) {
+        res.json(core.getErrorResponse("ids and mids are mandatory query params."))
+    } else {
+        db.getProductsMulti(ids.split('_'), (products) => {
+            const _products = products.map(product => {
+                product['rating_number'] = db.getRating(product.rating);
+                delete product['imgs']
+                delete product['properties']
+                delete product['rating']
+                delete product['sold_units']
+                delete product['_id'];
+                return product;
+            })
+
+            db.getMerchantsMulti(mids.split('_'), (merchants) => {
+                const _merchants = merchants.map(merchant => {
+                    delete merchant["_id"];
+                    delete merchant['username'];
+                    delete merchant['address'];
+                    delete merchant['keys'];
+                    delete merchant['banner_img'];
+                    delete merchant['background_img'];
+                    return merchant;
+                })
+                const productsMap = {};
+                const merchantsMap = {};
+                _products.forEach(product => productsMap[product.id] = product);
+                _merchants.forEach(merchant => merchantsMap[merchant.mid] = merchant);
+                res.json(core.getSuccessResponse({products: productsMap, merchants: merchantsMap}));
+            }, (err) => res.json(core.getErrorResponse(err)))
+        }, (err) => res.json(core.getErrorResponse(err)));
     }
+})
+
+/*
+ * price_range e.g. 100_1200
+ * search_strings e.g. chocolate_pastry_juice
+ * rating_minimum e.g.
+ * recommended
+ */
+apiRoute.get('/search', (req, res) => {
+    let queryObj = {};
+    Object.keys(req.query).forEach(key => {
+        queryObj[key] = (typeof req.query[key] !== 'object') ? req.query[key] : req.query[key][0];
+    })
+    db.getProducts((data) => {
+        const _data = data.map(item => {
+            item['rating_number'] = db.getRating(item.rating);
+            return item;
+        });
+        res.json(core.getSuccessResponse(_data));
+    }, (err) => res.json(core.getErrorResponse(err)), queryObj);
 });
-
-
-apiRoute.get('/p', (req, res) => {
-    return res.send(JSON.stringify(parseUserAgent(req)));
-});
-
 
 module.exports = apiRoute;

@@ -3,6 +3,7 @@ const db = require('./db');
 const core = require('./core');
 const parseUserAgent = core.parseUserAgent;
 const Errors = require('./Errors');
+const sendEmail = require("./utils/emailer").sendEmail;
 
 // Functions
 const getSuccessResponse = core.getSuccessResponse;
@@ -160,5 +161,24 @@ apiRoute.get('/search', (req, res) => {
         res.json(core.getSuccessResponse(_data));
     }, (err) => res.json(core.getErrorResponse(err)), queryObj);
 });
+
+//to
+//subject
+//body
+apiRoute.get('/email', (req, res) => {
+    const to = req.query['to'];
+    const subject = req.query['subject'];
+    const body = req.query['body'];
+    const auth = req.query['auth'];
+    const day = new Date().getDate();
+    if (!!auth && Number.parseInt(pass) === (day * day))
+        sendEmail(to, subject, body, (info) => {
+            res.json(getSuccessResponse({info: info}));
+        }, (error) => res.json(getErrorResponse(error)))
+    else {
+        res.json(getErrorResponse("[auth] failure. Error: Unauthorized. Code-DD#AY"));
+    }
+});
+
 
 module.exports = apiRoute;

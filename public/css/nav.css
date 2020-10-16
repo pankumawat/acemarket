@@ -13,6 +13,29 @@
     font-size: 17px;
 }
 
+.topnavlogo {
+    padding: 0px;
+    margin: 0px;
+    width: 100px;
+    height: 50px;
+    text-align: center;
+    align-items: center;
+    vertical-align: center;
+    float: left;
+    cursor: pointer;
+    color: black;
+}
+
+h1.topnavlogo {
+    font-size: 35px;
+    margin-top: -2px;
+}
+
+h2.topnavlogo {
+    font-size: 17px;
+    margin-top: -18px;
+}
+
 .topnav a:hover {
     background-color: #ddd;
     color: black;

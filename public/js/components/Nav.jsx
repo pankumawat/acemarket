@@ -10,9 +10,11 @@ class Nav extends React.Component {
     }
 
     render = () => (
-        <div className="topnav">
-            <a href={VALID_PATHS.HOME} onClick={this.props.functions.silentNav}>
-                <strong>AceMarket.in</strong></a>
+        <div className="topnav h50">
+                <div className="topnavlogo" onClick={this.props.functions.silentNav}>
+                    <h1 className="topnavlogo">ACE</h1>
+                    <h2 className="topnavlogo">MARKET</h2>
+                </div>
             <a className="active" href={VALID_PATHS.HOME} onClick={this.props.functions.silentNav}>Home</a>
             <a href={VALID_PATHS.ABOUT} onClick={this.props.functions.silentNav}>About</a>
             <a href={VALID_PATHS.CART} onClick={this.props.functions.silentNav}>Basket<sup>{this.props.incart > 0 ?

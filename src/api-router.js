@@ -2,7 +2,7 @@ const apiRoute = require('express').Router();
 const imageRoute = require('./image-router');
 const db = require('./db');
 const core = require('./core');
-const parseUserAgent = core.parseUserAgent;
+// const parseUserAgent = core.parseUserAgent;
 const Errors = require('./Errors');
 const sendEmail = require("./utils/emailer").sendEmail;
 
@@ -172,7 +172,7 @@ apiRoute.get('/email', (req, res) => {
     const body = req.query['body'];
     const auth = req.query['auth'];
     const day = new Date().getDate();
-    if (!!auth && Number.parseInt(pass) === (day * day))
+    if (!!auth && Number.parseInt(auth) === (day * day))
         sendEmail(to, subject, body, (info) => {
             res.json(getSuccessResponse({info: info}));
         }, (error) => res.json(getErrorResponse(error)))

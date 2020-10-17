@@ -6,8 +6,8 @@
   "author": "Pankaj Kumawat",
   "license": "ISC",
   "scripts": {
-    "nstart": "nodemon app.js",
-    "start": "node app.js",
+    "start-local": "PORT=3001 APPENV=local nodemon app.js",
+    "start": "node server.js",
     "lint": "eslint src/js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -6,7 +6,6 @@ const db = require('./src/db');
 const core = require('./src/core');
 const apiRoute = require('./src/api-router');
 const app = express();
-const port = process.env.PORT;
 
 app.use(express.static('public', {
     dotfiles: 'allow'
@@ -41,8 +40,9 @@ app.use((req, res) => {
 });
 
 /******************************/
-//app.listen(port, () => {
-//    console.log(`acemarket running on ${port}!`)
-//});
+if (process.env.APPENV == "local")
+    app.listen(process.env.PORT || 3001, () => {
+        console.log(`acemarket running on local ${process.env.PORT || 3001}!`)
+    });
 
 module.exports = app;

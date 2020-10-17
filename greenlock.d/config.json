@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-{ "sites": [{ "subject": "acemarket.in", "altnames": ["acemarket.in", "www.acemarket.in"] }] }
-=======
 {
   "sites": [
     {
@@ -28,4 +25,3 @@
     "subscriberEmail": "contactpnk@gmail.com"
   }
 }
->>>>>>> 677b4f33cc51dd9c4cc39106ec0c677917f2869c

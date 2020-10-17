@@ -1,4 +1,5 @@
 const apiRoute = require('express').Router();
+const imageRoute = require('./image-router');
 const db = require('./db');
 const core = require('./core');
 const parseUserAgent = core.parseUserAgent;
@@ -83,16 +84,16 @@ apiRoute.get('/merchant/:mid/products', (req, res) => {
     }, (err) => res.json(core.getErrorResponse(err)));
 });
 
-apiRoute.get('/product/:id', (req, res) => {
-    const id = req.params['id'];
-    db.getProduct(id, (item) => {
+apiRoute.get('/product/:pid', (req, res) => {
+    const pid = req.params['pid'];
+    db.getProduct(pid, (item) => {
         item['rating_number'] = db.getRating(item.rating);
         res.json(core.getSuccessResponse(item));
     }, (err) => res.json(core.getErrorResponse(err)));
 });
 
-//id=100_101_209 or 101
-apiRoute.get('/products/:ids', (req, res) => {
+//pids=100_101_209 or 101
+apiRoute.get('/products/:pids', (req, res) => {
     const ids = req.params['ids'];
     db.getProductsMulti(ids.split('_'), (items) => {
         const _items = items.map(item => {
@@ -103,15 +104,15 @@ apiRoute.get('/products/:ids', (req, res) => {
     }, (err) => res.json(core.getErrorResponse(err)));
 });
 
-//ids=100_101_209 or 101
+//pids=100_101_209 or 101
 //mids=0_1 or 1
 apiRoute.get('/data/cart', (req, res) => {
-    const ids = req.query['ids'];
+    const pids = req.query['pids'];
     const mids = req.query['mids'];
-    if (!ids || !mids) {
-        res.json(core.getErrorResponse("ids and mids are mandatory query params."))
+    if (!pids || !mids) {
+        res.json(core.getErrorResponse("pids and mids are mandatory query params."))
     } else {
-        db.getProductsMulti(ids.split('_'), (products) => {
+        db.getProductsMulti(pids.split('_'), (products) => {
             const _products = products.map(product => {
                 product['rating_number'] = db.getRating(product.rating);
                 delete product['imgs']
@@ -134,7 +135,7 @@ apiRoute.get('/data/cart', (req, res) => {
                 })
                 const productsMap = {};
                 const merchantsMap = {};
-                _products.forEach(product => productsMap[product.id] = product);
+                _products.forEach(product => productsMap[product.pid] = product);
                 _merchants.forEach(merchant => merchantsMap[merchant.mid] = merchant);
                 res.json(core.getSuccessResponse({products: productsMap, merchants: merchantsMap}));
             }, (err) => res.json(core.getErrorResponse(err)))
@@ -180,5 +181,6 @@ apiRoute.get('/email', (req, res) => {
     }
 });
 
+apiRoute.use("/images/", imageRoute);
 
 module.exports = apiRoute;

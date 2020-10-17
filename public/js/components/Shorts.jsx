@@ -2,7 +2,6 @@ class Shorts extends React.Component {
 
     // props
     // products []
-    // hide_ids []
     // query { key: val }
     /*
      * price_range e.g. 100_1200
@@ -21,7 +20,7 @@ class Shorts extends React.Component {
         return (
             <div className={`h400 ${!!this.props.railml ? "railml" : "rail"}`}>
                 {hasProducts ?
-                    this.props.products.map(product => (!this.props.recommended_for || this.props.recommended_for != product.id) ?
+                    this.props.products.map(product => (!this.props.recommended_for || this.props.recommended_for != product.pid) ?
                         <ProductShort product={product}
                                       functions={{
                                           ...this.props.functions,

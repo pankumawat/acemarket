@@ -14,17 +14,17 @@ class Cart extends React.Component {
         event.preventDefault();
 
         let elem = event.target.getAttributeNames().includes("role") ? event.target : event.target.parentElement;
-        const id = elem.getAttribute("data_id");
+        const pid = elem.getAttribute("data_pid");
         const role = elem.getAttribute('role');
         switch (role) {
             case "plus":
-                this.props.functions.addProductToCart(this.state.cart.products[id], 1);
+                this.props.functions.addProductToCart(this.state.cart.products[pid], 1);
                 break;
             case "minus":
-                this.props.functions.remProductFromCart(this.state.cart.products[id], 1);
+                this.props.functions.remProductFromCart(this.state.cart.products[pid], 1);
                 break;
             case "remove":
-                this.props.functions.remProductFromCart(this.state.cart.products[id], this.props.cart.quantity[id]);
+                this.props.functions.remProductFromCart(this.state.cart.products[pid], this.props.cart.quantity[pid]);
                 break;
             default:
                 showError("Something went wrong. " + elem);
@@ -32,18 +32,18 @@ class Cart extends React.Component {
     }
 
     fetchCartDetails = () => {
-        const ids = [];
+        const pids = [];
         const mids = [];
-        Object.keys(this.props.cart.products).forEach(id => {
-            const mid = this.props.cart.products[id].mid;
-            if (!ids.includes(id))
-                ids.push(id);
+        Object.keys(this.props.cart.products).forEach(pid => {
+            const mid = this.props.cart.products[pid].mid;
+            if (!pids.includes(pid))
+                pids.push(pid);
             if (!mids.includes(mid))
                 mids.push(mid);
         })
-        const idsStr = ids.reduce((pid, cid) => `${pid}_${cid}`);
+        const pidsStr = pids.reduce((pid, cid) => `${pid}_${cid}`);
         const midsStr = mids.reduce((pid, cid) => `${pid}_${cid}`);
-        makeGetCall(`/api/data/cart?ids=${idsStr}&mids=${midsStr}`, (response) => {
+        makeGetCall(`/api/data/cart?pids=${pidsStr}&mids=${midsStr}`, (response) => {
             this.setState({...this.state, data: {...response.data}})
         });
     }
@@ -79,7 +79,7 @@ class Cart extends React.Component {
                                                     const product = this.state.data.products[pid];
                                                     const merchant = this.state.data.merchants[product.mid];
                                                     product["merchant"] = {...merchant};
-                                                    product["cart_quantity"] = this.props.cart.quantity[product.id];
+                                                    product["cart_quantity"] = this.props.cart.quantity[product.pid];
                                                     product["cart_total_price"] = product.price * product.cart_quantity;
                                                     return (
                                                         <tr>
@@ -88,7 +88,7 @@ class Cart extends React.Component {
                                                                     <div className="col-md-4">
                                                                         <img src={product.img} className="img-thumbnail"
                                                                              alt="Product Image" onClick={() => {
-                                                                            this.props.functions.silentNav(undefined, `${VALID_PATHS.DETAILS}?pid=${product.id}`);
+                                                                            this.props.functions.silentNav(undefined, `${VALID_PATHS.DETAILS}?pid=${product.pid}`);
                                                                         }}/>
                                                                     </div>
                                                                     <div className="col-md-8">
@@ -133,7 +133,7 @@ class Cart extends React.Component {
                                                                 <div className="row">
                                                                     <div className="col-md-2"> {
                                                                         product.cart_quantity > 1 ?
-                                                                            <a href="#" role="minus" data_id={product.id}
+                                                                            <a href="#" role="minus" data_pid={product.pid}
                                                                                onClick={this.quantityUpdate}><i
                                                                                 className="far fa-minus-square"/></a>
                                                                             :
@@ -144,14 +144,14 @@ class Cart extends React.Component {
                                                                         {product.cart_quantity}
                                                                     </div>
                                                                     <div className="col-md-2">
-                                                                        <a href="#" role="plus" data_id={product.id}
+                                                                        <a href="#" role="plus" data_pid={product.pid}
                                                                            onClick={this.quantityUpdate}><i
                                                                             className="far fa-plus-square"/></a>
                                                                     </div>
                                                                     <div className="col-md-6" data-toggle="tooltip"
                                                                          data-placement="top"
                                                                          title="Remove item from cart.">
-                                                                        <a href="#" role="remove" data_id={product.id}
+                                                                        <a href="#" role="remove" data_pid={product.pid}
                                                                            onClick={this.quantityUpdate}><i
                                                                             className="far fa-trash-alt orange"/></a>
                                                                     </div>

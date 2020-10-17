@@ -22,7 +22,7 @@ class Details extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!nextProps.product)
             return true;
-        if (this.state.product.id !== nextProps.product.id) {
+        if (this.state.product.pid !== nextProps.product.pid) {
             this.setState({
                 product: nextProps.product,
                 currentImg: nextProps.product.img

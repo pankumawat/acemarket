@@ -29,11 +29,11 @@ class App extends React.Component {
 
     addProductToCart = (product, quantity) => {
         const cart = {...this.state.cart};
-        if (!cart.quantity[product.id]) {
-            cart.quantity[product.id] = Number.parseInt(quantity);
-            cart.products[product.id] = {id: product.id, mid: product.mid};
+        if (!cart.quantity[product.pid]) {
+            cart.quantity[product.pid] = Number.parseInt(quantity);
+            cart.products[product.pid] = {pid: product.pid, mid: product.mid};
         } else {
-            cart.quantity[product.id] = cart.quantity[product.id] + Number.parseInt(quantity);
+            cart.quantity[product.pid] = cart.quantity[product.pid] + Number.parseInt(quantity);
         }
         cart.total = cart.total + Number.parseInt(quantity);
         if (localStorage) {
@@ -46,12 +46,12 @@ class App extends React.Component {
 
     remProductFromCart = (product, quantity) => {
         const cart = {...this.state.cart};
-        if (cart.quantity[product.id]) {
-            cart.total = cart.total - (cart.quantity[product.id] < cart.quantity[product.id] ? cart.quantity[product.id] : Number.parseInt(quantity));
-            cart.quantity[product.id] = cart.quantity[product.id] - Number.parseInt(quantity);
-            if (cart.quantity[product.id] <= 0) {
-                delete cart.quantity[product.id];
-                delete cart.products[product.id];
+        if (cart.quantity[product.pid]) {
+            cart.total = cart.total - (cart.quantity[product.pid] < cart.quantity[product.pid] ? cart.quantity[product.pid] : Number.parseInt(quantity));
+            cart.quantity[product.pid] = cart.quantity[product.pid] - Number.parseInt(quantity);
+            if (cart.quantity[product.pid] <= 0) {
+                delete cart.quantity[product.pid];
+                delete cart.products[product.pid];
             }
             cart.total = cart.total <= 0 ? 0 : cart.total;
             if (localStorage) {
@@ -229,7 +229,7 @@ class App extends React.Component {
                                     <h2><u>Similar items</u></h2>
                                     <Shorts functions={this.functions}
                                             products={this.state.products}
-                                            recommended_for={!!this.state.product ? this.state.product.id : undefined}
+                                            recommended_for={!!this.state.product ? this.state.product.pid : undefined}
                                     />
                                 </div>
                             </div>

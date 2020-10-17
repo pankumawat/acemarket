@@ -4,7 +4,9 @@ const Errors = require('./Errors');
 const COLLECTIONS = {
     MERCHANT: "merchant",
     SUBSCRIPTION: "subscription",
-    PRODUCTS: "products"
+    PRODUCTS: "products",
+    IMAGES_PROFILE: "imagesProfile",
+    IMAGES_PRODUCTS: "imagesProducts",
 }
 
 /*
@@ -74,6 +76,27 @@ exports.getRating = (ratingObj) => {
     return parseFloat(((i1 + i2 + i3 + i4 + i5) === 0 ? -1 : ((i1 + i2 * 2 + i3 * 3 + i4 * 4 + i5 * 5) / (i1 + i2 + i3 + i4 + i5))).toFixed(2));
 }
 
+exports.saveProfileImage = (name, originalname, mid, data, createdDt, modifiedDt) => {
+    const fileObj = {
+        name,
+        data,
+        createdDt: Date.now(),
+        modifiedDt: Date.now(),
+        mid,
+    }
+}
+
+exports.saveProductImage = (name, originalname, mid, pid, data, createdDt, modifiedDt) => {
+    const fileObj = {
+        name,
+        data,
+        createdDt: Date.now(),
+        modifiedDt: Date.now(),
+        mid,
+        pid,
+    }
+}
+
 exports.getMerchant = (mid, success, failure) => {
     const _mid = /^\d+$/.test(mid.trim()) ? Number.parseInt(mid) : undefined;
     if (_mid === undefined)
@@ -106,7 +129,7 @@ exports.getProduct = (id, success, failure) => {
     if (_id === undefined)
         failure(Errors.INVALID_PARAM_ID);
     else
-        query(COLLECTIONS.PRODUCTS, {id: _id}, success, failure, false);
+        query(COLLECTIONS.PRODUCTS, {pid: _id}, success, failure, false);
 }
 
 exports.getProductsMulti = (IdArr, success, failure) => {
@@ -117,7 +140,7 @@ exports.getProductsMulti = (IdArr, success, failure) => {
         if (!intArr || intArr.length === 0) {
             failure(Errors.INVALID_PARAM_IDS);
         } else {
-            query(COLLECTIONS.PRODUCTS, {id: {$in: intArr}}, success, failure, true);
+            query(COLLECTIONS.PRODUCTS, {pid: {$in: intArr}}, success, failure, true);
         }
     }
 }

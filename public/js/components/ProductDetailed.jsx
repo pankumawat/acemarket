@@ -1,7 +1,7 @@
 class ProductDetailed extends React.Component {
     product = {
         "mid": "0",
-        "id": "100",
+        "pid": "100",
         "name": "Roger's special",
         "description": "An awesome cake with Roger's name on it. An awesome cake with Roger's name on it. An awesome cake with Roger's name on it. An awesome cake with Roger's name on it. An awesome cake with Roger's name on it. An awesome cake with Roger's name on it. An awesome cake with Roger's name on it. An awesome cake with Roger's name on it. An awesome cake with Roger's name on it.",
         "keys": [
@@ -53,7 +53,7 @@ class ProductDetailed extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!nextProps.product)
             return true;
-        if (!!nextProps.product && this.state.product.id !== nextProps.product.id) {
+        if (!!nextProps.product && this.state.product.pid !== nextProps.product.pid) {
             this.setState({
                 product: nextProps.product
             })
@@ -73,7 +73,7 @@ class ProductDetailed extends React.Component {
                         <h2><u>Similar items</u></h2>
                         <Shorts functions={this.props.functions}
                                 query={{"search_strings": this.state.product.keys.reduce((a, c) => `${a}_${c}`)}}
-                                recommended_for={this.state.product.id}
+                                recommended_for={this.state.product.pid}
                         />
                     </div>
                 </div>

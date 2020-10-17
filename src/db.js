@@ -103,7 +103,7 @@ exports.getMerchant = (mid, success, failure) => {
         failure(Errors.INVALID_PARAM_MID);
     else
         query(COLLECTIONS.MERCHANT, {mid: _mid}, (item) => {
-            if (!!item)
+            if (item)
                 delete item["password"];
             success(item)
         }, failure);

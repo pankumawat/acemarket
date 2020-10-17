@@ -26,7 +26,7 @@ const getUrlPath = (url) => {
 
 const getQueries = (url) => {
     const retObj = {};
-    for ([key, value] of new URLSearchParams(new URL(url || window.location.href).search).entries()) {
+    for (const [key, value] of new URLSearchParams(new URL(url || window.location.href).search).entries()) {
         retObj[key] = value;
     }
     return retObj;

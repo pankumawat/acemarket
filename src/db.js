@@ -23,27 +23,23 @@ dbo.collection("customers").find().sort(mysort).toArray(function(err, result) {
   });
  */
 // Connection URL
-exports.MongoURI = 'mongodb://localhost:27017';
-
-// Database Name
-const dbName = 'acemarket';
+const mongoConnURI = 'mongodb://127.0.0.1:27017/acemarket';
 
 // Create a new MongoClient
 function query(collection_name, query, success, failure, fetchMulti = false) {
     const client = new MongoClient(
-        this.MongoURI,
+        mongoConnURI,
         {useUnifiedTopology: true},
         {useNewUrlParser: true},
         {connectTimeoutMS: 3000},
         {keepAlive: 1}
     );
     client.connect(function (err) {
-        const dbo = client.db(dbName);
         if (err != null) {
             console.error(err);
             failure(Errors.MONGO_CONNECTION_FAILURE);
         } else {
-            const collection = dbo.collection(collection_name);
+            const collection = client.db().collection(collection_name);
             if (fetchMulti) {
                 collection.find(query).toArray(function (err, items) {
                     if (err) {
@@ -72,7 +68,7 @@ function query(collection_name, query, success, failure, fetchMulti = false) {
 // read or wr
 exports.saveFile = async (buffer, filename, successCB, failureCB) => {
     const client = new MongoClient(
-        this.MongoURI,
+        mongoConnURI,
         {useUnifiedTopology: true},
         {useNewUrlParser: true},
         {connectTimeoutMS: 3000},
@@ -80,8 +76,7 @@ exports.saveFile = async (buffer, filename, successCB, failureCB) => {
     );
 
     await client.connect();
-    const db = client.db(dbName);
-    const gsUploadStream = new GridFSBucket(db).openUploadStream(filename, {
+    const gsUploadStream = new GridFSBucket(client.db()).openUploadStream(filename, {
         contentType: "image/jpeg"
     })
     gsUploadStream.on("finish", successCB);
@@ -91,18 +86,17 @@ exports.saveFile = async (buffer, filename, successCB, failureCB) => {
 
 exports.readFile = (filename, success, failure) => {
     const client = new MongoClient(
-        this.MongoURI,
+        mongoConnURI,
         {useUnifiedTopology: true},
         {useNewUrlParser: true},
         {connectTimeoutMS: 3000},
         {keepAlive: 1}
     );
     client.connect(async function (err) {
-        const db = client.db(dbName);
         if (err != null) {
             failure(Errors.MONGO_CONNECTION_FAILURE);
         } else {
-            const gsDownloadStream = new GridFSBucket(db).openDownloadStreamByName(filename)
+            const gsDownloadStream = new GridFSBucket(client.db()).openDownloadStreamByName(filename)
             // gsDownloadStream.on("end", (err) => {
             //     console.log("END " + err);
             //     console.log(Object.keys(gsDownloadStream));

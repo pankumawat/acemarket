@@ -9,6 +9,9 @@
   <li>Ensure duplicacy check while updating/adding products and merchants.</li>
 </ol>
 
+db.products.createIndex( { id: -1}, {unique:true} )
+db.merchant.createIndex( { mid: -1}, {unique:true} )
+
 
 pipe(
   getName,

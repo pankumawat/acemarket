@@ -9,6 +9,7 @@ const COLLECTIONS = {
     ADMIN: "admins",
 }
 
+const mongoConnURI = 'mongodb://127.0.0.1:27017/acemarket';
 const getMongoClient = () => {
     return new MongoClient(
         mongoConnURI,
@@ -20,10 +21,6 @@ const getMongoClient = () => {
 }
 
 /*
-
-db.products.createIndex( { id: -1}, {unique:true} )
-db.merchant.createIndex( { mid: -1}, {unique:true} )
-
 dbo.collection("customers").find().sort(mysort).toArray(function(err, result) {
     if (err) throw err;
     console.log(result);
@@ -31,7 +28,6 @@ dbo.collection("customers").find().sort(mysort).toArray(function(err, result) {
   });
  */
 // Connection URL
-const mongoConnURI = 'mongodb://127.0.0.1:27017/acemarket';
 
 // Create a new MongoClient
 function query(collection_name, query, success, failure, fetchMulti = false) {

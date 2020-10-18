@@ -25,8 +25,23 @@ imageRoute.get('/:filename', function (req, res, next) {
     db.readFile(filename,
         (stream) => {
             stream.pipe(res);
+        }, (error) => {
+        res.status(404).json(getErrorResponse("No such file exists."))
         }
     );
+});
+
+imageRoute.delete('/:filename', function (req, res, next) {
+    const filename = req.params["filename"];
+    db.deleteFile(filename, obj => {
+        res.json(obj);
+    })
+    /*db.readFile(filename,
+        (stream, id) => {
+            res.header('chunk-id' , id);
+            stream.pipe(res);
+        }
+    );*/
 });
 
 module.exports = imageRoute;

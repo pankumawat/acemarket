@@ -97,14 +97,53 @@ exports.readFile = (filename, success, failure) => {
             failure(Errors.MONGO_CONNECTION_FAILURE);
         } else {
             const gsDownloadStream = new GridFSBucket(client.db()).openDownloadStreamByName(filename)
-            // gsDownloadStream.on("end", (err) => {
-            //     console.log("END " + err);
-            //     console.log(Object.keys(gsDownloadStream));
-            //     success();
-            // });
+            gsDownloadStream.on('error', err => {
+                failure(err);
+            })
             return success(gsDownloadStream);
         }
     });
+}
+
+exports.findFile = async (filename, successCB) => {
+    const client = new MongoClient(
+        mongoConnURI,
+        {useUnifiedTopology: true},
+        {useNewUrlParser: true},
+        {connectTimeoutMS: 3000},
+        {keepAlive: 1}
+    );
+
+    await client.connect();
+    new GridFSBucket(client.db()).find({filename: filename}).toArray((error, items) => {
+        successCB(items);
+    })
+}
+
+exports.deleteFile = async (filename, successCB, failure) => {
+    const client = new MongoClient(
+        mongoConnURI,
+        {useUnifiedTopology: true},
+        {useNewUrlParser: true},
+        {connectTimeoutMS: 3000},
+        {keepAlive: 1}
+    );
+
+    await client.connect();
+    const gridFSBucket = new GridFSBucket(client.db())
+    const errors = [];
+    gridFSBucket.find({filename: filename}).toArray((error, items) => {
+        items.forEach(item => {
+            gridFSBucket.delete(item._id, (_error) => {
+                errors.push(_error);
+            });
+        })
+
+        successCB({
+            items: items,
+            errors: errors
+        });
+    })
 }
 
 exports.getRating = (ratingObj) => {

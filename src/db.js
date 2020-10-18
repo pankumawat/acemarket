@@ -9,6 +9,16 @@ const COLLECTIONS = {
     ADMIN: "admins",
 }
 
+const getMongoClient = () => {
+    return new MongoClient(
+        mongoConnURI,
+        {useUnifiedTopology: true},
+        {useNewUrlParser: true},
+        {connectTimeoutMS: 3000},
+        {keepAlive: 1}
+    );
+}
+
 /*
 
 db.products.createIndex( { id: -1}, {unique:true} )
@@ -25,13 +35,7 @@ const mongoConnURI = 'mongodb://127.0.0.1:27017/acemarket';
 
 // Create a new MongoClient
 function query(collection_name, query, success, failure, fetchMulti = false) {
-    const client = new MongoClient(
-        mongoConnURI,
-        {useUnifiedTopology: true},
-        {useNewUrlParser: true},
-        {connectTimeoutMS: 3000},
-        {keepAlive: 1}
-    );
+    const client = getMongoClient();
     client.connect(function (err) {
         if (err != null) {
             console.error(err);
@@ -66,13 +70,7 @@ function query(collection_name, query, success, failure, fetchMulti = false) {
 exports.saveFile = async (buffer, filename, successCB, failureCB) => {
     if (!successCB)
         throw new Error("success callback can't be undefined.");
-    const client = new MongoClient(
-        mongoConnURI,
-        {useUnifiedTopology: true},
-        {useNewUrlParser: true},
-        {connectTimeoutMS: 3000},
-        {keepAlive: 1}
-    );
+    const client = getMongoClient();
 
     await client.connect();
     const gsUploadStream = new GridFSBucket(client.db()).openUploadStream(filename, {
@@ -84,13 +82,7 @@ exports.saveFile = async (buffer, filename, successCB, failureCB) => {
 }
 
 exports.readFile = (filename, success, failure) => {
-    const client = new MongoClient(
-        mongoConnURI,
-        {useUnifiedTopology: true},
-        {useNewUrlParser: true},
-        {connectTimeoutMS: 3000},
-        {keepAlive: 1}
-    );
+    const client = getMongoClient();
     client.connect(async function (err) {
         if (err != null) {
             failure(Errors.MONGO_CONNECTION_FAILURE);
@@ -105,14 +97,7 @@ exports.readFile = (filename, success, failure) => {
 }
 
 exports.findFiles = async (filenames, successCB) => {
-    const client = new MongoClient(
-        mongoConnURI,
-        {useUnifiedTopology: true},
-        {useNewUrlParser: true},
-        {connectTimeoutMS: 3000},
-        {keepAlive: 1}
-    );
-
+    const client = this.getMongoClient();
     await client.connect();
     new GridFSBucket(client.db()).find({filename: {$in: filenames}}).toArray((error, items) => {
         successCB(items);
@@ -124,14 +109,7 @@ exports.findFile = async (filename, successCB) => {
 }
 
 exports.deleteFiles = async (filenames, successCB) => {
-    const client = new MongoClient(
-        mongoConnURI,
-        {useUnifiedTopology: true},
-        {useNewUrlParser: true},
-        {connectTimeoutMS: 3000},
-        {keepAlive: 1}
-    );
-
+    const client = getMongoClient();
     await client.connect();
     const gridFSBucket = new GridFSBucket(client.db())
     const errors = {};

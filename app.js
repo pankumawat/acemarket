@@ -1,8 +1,7 @@
 const express = require('express');
 const path = require('path');
-const db = require('./src/db');
 const core = require('./src/core');
-const apiRoute = require('./src/api-router');
+const apiRoute = require('./src/routers/api-router');
 const app = express();
 
 app.use(express.static('public', {

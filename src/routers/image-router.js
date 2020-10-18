@@ -1,8 +1,8 @@
 const imageRoute = require('express').Router();
-const core = require('./core');
-const db = require('./db');
+const core = require('../core');
+const db = require('../db');
 const multer = require('multer');
-const mediaUtils = require('./utils/mediaUtils');
+const mediaUtils = require('../utils/mediaUtils');
 const upload = multer({storage: multer.memoryStorage()})
 
 // Functions
@@ -11,6 +11,7 @@ const getErrorResponse = core.getErrorResponse;
 
 
 //var cpUpload = upload.fields([{ name: 'avatar', maxCount: 1 }, { name: 'gallery', maxCount: 8 }])
+// req.files is an object (String -> Array) where fieldname is the key, and the value is array of files
 imageRoute.post('/profile', upload.single("image"), function (req, res, next) {
     if (req.body.upload == "yes")
         mediaUtils.resizeAndUploadImage(req.file, (info) => {

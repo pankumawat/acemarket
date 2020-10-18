@@ -5,10 +5,8 @@ const Errors = require('./Errors');
 
 const COLLECTIONS = {
     MERCHANT: "merchant",
-    SUBSCRIPTION: "subscription",
     PRODUCTS: "products",
-    IMAGES_PROFILE: "imagesProfile",
-    IMAGES_PRODUCTS: "imagesProducts",
+    ADMIN: "admins",
 }
 
 /*
@@ -65,8 +63,9 @@ function query(collection_name, query, success, failure, fetchMulti = false) {
     });
 }
 
-// read or wr
 exports.saveFile = async (buffer, filename, successCB, failureCB) => {
+    if (!successCB)
+        throw new Error("success callback can't be undefined.");
     const client = new MongoClient(
         mongoConnURI,
         {useUnifiedTopology: true},
@@ -105,7 +104,7 @@ exports.readFile = (filename, success, failure) => {
     });
 }
 
-exports.findFile = async (filename, successCB) => {
+exports.findFiles = async (filenames, successCB) => {
     const client = new MongoClient(
         mongoConnURI,
         {useUnifiedTopology: true},
@@ -115,12 +114,16 @@ exports.findFile = async (filename, successCB) => {
     );
 
     await client.connect();
-    new GridFSBucket(client.db()).find({filename: filename}).toArray((error, items) => {
+    new GridFSBucket(client.db()).find({filename: {$in: filenames}}).toArray((error, items) => {
         successCB(items);
     })
 }
 
-exports.deleteFile = async (filename, successCB, failure) => {
+exports.findFile = async (filename, successCB) => {
+    return this.findFiles([filename], successCB);
+}
+
+exports.deleteFiles = async (filenames, successCB) => {
     const client = new MongoClient(
         mongoConnURI,
         {useUnifiedTopology: true},
@@ -131,19 +134,22 @@ exports.deleteFile = async (filename, successCB, failure) => {
 
     await client.connect();
     const gridFSBucket = new GridFSBucket(client.db())
-    const errors = [];
-    gridFSBucket.find({filename: filename}).toArray((error, items) => {
+    const errors = {};
+    gridFSBucket.find({filename: {$in: filenames}}).toArray((error, items) => {
         items.forEach(item => {
             gridFSBucket.delete(item._id, (_error) => {
-                errors.push(_error);
+                errors[`${item.filename}`] = _error;
             });
         })
-
         successCB({
             items: items,
             errors: errors
         });
     })
+}
+
+exports.deleteFile = async (filename, successCB) => {
+    return this.deleteFiles([filename], successCB);
 }
 
 exports.getRating = (ratingObj) => {

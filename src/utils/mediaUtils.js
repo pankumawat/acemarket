@@ -4,7 +4,7 @@ const db = require('../db');
 
 exports.resizeAndUploadImage = async (file, success, failure, height) => {
     if (!file.mimetype.startsWith("image"))
-        return failure(`Only images are allowed. Provided ${file.mimetype}`);
+        return failure(`Only images are allowed. Uploaded type: ${file.mimetype}`);
     const filename = (await crypto.randomBytes(20)).toString('hex') + ".jpeg";
     sharp(file.buffer)
         .resize({

@@ -1,19 +1,14 @@
 const apiRoute = require('express').Router();
 const imageRoute = require('./image-router');
-const db = require('./db');
-const core = require('./core');
-// const parseUserAgent = core.parseUserAgent;
-const Errors = require('./Errors');
-const sendEmail = require("./utils/emailer").sendEmail;
+const adminRoute = require('./admin-router');
+const db = require('../db');
+const core = require('../core');
+const Errors = require('../Errors');
 
 // Functions
 const getSuccessResponse = core.getSuccessResponse;
 const getErrorResponse = core.getErrorResponse;
 const getJwtToken = core.getJwtToken;
-
-apiRoute.get('/health', (req, res) => {
-    res.status(200).json({message: 'Connected!'});
-});
 
 apiRoute.post('/login', (req, res) => {
     const username = req.body.username;
@@ -163,24 +158,7 @@ apiRoute.get('/search', (req, res) => {
     }, (err) => res.json(core.getErrorResponse(err)), queryObj);
 });
 
-//to
-//subject
-//body
-apiRoute.get('/email', (req, res) => {
-    const to = req.query['to'];
-    const subject = req.query['subject'];
-    const body = req.query['body'];
-    const auth = req.query['auth'];
-    const day = new Date().getDate();
-    if (!!auth && Number.parseInt(auth) === (day * day))
-        sendEmail(to, subject, body, (info) => {
-            res.json(getSuccessResponse({info: info}));
-        }, (error) => res.json(getErrorResponse(error)))
-    else {
-        res.json(getErrorResponse("[auth] failure. Error: Unauthorized. Code-DD#AY"));
-    }
-});
-
 apiRoute.use("/images/", imageRoute);
+apiRoute.use("/admin/", adminRoute);
 
 module.exports = apiRoute;

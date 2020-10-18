@@ -10,7 +10,7 @@ class AdminLogin extends React.Component {
             password
         }, (response) => {
             const loggedInUser = response.data
-            localStorage.setItem("admin", JSON.stringify(loggedInUser));
+            localStorage.setItem("user", JSON.stringify(loggedInUser));
             showSuccess('You are amongst us.', 1000);
             setTimeout(() => {
                 this.props.loginSuccess(loggedInUser)

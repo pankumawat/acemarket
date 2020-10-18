@@ -4,6 +4,9 @@ const core = require('../core');
 const Errors = require('../Errors');
 const sendEmail = require("../utils/emailer").sendEmail;
 const osutils = require("os-utils");
+const getErrorResponse = core.getErrorResponse;
+const getSuccessResponse = core.getSuccessResponse;
+const getJwtToken = core.getJwtToken;
 
 adminRouter.get('/health', (req, res) => {
     try {
@@ -28,6 +31,40 @@ adminRouter.get('/health', (req, res) => {
 adminRouter.post('/login', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
+
+    if (!username || !password) {
+        return res.status(400).json(getErrorResponse(Errors.MISSING_PARAMS_LOGIN));
+    } else {
+        if (username == "admin") {
+            if (password == "admin") {
+                const admin = {
+                    username: username,
+                    name: "Admin Sahab",
+                    type: "admin"
+                }
+                getJwtToken(
+                    {admin}
+                ).then(tokenObj => {
+                    return res.json(getSuccessResponse({
+                        user: {...admin},
+                        admin: true,
+                        ...tokenObj
+                    }))
+                }, error => {
+                    return res.status(500).json(getErrorResponse(error.message));
+                }).catch(error => {
+                    return res.status(500).json(getErrorResponse(error.message));
+                });
+            } else {
+                return res.status(401).json(getErrorResponse(Errors.INVALID_LOGIN_PASSWORD));
+            }
+        } else {
+            return res.status(401).json(getErrorResponse(Errors.INVALID_LOGIN_USERNAME));
+        }
+
+    }
+
+    /*
     if (username && password) {
         db.getMerchantForLogin(username,
             (merchant) => {
@@ -69,6 +106,9 @@ adminRouter.post('/login', (req, res) => {
     } else {
         return res.status(400).json({user: username, pass: password});
     }
+
+     */
+
 });
 
 //to

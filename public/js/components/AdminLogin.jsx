@@ -21,8 +21,11 @@ class AdminLogin extends React.Component {
     render() {
         return (
             <form className="login" id="login_form" onSubmit={this.login}>
+                <div className="right">
+                    <a href={VALID_PATHS.HOME} onClick={this.props.functions.silentNav} className="white">Go Home</a>
+                </div>
                 <div className="form-group">
-                    <h3 style={{color: "white"}}>Sign in</h3>
+                    <h3 className="white">Sign in</h3>
                 </div>
                 <div className="form-group">
                     <div className="input-group">
@@ -42,7 +45,7 @@ class AdminLogin extends React.Component {
                     </div>
                 </div>
                 <div className="right">
-                    <a href={VALID_PATHS.LOGIN} data-toggle="tooltip" data-placement="top" className="grey">Login as
+                    <a href={VALID_PATHS.LOGIN} className="grey">Login as
                         Merchant</a>
                 </div>
             </form>

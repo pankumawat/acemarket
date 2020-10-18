@@ -598,3 +598,7 @@
     overflow-y: scroll;
     display: inline-block;
 }
+
+.inline {
+    display: inline-block;
+}

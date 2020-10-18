@@ -1,4 +1,5 @@
 #rm -rf ./node_modules/
+git pull;
 npm install;
 echo "Deploying changes.."
 sudo kill -9 `pgrep node | head -1`

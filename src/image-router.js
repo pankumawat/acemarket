@@ -1,26 +1,40 @@
 const imageRoute = require('express').Router();
 const core = require('./core');
+const db = require('./db');
+const fs = require('fs');
 const crypto = require('crypto');
 const path = require('path');
 const multer = require('multer');
+const upload = multer({storage: multer.memoryStorage()})
+
+const imgMimes = [
+    'image/bmp',
+    'image/gif',
+    'image/x-icon',
+    'image/jpeg',
+    'image/png',
+    'image/svg+xml'
+]
 
 // Functions
 const getSuccessResponse = core.getSuccessResponse;
 const getErrorResponse = core.getErrorResponse;
 const getJwtToken = core.getJwtToken;
 
-imageRoute.use('/profile', function (req, res, next) {
-    console.log('Request Type:', req.method)
-    next();
-})
+const uploadMW = require('./uploadMW');
+const imgMap = {}
 
+imageRoute.post('/profile', uploadMW.uploadImages, uploadMW.resizeImages, uploadMW.getResult, async function (req, res, next) {
+    res.json([...Object.keys(req.body)]);
+});
 
-/*imageRoute.post('/product', uploadProfile.single('productImg'), function (req, res, next) {
-    const {file} = req;
-    const stream = fs.createReadStream(file.path);
-    storage.fromStream(stream, req, file)
-        .then(() => res.send('File uploaded'))
-        .catch(() => res.status(500).send('error'));
-});*/
+imageRoute.get('/profile/:filename', function (req, res, next) {
+    const filename = req.params["filename"];
+    db.readFile(filename,
+        (stream) => {
+            stream.pipe(res);
+        }
+    );
+});
 
 module.exports = imageRoute;

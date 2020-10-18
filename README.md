@@ -8,3 +8,12 @@
   <li>Add indexing to id on products in decremental order. {unique: true}</li>
   <li>Ensure duplicacy check while updating/adding products and merchants.</li>
 </ol>
+
+
+pipe(
+  getName,
+  uppercase,
+  get6Characters,
+  reverse
+)({ name: 'Buckethead' });
+// 'TEKCUB'

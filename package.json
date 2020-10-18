@@ -6,7 +6,7 @@
   "author": "Pankaj Kumawat",
   "license": "ISC",
   "scripts": {
-    "start-local": "PORT=3001 APPENV=local nodemon app.js",
+    "local": "PORT=3001 APPENV=local nodemon app.js",
     "start": "node server.js",
     "lint": "eslint src/js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -20,8 +20,10 @@
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.6.2",
     "multer": "^1.4.2",
+    "multer-gridfs-storage": "^4.2.0",
     "nodemailer": "^6.4.14",
     "path": "^0.12.7",
+    "sharp": "^0.26.2",
     "ua-parser-js": "^0.7.22"
   },
   "devDependencies": {

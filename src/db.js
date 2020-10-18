@@ -1,4 +1,6 @@
 const MongoClient = require('mongodb').MongoClient;
+const GridFSBucket = require('mongodb').GridFSBucket;
+const crypto = require('crypto');
 const Errors = require('./Errors');
 
 const COLLECTIONS = {
@@ -21,7 +23,7 @@ dbo.collection("customers").find().sort(mysort).toArray(function(err, result) {
   });
  */
 // Connection URL
-const url = 'mongodb://localhost:27017';
+exports.MongoURI = 'mongodb://localhost:27017';
 
 // Database Name
 const dbName = 'acemarket';
@@ -29,7 +31,7 @@ const dbName = 'acemarket';
 // Create a new MongoClient
 function query(collection_name, query, success, failure, fetchMulti = false) {
     const client = new MongoClient(
-        url,
+        this.MongoURI,
         {useUnifiedTopology: true},
         {useNewUrlParser: true},
         {connectTimeoutMS: 3000},
@@ -63,6 +65,50 @@ function query(collection_name, query, success, failure, fetchMulti = false) {
                     client.close();
                 });
             }
+        }
+    });
+}
+
+// read or wr
+exports.saveFile = async (buffer, filename, successCB, failureCB) => {
+    const client = new MongoClient(
+        this.MongoURI,
+        {useUnifiedTopology: true},
+        {useNewUrlParser: true},
+        {connectTimeoutMS: 3000},
+        {keepAlive: 1}
+    );
+
+    await client.connect();
+    const db = client.db(dbName);
+    const gsUploadStream = new GridFSBucket(db).openUploadStream(filename, {
+        contentType: "image/jpeg"
+    })
+    gsUploadStream.on("finish", successCB);
+    gsUploadStream.on("error", failureCB || ((error) => console.error(error)));
+    gsUploadStream.end(buffer);
+}
+
+exports.readFile = (filename, success, failure) => {
+    const client = new MongoClient(
+        this.MongoURI,
+        {useUnifiedTopology: true},
+        {useNewUrlParser: true},
+        {connectTimeoutMS: 3000},
+        {keepAlive: 1}
+    );
+    client.connect(async function (err) {
+        const db = client.db(dbName);
+        if (err != null) {
+            failure(Errors.MONGO_CONNECTION_FAILURE);
+        } else {
+            const gsDownloadStream = new GridFSBucket(db).openDownloadStreamByName(filename)
+            // gsDownloadStream.on("end", (err) => {
+            //     console.log("END " + err);
+            //     console.log(Object.keys(gsDownloadStream));
+            //     success();
+            // });
+            return success(gsDownloadStream);
         }
     });
 }

@@ -37,6 +37,7 @@ const VALID_PATHS = {
     "HOME": "/home",
     "DETAILS": "/details",
     "LOGIN": "/login",
+    "ADMINLOGIN": "/adminlogin",
     "LOGOUT": "/logout",
     "ABOUT": "/about",
     "CART": "/cart",

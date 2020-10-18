@@ -7,8 +7,8 @@ const app = express();
 app.use(express.static('public', {
     dotfiles: 'allow'
 }));
-app.use(express.json());
 
+app.use(express.json());
 app.use('/api/', apiRoute);
 
 app.get('/@:short_name', (req, res) => {
@@ -22,8 +22,9 @@ app.get('/', (req, res) => {
     res.redirect('/home');
 });
 
-app.get(['/home', '/details', '/login', '/search', '/cart'], (req, res) => {
-    console.log(`GET ${req.url}`);
+app.get(['/home', '/details', '/login', '/search', '/cart', '/adminlogin'], (req, res) => {
+    if (process.env.APPENV == "local")
+        console.log(`GET ${req.url}`);
     res.sendFile(path.join(__dirname + '/public/index.html'));
 });
 

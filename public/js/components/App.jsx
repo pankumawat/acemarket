@@ -159,6 +159,10 @@ class App extends React.Component {
                 this.state = {...this.state, page: page};
                 break;
             }
+            case "ADMINLOGIN": {
+                this.state = {...this.state, page: page};
+                break;
+            }
             case "LOGOUT": {
                 const _state = {...this.state};
                 delete _state["user"];
@@ -198,6 +202,11 @@ class App extends React.Component {
             case "LOGIN": {
                 return (<div className="box center">
                     <div className="login margin36"><Login data={this.state} functions={this.functions}/></div>
+                </div>)
+            }
+            case "ADMINLOGIN": {
+                return (<div className="box center">
+                    <div className="login margin36"><AdminLogin data={this.state} functions={this.functions}/></div>
                 </div>)
             }
             case "SEARCH": {

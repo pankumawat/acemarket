@@ -9,6 +9,8 @@ const upload = multer({storage: multer.memoryStorage()})
 const getSuccessResponse = core.getSuccessResponse;
 const getErrorResponse = core.getErrorResponse;
 
+
+//var cpUpload = upload.fields([{ name: 'avatar', maxCount: 1 }, { name: 'gallery', maxCount: 8 }])
 imageRoute.post('/profile', upload.single("image"), function (req, res, next) {
     if (req.body.upload == "yes")
         mediaUtils.resizeAndUploadImage(req.file, (info) => {

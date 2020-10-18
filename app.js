@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
     res.redirect('/home');
 });
 
-app.get(['/home', '/details', '/login', '/search', '/cart', '/adminlogin'], (req, res) => {
+app.get(require('./commonConfig').jsxRoutes, (req, res) => {
     if (process.env.APPENV == "local")
         console.log(`GET ${req.url}`);
     res.sendFile(path.join(__dirname + '/public/index.html'));

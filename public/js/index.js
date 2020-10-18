@@ -33,20 +33,20 @@ const getQueries = (url) => {
 }
 
 const VALID_PATHS = {
-    "ERROR": "/error.html",
-    "HOME": "/home",
-    "DETAILS": "/details",
-    "LOGIN": "/login",
-    "ADMINLOGIN": "/adminlogin",
-    "LOGOUT": "/logout",
-    "ABOUT": "/about",
-    "CART": "/cart",
-    "SEARCH": "/search"
+    ERROR: "/error.html",
+    HOME: "/home",
+    DETAILS: "/details",
+    LOGIN: "/login",
+    ADMINLOGIN: "/admin/login",
+    LOGOUT: "/logout",
+    ABOUT: "/about",
+    CART: "/cart",
+    SEARCH: "/search"
 }
 
 const getPageName = (url) => {
     const cPath = getUrlPath(url);
-    const matched = Object.keys(VALID_PATHS).filter(key => (cPath.includes(VALID_PATHS[key]) && key));
+    const matched = Object.keys(VALID_PATHS).filter(key => (cPath == VALID_PATHS[key]));
     return (!!matched && matched.length > 0 && matched[0]) || "ROOT";
 }
 const getWAI = (url) => {

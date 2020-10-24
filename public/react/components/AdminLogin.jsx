@@ -1,4 +1,11 @@
 class AdminLogin extends React.Component {
+    constructor(props) {
+        super(props);
+        if (this.props.functions.isAdminLoggedIn()) {
+            this.props.functions.silentNav(undefined, VALID_PATHS.ADMIN_HOME);
+        }
+    }
+
     login = (event) => {
         event.preventDefault();
         const loginForm = event.target;
@@ -14,7 +21,7 @@ class AdminLogin extends React.Component {
             showSuccess('You are amongst us.', 1000);
             setTimeout(() => {
                 this.props.functions.loginSuccess(loggedInUser);
-                this.props.functions.silentNav(undefined, VALID_PATHS.ADMINHOME)
+                this.props.functions.silentNav(undefined, VALID_PATHS.ADMIN_HOME)
             }, 1000);
         })
     }

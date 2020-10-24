@@ -34,11 +34,11 @@ const getQueries = (url) => {
 
 const VALID_PATHS = {
     ERROR: "/error.html",
-    ADMINHOME: "/admin.html",
+    ADMIN_HOME: "/admin.html",
     HOME: "/home",
     DETAILS: "/details",
     LOGIN: "/login",
-    ADMINLOGIN: "/admin/login",
+    ADMIN_LOGIN: "/admin/login",
     LOGOUT: "/logout",
     ABOUT: "/about",
     CART: "/cart",

@@ -25,7 +25,7 @@ class Nav extends React.Component {
                aria-expanded="false">Login</a>
             <div className="dropdown-menu">
                 <a className="dropdown-item"  href={VALID_PATHS.LOGIN} onClick={this.props.functions.silentNav}>Merchant</a>
-                <a className="dropdown-item"  href={VALID_PATHS.ADMINLOGIN} onClick={this.props.functions.silentNav}>Admin</a>
+                <a className="dropdown-item"  href={VALID_PATHS.ADMIN_LOGIN} onClick={this.props.functions.silentNav}>Admin</a>
             </div>
             </div>
         </div>

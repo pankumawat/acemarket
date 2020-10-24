@@ -23,6 +23,8 @@ class App extends React.Component {
         this.updateState = this.updateState.bind(this);
         this.loginSuccess = this.loginSuccess.bind(this);
         this.getLoggedInUser = this.getLoggedInUser.bind(this);
+        this.isAdminLoggedIn = this.isAdminLoggedIn.bind(this);
+        this.isMerchantLoggedIn = this.isMerchantLoggedIn.bind(this);
         this.logout = this.logout.bind(this);
 
         this.handleNavigation();
@@ -44,6 +46,14 @@ class App extends React.Component {
                 localStorage.removeItem(MEM_KEYS.ACEM_USER);
             }
         }
+    }
+
+    isAdminLoggedIn = () => {
+        return (!!this.state.loggedInUser && this.state.loggedInUser.isAdmin === true);
+    }
+
+    isMerchantLoggedIn = () => {
+        return (!!this.state.loggedInUser && !this.state.loggedInUser.isAdmin);
     }
 
     loginSuccess = (loggedInUser) => {
@@ -125,7 +135,9 @@ class App extends React.Component {
         updateState: this.updateState,
         loginSuccess: this.loginSuccess,
         getLoggedInUser: this.getLoggedInUser,
-        logout: this.logout
+        logout: this.logout,
+        isAdminLoggedIn: this.isAdminLoggedIn,
+        isMerchantLoggedIn: this.isMerchantLoggedIn
     }
 
     handleNavigation = () => {
@@ -135,9 +147,8 @@ class App extends React.Component {
                 this.silentNav(undefined, VALID_PATHS.HOME);
                 break;
             }
-            case "ADMINHOME": {
-                const loggedInUser = this.getLoggedInUser();
-                if(!(!!loggedInUser && loggedInUser.isAdmin === true)) {
+            case "ADMIN_HOME": {
+                if (this.isAdminLoggedIn()) {
                     this.silentNav(undefined, VALID_PATHS.HOME);
                 }
                 break;
@@ -205,7 +216,7 @@ class App extends React.Component {
                 this.state = {...this.state, page: page};
                 break;
             }
-            case "ADMINLOGIN": {
+            case "ADMIN_LOGIN": {
                 this.state = {...this.state, page: page};
                 break;
             }
@@ -250,10 +261,18 @@ class App extends React.Component {
                     <div className="login margin36"><Login data={this.state} functions={this.functions}/></div>
                 </div>)
             }
-            case "ADMINLOGIN": {
+            case "ADMIN_LOGIN": {
                 return (<div className="box center">
                     <div className="login margin36"><AdminLogin data={this.state} functions={this.functions}/></div>
                 </div>)
+            }
+            case "ADMIN_HOME": {
+                return (
+                    <div>
+                        <Nav incart={this.state.cart.total} functions={this.functions}/>
+                        <AdminHome/>
+                    </div>
+                )
             }
             case "SEARCH": {
                 return (

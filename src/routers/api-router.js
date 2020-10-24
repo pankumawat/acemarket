@@ -10,6 +10,52 @@ const getSuccessResponse = core.getSuccessResponse;
 const getErrorResponse = core.getErrorResponse;
 const getJwtToken = core.getJwtToken;
 
+apiRoute.get('/login/status', (req, res) => {
+    const access_token = req.body.access_token;
+    const password = req.body.password;
+    if (username && password) {
+        db.getMerchantForLogin(username,
+            (merchant) => {
+                if (!merchant) {
+                    return res.status(400).json(getErrorResponse(Errors.INVALID_LOGIN_USERNAME));
+                } else {
+                    const fetched_password = merchant.password;
+                    const user = {
+                        mid: merchant.mid,
+                        username: merchant.username,
+                        tag: merchant.tag,
+                        name: merchant.name,
+                        fullname: merchant.fullname,
+                        email: merchant.email,
+                        contact_no: merchant.contact_no,
+                    }
+                    if (true || fetched_password == password) {
+                        getJwtToken(
+                            {username: username, ...user}
+                        ).then(tokenObj => {
+                            const localUsrObj = {...user}
+                            return res.json(getSuccessResponse({
+                                user: {username: username, ...localUsrObj},
+                                ...tokenObj
+                            }))
+                        }, error => {
+                            console.log(error.stack)
+                            return res.status(500).json(getErrorResponse(error.message));
+                        });
+                    } else {
+                        return res.status(401).json(getErrorResponse(Errors.INVALID_LOGIN_PASSWORD));
+                    }
+                }
+            }
+            ,
+            (error) => res.status(401).json(getErrorResponse(`Incorrect username or password ${error}`))
+        )
+        ;
+    } else {
+        return res.status(400).json({user: username, pass: password});
+    }
+});
+
 apiRoute.post('/login', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;

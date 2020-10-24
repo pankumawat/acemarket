@@ -28,6 +28,12 @@ app.get(require('./commonConfig').jsxRoutes, (req, res) => {
     res.sendFile(path.join(__dirname + '/public/index.html'));
 });
 
+app.get(require('./adminConfig').jsxRoutes, (req, res) => {
+    if (process.env.APPENV == "local")
+        console.log(`GET ${req.url}`);
+    res.sendFile(path.join(__dirname + '/public/admin.html'));
+});
+
 app.use((req, res) => {
     const queryObj = req.query;
     let queryString = '';

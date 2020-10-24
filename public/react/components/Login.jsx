@@ -1,19 +1,19 @@
-class AdminLogin extends React.Component {
+class Login extends React.Component {
     login = (event) => {
         event.preventDefault();
         const loginForm = event.target;
         const username = loginForm.elements.namedItem("username").value;
         const password = loginForm.elements.namedItem("password").value;
 
-        makePostCall('/api/admin/login', {
+        makePostCall('/api/login', {
             username,
             password
         }, (response) => {
             const loggedInUser = response.data
-            localStorage.setItem("user", JSON.stringify(loggedInUser));
-            showSuccess('You are amongst us.', 1000);
+            localStorage.setItem(MEM_KEYS.ACEM_USER, JSON.stringify(loggedInUser));
+            showSuccess('Login successful.', 1000);
             setTimeout(() => {
-                this.props.loginSuccess(loggedInUser)
+                this.props.loginSuccess(loggedInUser, admin);
             }, 1000);
         })
     }
@@ -43,10 +43,6 @@ class AdminLogin extends React.Component {
                     <div className="input-group">
                         <button type="submit" className="btn btn-success form-control">Login</button>
                     </div>
-                </div>
-                <div className="right">
-                    <a href={VALID_PATHS.LOGIN} className="grey">Login as
-                        Merchant</a>
                 </div>
             </form>
         )

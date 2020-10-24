@@ -9,8 +9,8 @@ const upload = multer({storage: multer.memoryStorage()})
 const getSuccessResponse = core.getSuccessResponse;
 const getErrorResponse = core.getErrorResponse;
 
-
-//var cpUpload = upload.fields([{ name: 'avatar', maxCount: 1 }, { name: 'gallery', maxCount: 8 }])
+// for actuals..
+// const cpUpload = upload.fields([{ name: 'avatar', maxCount: 1 }, { name: 'gallery', maxCount: 8 }])
 // req.files is an object (String -> Array) where fieldname is the key, and the value is array of files
 imageRoute.post('/profile', upload.single("image"), function (req, res, next) {
     if (req.body.upload == "yes")
@@ -39,12 +39,6 @@ imageRoute.delete('/:filename', function (req, res, next) {
     db.deleteFile(filename, obj => {
         res.json(obj);
     })
-    /*db.readFile(filename,
-        (stream, id) => {
-            res.header('chunk-id' , id);
-            stream.pipe(res);
-        }
-    );*/
 });
 
 module.exports = imageRoute;

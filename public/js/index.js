@@ -34,6 +34,7 @@ const getQueries = (url) => {
 
 const VALID_PATHS = {
     ERROR: "/error.html",
+    ADMINHOME: "/admin.html",
     HOME: "/home",
     DETAILS: "/details",
     LOGIN: "/login",
@@ -49,6 +50,11 @@ const getPageName = (url) => {
     const matched = Object.keys(VALID_PATHS).filter(key => (cPath == VALID_PATHS[key]));
     return (!!matched && matched.length > 0 && matched[0]) || "ROOT";
 }
+
+const getLoggedInUser = () => {
+    // if(localStorage && localStorage.getItem())
+}
+
 const getWAI = (url) => {
     const page = getPageName(url)
     return {
@@ -58,8 +64,10 @@ const getWAI = (url) => {
 }
 
 const MEM_KEYS = {
-    STATE_CART: "acemarket_cart_state",
-    GET_CACHE: "acemarket_get_cache"
+    ACEM_STATE_CART: "acemarket_cart_state",
+    ACEM_GET_CACHE: "acemarket_get_cache",
+    ACEM_USER: "acemarket_current_user",
+    ACEM_ERROR: "acemarket_error"
 }
 
 const SVG = {
@@ -75,7 +83,7 @@ const fillLogo = () => {
 /*
  * { "url" : { "ts", "data" }
  */
-const GETcache = (localStorage && localStorage.getItem(MEM_KEYS.GET_CACHE)) ? JSON.parse(localStorage.getItem(MEM_KEYS.GET_CACHE)) : {};
+const GETcache = (localStorage && localStorage.getItem(MEM_KEYS.ACEM_GET_CACHE)) ? JSON.parse(localStorage.getItem(MEM_KEYS.ACEM_GET_CACHE)) : {};
 
 const addToGETCache = (url, data) => {
     GETcache[url] = {
@@ -83,7 +91,7 @@ const addToGETCache = (url, data) => {
         data: data
     }
     if (localStorage) {
-        localStorage.setItem(MEM_KEYS.GET_CACHE, JSON.stringify(GETcache));
+        localStorage.setItem(MEM_KEYS.ACEM_GET_CACHE, JSON.stringify(GETcache));
     }
 }
 

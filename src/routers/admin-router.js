@@ -47,7 +47,7 @@ adminRouter.post('/login', (req, res) => {
                 ).then(tokenObj => {
                     return res.json(getSuccessResponse({
                         user: {...admin},
-                        admin: true,
+                        isAdmin: true,
                         ...tokenObj
                     }))
                 }, error => {

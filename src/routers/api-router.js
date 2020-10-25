@@ -36,7 +36,6 @@ apiRoute.post('/login', (req, res) => {
                 if (!merchant) {
                     return res.status(400).json(getErrorResponse(Errors.INVALID_LOGIN_USERNAME));
                 } else {
-                    const fetched_password = merchant.password;
                     const user = {
                         mid: merchant.mid,
                         username: merchant.username,
@@ -45,7 +44,7 @@ apiRoute.post('/login', (req, res) => {
                         email: merchant.email,
                         contact_no: merchant.contact_no,
                     }
-                    if (await core.matchPassword(password, merchant)) {
+                    if (await core.matchPassword(password, merchant.password)) {
                         getJwtToken(
                             {username: username, ...user}
                         ).then(tokenObj => {

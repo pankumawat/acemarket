@@ -13,7 +13,7 @@ class Login extends React.Component {
             localStorage.setItem(MEM_KEYS.ACEM_USER, JSON.stringify(loggedInUser));
             showSuccess('Login successful.', 1000);
             setTimeout(() => {
-                this.props.loginSuccess(loggedInUser, admin);
+                this.props.loginSuccess(loggedInUser);
             }, 1000);
         })
     }

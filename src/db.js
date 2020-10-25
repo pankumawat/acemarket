@@ -20,49 +20,7 @@ const getMongoClient = () => {
     );
 }
 
-/*
-dbo.collection("customers").find().sort(mysort).toArray(function(err, result) {
-    if (err) throw err;
-    console.log(result);
-    db.close();
-  });
- */
-// Connection URL
-
-// Create a new MongoClient
-function query(collection_name, query, success, failure, fetchMulti = false) {
-    const client = getMongoClient();
-    client.connect(function (err) {
-        if (err != null) {
-            console.error(err);
-            failure(Errors.MONGO_CONNECTION_FAILURE);
-        } else {
-            const collection = client.db().collection(collection_name);
-            if (fetchMulti) {
-                collection.find(query).toArray(function (err, items) {
-                    if (err) {
-                        console.error(err);
-                        failure(err.message);
-                    } else {
-                        success(items);
-                    }
-                    client.close();
-                });
-            } else {
-                collection.findOne(query, function (err, item) {
-                    if (err) {
-                        console.error(err);
-                        failure(err.message);
-                    } else {
-                        success(item);
-                    }
-                    client.close();
-                });
-            }
-        }
-    });
-}
-
+// FILES
 exports.saveFile = async (buffer, filename, successCB, failureCB) => {
     if (!successCB)
         throw new Error("success callback can't be undefined.");
@@ -115,15 +73,60 @@ exports.deleteFiles = async (filenames, successCB) => {
                 errors[`${item.filename}`] = _error;
             });
         })
-        successCB({
-            items: items,
-            errors: errors
-        });
+
+        if (!!successCB && typeof successCB === 'function')
+            successCB({
+                items: items,
+                errors: errors
+            });
     })
 }
 
 exports.deleteFile = async (filename, successCB) => {
     return this.deleteFiles([filename], successCB);
+}
+
+/*
+dbo.collection("customers").find().sort(mysort).toArray(function(err, result) {
+    if (err) throw err;
+    console.log(result);
+    db.close();
+  });
+ */
+// Connection URL
+
+// Create a new MongoClient
+function query(collection_name, query, success, failure, fetchMulti = false) {
+    const client = getMongoClient();
+    client.connect(function (err) {
+        if (err != null) {
+            console.error(err);
+            failure(Errors.MONGO_CONNECTION_FAILURE);
+        } else {
+            const collection = client.db().collection(collection_name);
+            if (fetchMulti) {
+                collection.find(query).toArray(function (err, items) {
+                    if (err) {
+                        console.error(err);
+                        failure(err.message);
+                    } else {
+                        success(items);
+                    }
+                    client.close();
+                });
+            } else {
+                collection.findOne(query, function (err, item) {
+                    if (err) {
+                        console.error(err);
+                        failure(err.message);
+                    } else {
+                        success(item);
+                    }
+                    client.close();
+                });
+            }
+        }
+    });
 }
 
 exports.getRating = (ratingObj) => {
@@ -133,27 +136,6 @@ exports.getRating = (ratingObj) => {
     const i4 = (!!ratingObj && ratingObj[4]) || 0;
     const i5 = (!!ratingObj && ratingObj[5]) || 0;
     return parseFloat(((i1 + i2 + i3 + i4 + i5) === 0 ? -1 : ((i1 + i2 * 2 + i3 * 3 + i4 * 4 + i5 * 5) / (i1 + i2 + i3 + i4 + i5))).toFixed(2));
-}
-
-exports.saveProfileImage = (name, originalname, mid, data, createdDt, modifiedDt) => {
-    const fileObj = {
-        name,
-        data,
-        createdDt: Date.now(),
-        modifiedDt: Date.now(),
-        mid,
-    }
-}
-
-exports.saveProductImage = (name, originalname, mid, pid, data, createdDt, modifiedDt) => {
-    const fileObj = {
-        name,
-        data,
-        createdDt: Date.now(),
-        modifiedDt: Date.now(),
-        mid,
-        pid,
-    }
 }
 
 exports.getMerchant = (mid, success, failure) => {
@@ -310,4 +292,31 @@ exports.getProducts = (success, failure, queryObj) => {
         }
         success(filtered);
     }, failure, true);
+}
+
+exports.insertMerchant = async (merchant, success, failure) => {
+    const client = getMongoClient();
+    await client.connect();
+    const collection = client.db().collection(COLLECTIONS.MERCHANT);
+    if (!!(await collection.findOne({username: merchant.username}))) {
+        return failure(`Merchant already exists with username: ${merchant.username}`);
+    }
+    collection.find().sort({mid: -1}).limit(1).toArray(async (err, result) => {
+            if (err) {
+                console.log(err.message);
+                return failure(err.message);
+            } else {
+                const newId = (result.length === 1) ? (result[0]._id + 1) : 1000;
+                merchant.mid = newId;
+                merchant._id = newId;
+                await collection.insertOne(merchant, async (err, result) => {
+                    if (err) {
+                        console.log(err.message);
+                        return failure(err.message);
+                    } else return success(merchant);
+                    await client.close();
+                })
+            }
+        }
+    )
 }

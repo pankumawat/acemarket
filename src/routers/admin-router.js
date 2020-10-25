@@ -79,7 +79,6 @@ adminRouter.post('/login', (req, res) => {
                     const user = {
                         mid: merchant.mid,
                         username: merchant.username,
-                        tag: merchant.tag,
                         name: merchant.name,
                         fullname: merchant.fullname,
                         email: merchant.email,
@@ -115,24 +114,78 @@ adminRouter.post('/login', (req, res) => {
 
 });
 
-adminRouter.post('/register/merchant', upload.single("logo_img"), (req, res) => {
-    mediaUtils.resizeAndUploadImage(req.file, (info) => {
+adminRouter.post('/register/merchant', upload.single("logo_img"), async (req, res) => {
+
+    // Sanitize input
+    const mandatoryKeys = ["username", "password", "password_confirm", "email", "name", "fullname", "contact_no", "city", "state", "pin", "keys", "address_line_1"];
+    const missingParams = [];
+    for (let i = 0; i < mandatoryKeys.length; i++) {
+        const key = mandatoryKeys[i];
+        if (!req.body[key] || req.body[key].length === 0) {
+            missingParams.push(key);
+        }
+    }
+
+    if (missingParams.length > 0) {
+        return res.json(getErrorResponse(`Missing mandatory params: ${missingParams}`));
+    }
+    if (req.body.password !== req.body.password_confirm) {
+        return res.json(getErrorResponse("Password is not matching with confirm password field"));
+    }
+
+    const keys = req.body.keys.replace(/\s/g, '').split(",").filter(item => item.length > 0);
+    if (keys.length === 0) {
+        return res.json(getErrorResponse("Keys cannot be empty. This helps in searching."));
+    }
+
+    const contact_no_others = req.body.contact_no_others.replace(/\s/g, '').split(",").filter(item => item.length > 0);
+
+    const password = await core.getPasswordHash(req.body.password);
+
+    const body = {
+        username: req.body.username,
+        email: req.body.email,
+        name: req.body.name,
+        fullname: req.body.fullname,
+        contact_no: req.body.contact_no,
+        contact_no_others: contact_no_others,
+        keys: keys,
+        address_line_1: req.body.address_line_1,
+        address_line_2: req.body.address_line_2,
+        address_line_3: req.body.address_line_3,
+        landmark: req.body.landmark,
+        city: req.body.city,
+        state: req.body.state,
+        pin: req.body.pin,
+        password: password,
+    }
+
+    await mediaUtils.resizeAndUploadImage(req.file, (info) => {
         uploaded(info.filename);
     }, (err) => {
         res.json(getErrorResponse(err));
     })
 
     const uploaded = (filename) => {
-        const body = {
-            ...req.body,
-            logo_img: filename
-        }
-
-        body.keys = body.keys.replace(/\s/g, '').split(",").filter(item => item.length > 0);
-        body.contact_no_others = body.contact_no_others.replace(/\s/g, '').split(",").filter(item => item.length > 0);
-
-        res.json(getSuccessResponse(body));
+        body.logo_img = filename;
+        db.insertMerchant(body, (merchant) => {
+            return res.json(getSuccessResponse(merchant));
+        }, (err) => {
+            db.deleteFile(filename);
+            res.json(getErrorResponse(err));
+        })
     }
+});
+
+adminRouter.get('/experiment', async (req, res) => {
+    const hash = await core.getPasswordHash("pakaj123");
+    const match = await core.marchPassword("pakaj123", hash);
+    const nomatch = await core.marchPassword("pakaj1233", hash);
+    res.json(getSuccessResponse({
+        hash,
+        match,
+        nomatch
+    }));
 });
 
 

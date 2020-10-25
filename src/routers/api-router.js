@@ -23,7 +23,6 @@ apiRoute.get('/login/status', (req, res) => {
                     const user = {
                         mid: merchant.mid,
                         username: merchant.username,
-                        tag: merchant.tag,
                         name: merchant.name,
                         fullname: merchant.fullname,
                         email: merchant.email,
@@ -69,7 +68,6 @@ apiRoute.post('/login', (req, res) => {
                     const user = {
                         mid: merchant.mid,
                         username: merchant.username,
-                        tag: merchant.tag,
                         name: merchant.name,
                         fullname: merchant.fullname,
                         email: merchant.email,

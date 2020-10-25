@@ -2,23 +2,26 @@ class AdminHome extends React.Component {
     submitForm = (e) => {
         e.preventDefault();
         const form = e.target;
-        $.ajax({
-            url: '/api/admin/register/merchant',
-            type: 'POST',
-            data: new FormData(form),
-            processData: false,
-            contentType: false,
-            success: (data) => {
-                if (data.success === true)
-                    showSuccess("We did it");
-                else
-                    showError(`Error - ${data.error}`);
-                console.dir(data);
-            },
-            error: (error) => {
-                showError(`Error - ${error}`);
-            }
-        });
+        if ($("#password_confirm").val() !== $("#password").val())
+            showError("Password mismatch.");
+        else
+            $.ajax({
+                url: '/api/admin/register/merchant',
+                type: 'POST',
+                data: new FormData(form),
+                processData: false,
+                contentType: false,
+                success: (data) => {
+                    if (data.success === true)
+                        showSuccess("We did it");
+                    else
+                        showError(`Error - ${data.error}`);
+                    console.dir(data);
+                },
+                error: (error) => {
+                    showError(`Error - ${error}`);
+                }
+            });
     }
 
     render() {
@@ -34,6 +37,7 @@ class AdminHome extends React.Component {
                     <fieldset>
                         <legend>Login Fields</legend>
                         <div className="flex">
+                            <span className="fs30">@</span>
                             <input type="text" className="flex-item w30p form-text-field" name="username"
                                    placeholder="Username" required/>
                             <input type="email" className="flex-item w70p form-text-field" name="email"
@@ -44,9 +48,6 @@ class AdminHome extends React.Component {
                     <fieldset>
                         <legend>Merchant Indentity</legend>
                         <div className="flex">
-                            <span className="fs30">@</span>
-                            <input type="text" className="flex-item w20p form-text-field" name="tag"
-                                   placeholder="Custom Tag" required/>
                             <input type="text" className="flex-item w30p form-text-field" name="name" placeholder="Name"
                                    required/>
                             <input type="text" className="flex-item w50p form-text-field" name="fullname"
@@ -106,9 +107,11 @@ class AdminHome extends React.Component {
                     <br/>
                     <fieldset>
                         <div className="flex">
-                            <input type="password" minLength="6" className="flex-item form-text-field" name="password"
+                            <input type="password" minLength="6" className="flex-item form-text-field" id="password"
+                                   name="password"
                                    placeholder="Password" required/>
-                            <input type="password" className="flex-item form-text-field" name="password_confirm"
+                            <input type="password" className="flex-item form-text-field" id="password_confirm"
+                                   name="password_confirm"
                                    placeholder="Confirm Password" required/>
                         </div>
                     </fieldset>

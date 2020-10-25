@@ -1,5 +1,6 @@
 const token_master = require('./utils/token-master');
 const user_agent_parser = require('ua-parser-js');
+const bcrypt = require('bcrypt');
 
 function getResponse(obj, success, error) {
     const respObj = {
@@ -23,7 +24,7 @@ exports.getSuccessResponse = function (obj) {
 }
 
 exports.getErrorResponse = function (error, obj) {
-    return getResponse(obj, false, error);
+    return getResponse(obj, false, error.message || error);
 }
 
 // Auth
@@ -80,4 +81,12 @@ exports.msToReadableDuration = (millisec) => {
     } else {
         return days + " Days"
     }
+}
+
+exports.getPasswordHash = async (plain_password) => {
+    return await bcrypt.hash(plain_password, 5);
+}
+
+exports.marchPassword = async (plain_password, hash) => {
+    return await bcrypt.compare(plain_password, hash);
 }

@@ -29,10 +29,11 @@ exports.getErrorResponse = function (error, obj) {
 
 // Auth
 exports.verifyToken = function (req, res, next) {
-    token_master.verifyJwtToken(req, res).then(user => {
-        req.user = user;
-        next();
-    });
+    token_master.verifyJwtToken(req, user => {
+            req.user = user;
+            next();
+        },
+        (err) => res.status(403).json(this.getErrorResponse(err)));
 }
 
 exports.getJwtToken = function (user, expiry) {
@@ -87,6 +88,6 @@ exports.getPasswordHash = async (plain_password) => {
     return await bcrypt.hash(plain_password, 5);
 }
 
-exports.marchPassword = async (plain_password, hash) => {
+exports.matchPassword = async (plain_password, hash) => {
     return await bcrypt.compare(plain_password, hash);
 }

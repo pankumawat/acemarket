@@ -1,6 +1,7 @@
 const apiRoute = require('express').Router();
 const imageRoute = require('./image-router');
 const adminRoute = require('./admin-router');
+const tokenMaster = require('../utils/token-master');
 const db = require('../db');
 const core = require('../core');
 const Errors = require('../Errors');
@@ -9,49 +10,20 @@ const Errors = require('../Errors');
 const getSuccessResponse = core.getSuccessResponse;
 const getErrorResponse = core.getErrorResponse;
 const getJwtToken = core.getJwtToken;
+const verifyJwtToken = tokenMaster.verifyJwtToken;
 
-apiRoute.get('/login/status', (req, res) => {
+apiRoute.post('/login/status', (req, res) => {
     const access_token = req.body.access_token;
-    const password = req.body.password;
-    if (username && password) {
-        db.getMerchantForLogin(username,
-            (merchant) => {
-                if (!merchant) {
-                    return res.status(400).json(getErrorResponse(Errors.INVALID_LOGIN_USERNAME));
-                } else {
-                    const fetched_password = merchant.password;
-                    const user = {
-                        mid: merchant.mid,
-                        username: merchant.username,
-                        name: merchant.name,
-                        fullname: merchant.fullname,
-                        email: merchant.email,
-                        contact_no: merchant.contact_no,
-                    }
-                    if (true || fetched_password == password) {
-                        getJwtToken(
-                            {username: username, ...user}
-                        ).then(tokenObj => {
-                            const localUsrObj = {...user}
-                            return res.json(getSuccessResponse({
-                                user: {username: username, ...localUsrObj},
-                                ...tokenObj
-                            }))
-                        }, error => {
-                            console.log(error.stack)
-                            return res.status(500).json(getErrorResponse(error.message));
-                        });
-                    } else {
-                        return res.status(401).json(getErrorResponse(Errors.INVALID_LOGIN_PASSWORD));
-                    }
-                }
-            }
-            ,
-            (error) => res.status(401).json(getErrorResponse(`Incorrect username or password ${error}`))
-        )
-        ;
+    const username = req.body.username;
+    if (access_token && username) {
+        req.headers.authorization = access_token;
+        verifyJwtToken(req, (user) => {
+            return res.json(getSuccessResponse(user));
+        }, (err) => {
+            return res.status(400).json(getErrorResponse(err));
+        });
     } else {
-        return res.status(400).json({user: username, pass: password});
+        return res.status(400).json(getErrorResponse("access_token and username are required params."));
     }
 });
 
@@ -60,7 +32,7 @@ apiRoute.post('/login', (req, res) => {
     const password = req.body.password;
     if (username && password) {
         db.getMerchantForLogin(username,
-            (merchant) => {
+            async (merchant) => {
                 if (!merchant) {
                     return res.status(400).json(getErrorResponse(Errors.INVALID_LOGIN_USERNAME));
                 } else {
@@ -73,7 +45,7 @@ apiRoute.post('/login', (req, res) => {
                         email: merchant.email,
                         contact_no: merchant.contact_no,
                     }
-                    if (true || fetched_password == password) {
+                    if (await core.matchPassword(password, merchant)) {
                         getJwtToken(
                             {username: username, ...user}
                         ).then(tokenObj => {

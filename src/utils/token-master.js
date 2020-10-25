@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-
 const TOKEN_SECRET = process.env.TOKEN_SECRET || "security_on_web_is_overrated";
 
 exports.getJwtToken = function (user, expiry) {
@@ -21,32 +20,23 @@ exports.getJwtToken = function (user, expiry) {
     });
 }
 
-exports.verifyJwtToken = function (req, res) {
-
+exports.verifyJwtToken = function (req, success, failure) {
     const authHeader = req.headers.authorization;
-    const accessToken = authHeader && authHeader.split(' ')[1]
+    const accessToken = authHeader && authHeader.split(' ').length === 1 ? authHeader : authHeader.split(' ')[1];
 
     const ignoreExpiration = false;
-    return new Promise(function (resolve, reject) {
-        if (accessToken) {
-            try {
-                jwt.verify(accessToken, TOKEN_SECRET, {ignoreExpiration: ignoreExpiration}, (err, user) => {
-                    if (err) {
-                        return res.status(403).json({
-                            status: 'failed',
-                            message: 'invalid authorization token'
-                        });
-                    }
-                    resolve(user);
-                });
-            } catch (error) {
-                reject(error);
-            }
-        } else {
-            return res.status(401).json({
-                status: 'failed',
-                message: 'missing authorization token'
+    if (accessToken) {
+        try {
+            jwt.verify(accessToken, TOKEN_SECRET, {ignoreExpiration: ignoreExpiration}, (err, user) => {
+                if (err) {
+                    failure('invalid authorization token');
+                }
+                success(user);
             });
+        } catch (error) {
+            reject(error);
         }
-    });
+    } else {
+        failure('missing authorization token');
+    }
 }

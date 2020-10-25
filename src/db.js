@@ -298,12 +298,14 @@ exports.insertMerchant = async (merchant, success, failure) => {
     const client = getMongoClient();
     await client.connect();
     const collection = client.db().collection(COLLECTIONS.MERCHANT);
+
     if (!!(await collection.findOne({username: merchant.username}))) {
+        await client.close();
         return failure(`Merchant already exists with username: ${merchant.username}`);
     }
     collection.find().sort({mid: -1}).limit(1).toArray(async (err, result) => {
             if (err) {
-                console.log(err.message);
+                await client.close();
                 return failure(err.message);
             } else {
                 const newId = (result.length === 1) ? (result[0]._id + 1) : 1000;
@@ -319,4 +321,23 @@ exports.insertMerchant = async (merchant, success, failure) => {
             }
         }
     )
+}
+
+exports.updateMerchant = async (merchant, success, failure) => {
+    const client = getMongoClient();
+    await client.connect();
+    const collection = client.db().collection(COLLECTIONS.MERCHANT);
+    const existingMerchant = await collection.findOne({username: merchant.username});
+    if (!existingMerchant) {
+        await client.close();
+        return failure(`Merchant does not exists: ${merchant.username}`);
+    } else {
+        await collection.updateOne({_id: existingMerchant._id}, {$set: {...merchant}}, async (err, result) => {
+            if (err) {
+                console.log(err.message);
+                return failure(err.message);
+            } else return success(merchant);
+            await client.close();
+        })
+    }
 }

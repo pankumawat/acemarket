@@ -43,7 +43,7 @@ adminRouter.post('/login', (req, res) => {
             if (password == "admin") {
                 const admin = {
                     username: username,
-                    name: "Admin Sahab",
+                    name: "Admin",
                     type: "admin"
                 }
                 getJwtToken(
@@ -133,7 +133,7 @@ adminRouter.post('/register/merchant', upload.single("logo_img"), async (req, re
         return res.json(getErrorResponse("Password is not matching with confirm password field"));
     }
 
-    const keys = req.body.keys.replace(/\s/g, '').split(",").filter(item => item.length > 0);
+    const keys = req.body.keys.replace(/\s/g, '').toLowerCase().split(",").filter(item => item.length > 0);
     if (keys.length === 0) {
         return res.json(getErrorResponse("Keys cannot be empty. This helps in searching."));
     }
@@ -143,8 +143,8 @@ adminRouter.post('/register/merchant', upload.single("logo_img"), async (req, re
     const password = await core.getPasswordHash(req.body.password);
 
     const body = {
-        username: req.body.username,
-        email: req.body.email,
+        username: req.body.username.toLowerCase(),
+        email: req.body.email.toLowerCase(),
         name: req.body.name,
         fullname: req.body.fullname,
         contact_no: req.body.contact_no,
@@ -178,14 +178,14 @@ adminRouter.post('/register/merchant', upload.single("logo_img"), async (req, re
 });
 
 adminRouter.get('/experiment', async (req, res) => {
-    const hash = await core.getPasswordHash("pakaj123");
-    const match = await core.marchPassword("pakaj123", hash);
-    const nomatch = await core.marchPassword("pakaj1233", hash);
-    res.json(getSuccessResponse({
-        hash,
-        match,
-        nomatch
-    }));
+    db.updateMerchant({
+        username: "neha",
+        contact_no: "011-1122334455"
+    }, (data) => {
+        res.json(getSuccessResponse(data));
+    }, (err) => {
+        res.json(getErrorResponse(err));
+    })
 });
 
 

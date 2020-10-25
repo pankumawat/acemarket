@@ -8,6 +8,10 @@ const getErrorResponse = core.getErrorResponse;
 const getSuccessResponse = core.getSuccessResponse;
 const getJwtToken = core.getJwtToken;
 
+const multer = require('multer');
+const mediaUtils = require('../utils/mediaUtils');
+const upload = multer({storage: multer.memoryStorage()})
+
 adminRouter.get('/health', (req, res) => {
     try {
         const data = {
@@ -110,6 +114,27 @@ adminRouter.post('/login', (req, res) => {
      */
 
 });
+
+adminRouter.post('/register/merchant', upload.single("logo_img"), (req, res) => {
+    mediaUtils.resizeAndUploadImage(req.file, (info) => {
+        uploaded(info.filename);
+    }, (err) => {
+        res.json(getErrorResponse(err));
+    })
+
+    const uploaded = (filename) => {
+        const body = {
+            ...req.body,
+            logo_img: filename
+        }
+
+        body.keys = body.keys.replace(/\s/g, '').split(",").filter(item => item.length > 0);
+        body.contact_no_others = body.contact_no_others.replace(/\s/g, '').split(",").filter(item => item.length > 0);
+
+        res.json(getSuccessResponse(body));
+    }
+});
+
 
 //to
 //subject

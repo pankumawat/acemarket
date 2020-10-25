@@ -3,6 +3,16 @@
     color: #555555
 }
 
+.error-label {
+    color: red;
+    font-size: small;
+}
+
+.image-preview {
+    display: none;
+    border-radius: 10%;
+}
+
 .box {
     display: -webkit-box;
     display: -webkit-flex;
@@ -30,7 +40,7 @@
 .flex-item {
     flex: initial;
     flex-basis: auto;
-    padding: 5px;
+    padding: 10px;
     margin: 5px;
     flex-grow: 1;
 }
@@ -58,24 +68,24 @@
 }
 
 fieldset {
-    display: block;
-    margin-inline-start: 2px;
-    margin-inline-end: 2px;
-    padding-block-start: 0.35em;
-    padding-inline-start: 0.75em;
-    padding-inline-end: 0.75em;
-    padding-block-end: 0.625em;
     min-inline-size: min-content;
     border-width: 5px;
     border-color: #dddddd;
-    border-style: none;
-    border-top-style: solid;
+
 }
 
 legend {
+    font-size: 15px;
+    font-weight: bold;
     width: auto;
     padding-inline-start: 5px;
-    padding-inline-end: 5px;
+}
+
+#merchant-new .form-text-field {
+    border-style: none;
+    border-radius: 5px;
+    background-color: #eeeeee;
+    border-left-color: #555555;
 }
 
 .center {
@@ -212,6 +222,7 @@ form.shortener {
 .w10p {
     width: 10%;
 }
+
 .w20p {
     width: 20%;
 }

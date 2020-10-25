@@ -45,6 +45,14 @@ const VALID_PATHS = {
     SEARCH: "/search"
 }
 
+const previewImg = (event) => {
+    const _this = event.target;
+    const previewImgId = `${_this.getAttribute("id") || _this.getAttribute("name")}_preview`;
+    !!event.target.files && (document.getElementById(previewImgId).src = window.URL.createObjectURL(event.target.files[0]));
+    document.getElementById(previewImgId).style.display = "block";
+    return true;
+}
+
 const getPageName = (url) => {
     const cPath = getUrlPath(url);
     const matched = Object.keys(VALID_PATHS).filter(key => (cPath == VALID_PATHS[key]));

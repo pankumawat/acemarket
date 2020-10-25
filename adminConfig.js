@@ -1,1 +1,0 @@
-exports.jsxRoutes = ['/admin/login'];

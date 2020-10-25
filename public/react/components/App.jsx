@@ -1,7 +1,31 @@
 class App extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
+        this.state = this.getInitialState();
+
+        this.handleNavigation = this.handleNavigation.bind(this);
+        this.addProductToCart = this.addProductToCart.bind(this);
+        this.remProductFromCart = this.remProductFromCart.bind(this);
+        this.silentNav = this.silentNav.bind(this);
+        this.getMainRenderBody = this.getMainRenderBody.bind(this);
+        this.updateState = this.updateState.bind(this);
+        this.loginSuccess = this.loginSuccess.bind(this);
+        this.getLoggedInUser = this.getLoggedInUser.bind(this);
+        this.isAdminLoggedIn = this.isAdminLoggedIn.bind(this);
+        this.isMerchantLoggedIn = this.isMerchantLoggedIn.bind(this);
+        this.getInitialState = this.getInitialState.bind(this);
+        this.logout = this.logout.bind(this);
+
+        this.handleNavigation();
+
+        if (!!localStorage && !!localStorage.getItem(MEM_KEYS.ACEM_ERROR)) {
+            showSuccess("Thank you for believing that we would recover.. :)", 3000)
+            localStorage.removeItem(MEM_KEYS.ACEM_ERROR);
+        }
+    }
+
+    getInitialState = () => {
+        return {
             cart: localStorage && localStorage.getItem(MEM_KEYS.ACEM_STATE_CART)
                 ? JSON.parse(localStorage.getItem(MEM_KEYS.ACEM_STATE_CART)) :
                 {
@@ -15,24 +39,11 @@ class App extends React.Component {
             query: undefined,
             loggedInUser: this.getLoggedInUser()
         }
-        this.handleNavigation = this.handleNavigation.bind(this);
-        this.addProductToCart = this.addProductToCart.bind(this);
-        this.remProductFromCart = this.remProductFromCart.bind(this);
-        this.silentNav = this.silentNav.bind(this);
-        this.getMainRenderBody = this.getMainRenderBody.bind(this);
-        this.updateState = this.updateState.bind(this);
-        this.loginSuccess = this.loginSuccess.bind(this);
-        this.getLoggedInUser = this.getLoggedInUser.bind(this);
-        this.isAdminLoggedIn = this.isAdminLoggedIn.bind(this);
-        this.isMerchantLoggedIn = this.isMerchantLoggedIn.bind(this);
-        this.logout = this.logout.bind(this);
+    }
 
-        this.handleNavigation();
-
-        if (!!localStorage && !!localStorage.getItem(MEM_KEYS.ACEM_ERROR)) {
-            showSuccess("Thank you for believing that we would recover.. :)", 3000)
-            localStorage.removeItem(MEM_KEYS.ACEM_ERROR);
-        }
+    clearMemory = () => {
+        if (!!localStorage)
+            Object.keys(MEM_KEYS).forEach(memKey => localStorage.removeItem(MEM_KEYS[memKey]));
     }
 
     getLoggedInUser = () => {
@@ -61,8 +72,8 @@ class App extends React.Component {
     }
 
     logout = () => {
-        localStorage.removeItem(MEM_KEYS.ACEM_USER);
-        this.updateState({}, true, true);
+        this.clearMemory();
+        this.state = this.getInitialState();
     }
 
     addProductToCart = (product, quantity) => {
@@ -99,7 +110,7 @@ class App extends React.Component {
         }
     }
 
-    silentNav = (event, path) => {
+    silentNav = (event, path, delay) => {
         let url = "/home";
         if (!!event) {
             event.preventDefault();
@@ -114,8 +125,10 @@ class App extends React.Component {
             if (preSwitchPage == "SEARCH" && postSwitchPage != "SEARCH") {
                 delete this.state["products"];
             }
-            this.handleNavigation();
-            this.updateState({url: url}, false, false);
+            setTimeout(() => {
+                this.handleNavigation();
+                this.updateState({url: url}, false);
+            }, delay === true ? 200 : 0)
         }
     }
 
@@ -142,13 +155,14 @@ class App extends React.Component {
 
     handleNavigation = () => {
         const page = getPageName();
+        console.log(`handleNavigation(${page})`);
         switch (page) {
             case "ROOT": {
                 this.silentNav(undefined, VALID_PATHS.HOME);
                 break;
             }
             case "ADMIN_HOME": {
-                if (this.isAdminLoggedIn()) {
+                if (!this.isAdminLoggedIn()) {
                     this.silentNav(undefined, VALID_PATHS.HOME);
                 }
                 break;
@@ -221,10 +235,8 @@ class App extends React.Component {
                 break;
             }
             case "LOGOUT": {
-                const _state = {...this.state};
-                delete _state["user"];
-                this.updateState(_state, true);
-                this.silentNav(undefined, VALID_PATHS.HOME);
+                this.logout();
+                this.silentNav(undefined, VALID_PATHS.HOME, true);
                 break;
             }
             case "ABOUT": {
@@ -232,6 +244,11 @@ class App extends React.Component {
                 break;
             }
             case "HOME": {
+                if (this.isAdminLoggedIn()) {
+                    this.silentNav(undefined, VALID_PATHS.ADMIN_HOME);
+                    break;
+                }
+
                 this.state = {...this.state, page: page};
                 if (!this.state.products || this.state.products.length === 0) {
                     let url = "/api/search?";
@@ -269,7 +286,7 @@ class App extends React.Component {
             case "ADMIN_HOME": {
                 return (
                     <div>
-                        <Nav incart={this.state.cart.total} functions={this.functions}/>
+                        <AdminNav functions={this.functions}/>
                         <AdminHome/>
                     </div>
                 )

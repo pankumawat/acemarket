@@ -34,7 +34,7 @@ const getQueries = (url) => {
 
 const VALID_PATHS = {
     ERROR: "/error.html",
-    ADMIN_HOME: "/admin.html",
+    ADMIN_HOME: "/admin/home",
     HOME: "/home",
     DETAILS: "/details",
     LOGIN: "/login",
@@ -48,6 +48,7 @@ const VALID_PATHS = {
 const getPageName = (url) => {
     const cPath = getUrlPath(url);
     const matched = Object.keys(VALID_PATHS).filter(key => (cPath == VALID_PATHS[key]));
+    //console.log(`url=${url}, cPath=${cPath}, matched=${matched}`);
     return (!!matched && matched.length > 0 && matched[0]) || "ROOT";
 }
 

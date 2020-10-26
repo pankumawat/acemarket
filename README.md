@@ -13,6 +13,8 @@ db.products.createIndex( { id: -1}, {unique:true} )
 db.merchant.createIndex( { mid: -1}, {unique:true} )
 
 
+DELETE files incase of api failure..
+
 pipe(
   getName,
   uppercase,

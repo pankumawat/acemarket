@@ -1,30 +1,102 @@
 class ProductForm extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            properties: [{key: "", value: ""}]
+        }
+        this.addPropertiesPair = this.addPropertiesPair.bind(this);
+        this.deletePropertiesPair = this.deletePropertiesPair.bind(this);
+    }
+
     submitForm = (e) => {
         e.preventDefault();
         const form = e.target;
-        if ($("#password_confirm").val() !== $("#password").val())
-            showError("Password mismatch.");
-        else
-            $.ajax({
-                url: '/api/admin/register/merchant',
-                type: 'POST',
-                data: new FormData(form),
-                processData: false,
-                contentType: false,
-                success: (data) => {
-                    if (data.success === true)
-                        showSuccess("We did it");
-                    else
-                        showError(`Error - ${data.error}`);
-                    console.dir(data);
-                },
-                error: (error) => {
-                    showError(`Error - ${error}`);
+        $.ajax({
+            url: '/api/m/register/product',
+            type: 'POST',
+            beforeSend: function (xhr) {
+                const loggedInUser = getLoggedInUser();
+                if (!!loggedInUser) {
+                    xhr.setRequestHeader("Authorization", `${loggedInUser.user.username} ${loggedInUser.accessToken}`);
                 }
-            });
+            },
+            data: new FormData(form),
+            processData: false,
+            contentType: false,
+            success: (data) => {
+                if (data.success === true)
+                    showSuccess("We did it");
+                else
+                    showError(`Error - ${data.error}`);
+                console.dir(data);
+            },
+            error: (error) => {
+                showError(`Error - ${error}`);
+            }
+        });
+    }
+
+    addPropertiesPair = () => {
+        const nameItems = document.getElementsByName("properties_name")
+        const valueItems = document.getElementsByName("properties_value")
+        const newProperties = [];
+        for (let i = 0; i < nameItems.length; i++) {
+            const key = nameItems[i].value;
+            if (key.length > 0) {
+                const value = valueItems[i].value;
+                newProperties.push({
+                    key, value
+                });
+            }
+        }
+        newProperties.push({key: "", value: ""});
+        this.setState({properties: [...newProperties]});
+    }
+
+    deletePropertiesPair = (event) => {
+        const key = event.target.getAttribute("data-item");
+        if (key) {
+            const newProperties = this.state.properties.filter(item => item.key != key)
+            this.setState({properties: newProperties});
+            this.force
+        }
     }
 
     render() {
+        const propertiesDivs = this.state.properties.map((item, index) => {
+            const isEmpty = (item.key && item.key.length > 0) ? false : true;
+            const keyD = `_${index}_${item.key}`;
+            return (
+                <div className="flex" key={`div_${keyD}`}>
+                    <input type="text" className="flex-item w30p form-text-field" name="properties_name"
+                           placeholder="Property e.g. weight, size, color etc."
+                           defaultValue={item.key}
+                           key={`i1${keyD}`}
+                    />
+                    <input type="text" className="flex-item w30p form-text-field"
+                           name="properties_value"
+                           placeholder="Property value e.g. 1.4KG, 16cms, red etc."
+                           defaultValue={item.value}
+                           key={`i2${keyD}`}
+                    />
+                    <div className="flex-item">
+                        {isEmpty ?
+                            <input type="button" className="margin6 btn btn-success"
+                                   value="&nbsp;&nbsp;Add&nbsp;&nbsp;"
+                                   onClick={this.addPropertiesPair}
+                            />
+                            :
+                            <input type="button" className="margin6 btn btn-danger"
+                                   value="Delete"
+                                   data-item={item.key}
+                                   onClick={this.deletePropertiesPair}
+                            />
+                        }
+                    </div>
+                </div>
+            )
+        });
+
         return (
             <div className="div-form w80p">
                 <div className="center w100p">
@@ -35,52 +107,20 @@ class ProductForm extends React.Component {
                 </div>
                 <form id="product-new" onSubmit={this.submitForm}>
                     <fieldset>
-                        <legend>Merchant Indentity</legend>
+                        <legend>Product Details</legend>
                         <div className="flex">
                             <input type="text" className="flex-item w30p form-text-field" name="name" placeholder="Name"
                                    required/>
-                            <textarea cols="30" className="flex-item w50p form-text-field" name="description"
-                                   placeholder="Product Description" required/>
-                        </div>
-                    </fieldset>
-                    <br/>
-                    <fieldset>
-                        <legend>Contact Details</legend>
-                        <div className="flex">
-                            <input type="text" className="flex-item w30p form-text-field" name="contact_no"
-                                   placeholder="Primary contact Number" required/>
-                            <input type="text" className="flex-item w70p form-text-field" name="contact_no_others"
-                                   placeholder="Other contact Numbers. [Comma separated e.g. 99xxxxxx80,0120-11111111]"
+                            <input type="number" className="flex-item w30p form-text-field" name="price"
+                                   placeholder="Price (after discount)"
                                    required/>
-                        </div>
-                    </fieldset>
-
-                    <br/>
-                    <fieldset>
-                        <legend>Business Address</legend>
-                        <div className="flex">
-                            <input type="text" className="flex-item form-text-field" name="address_line_1"
-                                   placeholder="Address Line 1" required/>
+                            <input type="number" className="flex-item w30p form-text-field"
+                                   name="price_without_discount" placeholder="Price (before discount)"
+                            />
                         </div>
                         <div className="flex">
-                            <input type="text" className="flex-item form-text-field" name="address_line_2"
-                                   placeholder="Address Line 2 (Optional)"/>
-                        </div>
-                        <div className="flex">
-                            <input type="text" className="flex-item form-text-field" name="address_line_3"
-                                   placeholder="Address Line 3 (Optional)"/>
-                            <input type="text" className="flex-item form-text-field" name="landmark"
-                                   placeholder="Landmark (Optional)"/>
-                        </div>
-
-                        <div className="flex">
-                            <input type="text" className="flex-item form-text-field" name="city"
-                                   placeholder="City" required/>
-                            <input type="text" className="flex-item form-text-field" name="state"
-                                   placeholder="State" required/>
-                            <input type="text" pattern="[1-9][0-9]{5}" className="flex-item form-text-field" name="pin"
-                                   placeholder="Pin Code (6 Digits numeric)"
-                                   required/>
+                            <textarea className="flex-item form-text-field" name="description"
+                                      placeholder="Product Description" required/>
                         </div>
                     </fieldset>
                     <br/>
@@ -92,30 +132,38 @@ class ProductForm extends React.Component {
                                    required/>
                         </div>
                     </fieldset>
-
                     <br/>
-                    <fieldset>
-                        <div className="flex">
-                            <input type="password" minLength="6" className="flex-item form-text-field" id="password"
-                                   name="password"
-                                   placeholder="Password" required/>
-                            <input type="password" className="flex-item form-text-field" id="password_confirm"
-                                   name="password_confirm"
-                                   placeholder="Confirm Password" required/>
-                        </div>
+                    <fieldset className="properties-container">
+                        <legend>Product Properties/Attributes (e.g. weight, size etc.)</legend>
+                        {propertiesDivs}
                     </fieldset>
-
                     <br/>
                     <fieldset>
+                        <legend>Product Images</legend>
                         <div className="flex">
                             <label className="flex-item w20p">
-                                Logo Image</label>
-                            <input type="file" className="flex-item w80p" id="logo_img" name="logo_img" accept="image/*"
+                                Product Primary Image</label>
+                            <input type="file" className="flex-item w80p" id="img" name="img" accept="image/*"
                                    onChange={previewImg}
                                    required/>
                         </div>
+                        <div className="flex">
+                            <div className="image-preview flex-item" id="img_preview"/>
+                        </div>
+
+                        <div className="flex">
+                            <label className="flex-item w20p">
+                                Other Images (Multiple)</label>
+                            <input type="file" className="flex-item w80p" id="imgs" name="imgs" accept="image/*"
+                                   onChange={previewImg}
+                                   multiple
+                            />
+                        </div>
+                        <div className="flex">
+                            <div className="image-preview flex-item" id="imgs_preview"/>
+                        </div>
                     </fieldset>
-                    <img className="flex-item w200 image-preview" id="logo_img_preview"/>
+
                     <br/>
                     <fieldset>
                         <div className="flex">

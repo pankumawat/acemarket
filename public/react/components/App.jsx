@@ -10,7 +10,6 @@ class App extends React.Component {
         this.getMainRenderBody = this.getMainRenderBody.bind(this);
         this.updateState = this.updateState.bind(this);
         this.loginSuccess = this.loginSuccess.bind(this);
-        this.getLoggedInUser = this.getLoggedInUser.bind(this);
         this.isAdminLoggedIn = this.isAdminLoggedIn.bind(this);
         this.isMerchantLoggedIn = this.isMerchantLoggedIn.bind(this);
         this.getInitialState = this.getInitialState.bind(this);
@@ -37,26 +36,13 @@ class App extends React.Component {
             product: undefined,
             page: undefined,
             query: undefined,
-            loggedInUser: this.getLoggedInUser()
+            loggedInUser: getLoggedInUser()
         }
     }
 
     clearMemory = () => {
         if (!!localStorage)
             Object.keys(MEM_KEYS).forEach(memKey => localStorage.removeItem(MEM_KEYS[memKey]));
-    }
-
-    getLoggedInUser = () => {
-        let user = localStorage.getItem(MEM_KEYS.ACEM_USER);
-        user = user && JSON.parse(localStorage.getItem(MEM_KEYS.ACEM_USER));
-        if (user) {
-            // Check if remaining session is at-least 5 seconds in future else consider non logged in.
-            if ((new Date(user.expireAt) - new Date()) > 5000) {
-                return user;
-            } else {
-                localStorage.removeItem(MEM_KEYS.ACEM_USER);
-            }
-        }
     }
 
     isAdminLoggedIn = () => {
@@ -147,7 +133,6 @@ class App extends React.Component {
         silentNav: this.silentNav,
         updateState: this.updateState,
         loginSuccess: this.loginSuccess,
-        getLoggedInUser: this.getLoggedInUser,
         logout: this.logout,
         isAdminLoggedIn: this.isAdminLoggedIn,
         isMerchantLoggedIn: this.isMerchantLoggedIn
@@ -163,6 +148,12 @@ class App extends React.Component {
             }
             case "ADMIN_HOME": {
                 if (!this.isAdminLoggedIn()) {
+                    this.silentNav(undefined, VALID_PATHS.HOME);
+                }
+                break;
+            }
+            case "MERCHANT_HOME": {
+                if (!this.isMerchantLoggedIn()) {
                     this.silentNav(undefined, VALID_PATHS.HOME);
                 }
                 break;
@@ -275,8 +266,16 @@ class App extends React.Component {
         switch (getPageName()) {
             case "MERCHANT_LOGIN": {
                 return (<div className="box center">
-                    <div className="login margin36"><Login data={this.state} functions={this.functions}/></div>
+                    <div className="login margin36"><MerchantLogin data={this.state} functions={this.functions}/></div>
                 </div>)
+            }
+            case "MERCHANT_HOME": {
+                return (
+                    <div>
+                        <AdminNav functions={this.functions}/>
+                        <MerchantHome/>
+                    </div>
+                )
             }
             case "ADMIN_LOGIN": {
                 return (<div className="box center">

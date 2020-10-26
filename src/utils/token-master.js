@@ -3,11 +3,10 @@ const TOKEN_SECRET = process.env.TOKEN_SECRET || "security_on_web_is_overrated";
 
 exports.getJwtToken = function (user, expiry) {
     return new Promise(function (resolve, reject) {
-        const userObj = {username: user.username, email: user.email, flags: user.flags};
         expiry = expiry === undefined ? '24h' : expiry;
         const opts = {expiresIn: expiry};
         try {
-            const accessToken = jwt.sign(userObj, TOKEN_SECRET, opts);
+            const accessToken = jwt.sign(user, TOKEN_SECRET, opts);
             jwt.verify(accessToken, TOKEN_SECRET, (err, user) => {
                 if (user)
                     resolve({accessToken: accessToken, expireAt: user.exp * 1000});
@@ -29,14 +28,14 @@ exports.verifyJwtToken = function (req, success, failure) {
         try {
             jwt.verify(accessToken, TOKEN_SECRET, {ignoreExpiration: ignoreExpiration}, (err, user) => {
                 if (err) {
-                    failure('invalid authorization token');
+                    failure('Invalid authorization token');
                 }
                 success(user);
             });
         } catch (error) {
-            reject(error);
+            failure(error);
         }
     } else {
-        failure('missing authorization token');
+        failure('Missing authorization token');
     }
 }

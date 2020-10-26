@@ -39,7 +39,7 @@ const VALID_PATHS = {
     HOME: "/home",
     DETAILS: "/details",
     MERCHANT_LOGIN: "/merchant/login",
-    ADMIN_HOME: "/merchant/home",
+    MERCHANT_HOME: "/merchant/home",
     LOGOUT: "/logout",
     ABOUT: "/about",
     CART: "/cart",
@@ -48,9 +48,24 @@ const VALID_PATHS = {
 
 const previewImg = (event) => {
     const _this = event.target;
+    if (_this.files.length >= 15) {
+        showError("Maximum allowed number of files is 15", 4000);
+        _this.value = '';
+        return false;
+    }
     const previewImgId = `${_this.getAttribute("id") || _this.getAttribute("name")}_preview`;
-    !!event.target.files && (document.getElementById(previewImgId).src = window.URL.createObjectURL(event.target.files[0]));
-    document.getElementById(previewImgId).style.display = "block";
+    const previewDiv = document.getElementById(previewImgId);
+    previewDiv.style.display = "block";
+    previewDiv.innerHTML = "";
+    if (!!event.target.files) {
+        for (let i = 0; i < _this.files.length; i++) {
+            const img = document.createElement("IMG");
+            img.style.height = "120px";
+            img.classList.add("image-preview");
+            img.src = window.URL.createObjectURL(_this.files[i]);
+            previewDiv.appendChild(img);
+        }
+    }
     return true;
 }
 
@@ -61,8 +76,17 @@ const getPageName = (url) => {
     return (!!matched && matched.length > 0 && matched[0]) || "ROOT";
 }
 
-const getLoggedInUser = () => {
-    // if(localStorage && localStorage.getItem())
+getLoggedInUser = () => {
+    let user = localStorage.getItem(MEM_KEYS.ACEM_USER);
+    user = user && JSON.parse(localStorage.getItem(MEM_KEYS.ACEM_USER));
+    if (user) {
+        // Check if remaining session is at-least 5 seconds in future else consider non logged in.
+        if ((new Date(user.expireAt) - new Date()) > 5000) {
+            return user;
+        } else {
+            localStorage.removeItem(MEM_KEYS.ACEM_USER);
+        }
+    }
 }
 
 const MEM_KEYS = {
@@ -129,10 +153,18 @@ const makeGetCall = (url, success, failure) => {
 }
 
 const makePostCall = (url, body, success, failure) => {
+    const headers = {
+        "Content-Type": "application/json"
+    }
+    const loggedInUser = getLoggedInUser();
+    if (!!loggedInUser) {
+        headers["Authorization"] = `${loggedInUser.user.username} ${loggedInUser.accessToken}`;
+    }
+
     fetch(url, {
         method: 'post',
         headers: {
-            "Content-Type": "application/json"
+            ...headers
         },
         body: JSON.stringify(body)
     }).then((response) => response.json()).then((response) => {

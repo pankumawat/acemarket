@@ -1,4 +1,11 @@
-class Login extends React.Component {
+class MerchantLogin extends React.Component {
+    constructor(props) {
+        super(props);
+        if (this.props.functions.isMerchantLoggedIn()) {
+            this.props.functions.silentNav(undefined, VALID_PATHS.MERCHANT_HOME);
+        }
+    }
+
     login = (event) => {
         event.preventDefault();
         const loginForm = event.target;
@@ -14,6 +21,7 @@ class Login extends React.Component {
             showSuccess('Login successful.', 1000);
             setTimeout(() => {
                 this.props.functions.loginSuccess(loggedInUser);
+                this.props.functions.silentNav(undefined, VALID_PATHS.MERCHANT_HOME);
             }, 1000);
         })
     }

@@ -8,6 +8,12 @@ class MerchantForm extends React.Component {
             $.ajax({
                 url: '/api/admin/register/merchant',
                 type: 'POST',
+                beforeSend: function (xhr) {
+                    const loggedInUser = getLoggedInUser();
+                    if (!!loggedInUser) {
+                        xhr.setRequestHeader("Authorization", `${loggedInUser.user.username} ${loggedInUser.accessToken}`);
+                    }
+                },
                 data: new FormData(form),
                 processData: false,
                 contentType: false,
@@ -125,8 +131,10 @@ class MerchantForm extends React.Component {
                                    onChange={previewImg}
                                    required/>
                         </div>
+                        <div className="flex">
+                            <div className="image-preview flex-item" id="logo_img_preview"/>
+                        </div>
                     </fieldset>
-                    <img className="flex-item w200 image-preview" id="logo_img_preview"/>
                     <br/>
                     <fieldset>
                         <div className="flex">

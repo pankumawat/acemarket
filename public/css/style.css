@@ -8,9 +8,13 @@
     font-size: small;
 }
 
-.image-preview {
+div.image-preview {
     display: none;
+}
+
+img.image-preview {
     border-radius: 10%;
+    margin: 5px;
 }
 
 .box {

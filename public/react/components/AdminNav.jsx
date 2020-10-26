@@ -18,13 +18,8 @@ class AdminNav extends React.Component {
             </div>
             <a className="active" href={VALID_PATHS.ADMIN_HOME} onClick={this.props.functions.silentNav}>Home</a>
             <input type="text" placeholder="Search.." onKeyUp={this.searchProducts}/>
-            <div className="topnavmore">
-            <a className="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
-               aria-expanded="false">Login</a>
-            <div className="dropdown-menu">
-                <a className="dropdown-item"  href={VALID_PATHS.MERCHANT_LOGIN} onClick={this.props.functions.silentNav}>Merchant</a>
-                <a className="dropdown-item"  href={VALID_PATHS.ADMIN_LOGIN} onClick={this.props.functions.silentNav}>Admin</a>
-            </div>
+            <div className="right">
+                <a className="dropdown-item"  href={VALID_PATHS.LOGOUT} onClick={this.props.functions.silentNav}>Logout</a>
             </div>
         </div>
     )

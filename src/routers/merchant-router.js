@@ -14,10 +14,18 @@ const multer = require('multer');
 const mediaUtils = require('../utils/mediaUtils');
 const upload = multer({storage: multer.memoryStorage()})
 
-merchantRouter.post('/register/product', upload.single("logo_img"), async (req, res) => {
-
+// const cpUpload = upload.fields([{ name: 'avatar', maxCount: 1 }, { name: 'gallery', maxCount: 8 }])
+// req.files is an object (String -> Array) where fieldname is the key, and the value is array of files
+merchantRouter.post('/register/product', core.authCheck, upload.fields([{name: 'img', maxCount: 1}, {
+    name: 'imgs',
+    maxCount: 15
+}]), async (req, res) => {
     // Sanitize input
-    const mandatoryKeys = ["username", "password", "password_confirm", "email", "name", "fullname", "contact_no", "city", "state", "pin", "keys", "address_line_1"];
+    if (req.user.username !== req.headers.authorization.split(' ')[0]) {
+        return res.status(403).json(this.getErrorResponse("Unauthorized."))
+    }
+    console.dir(req.body);
+    const mandatoryKeys = ["name", "description", "keys", "price"];
     const missingParams = [];
     for (let i = 0; i < mandatoryKeys.length; i++) {
         const key = mandatoryKeys[i];
@@ -29,51 +37,72 @@ merchantRouter.post('/register/product', upload.single("logo_img"), async (req, 
     if (missingParams.length > 0) {
         return res.json(getErrorResponse(`Missing mandatory params: ${missingParams}`));
     }
-    if (req.body.password !== req.body.password_confirm) {
-        return res.json(getErrorResponse("Password is not matching with confirm password field"));
-    }
 
     const keys = req.body.keys.replace(/\s/g, '').toLowerCase().split(",").filter(item => item.length > 0);
     if (keys.length === 0) {
         return res.json(getErrorResponse("Keys cannot be empty. This helps in searching."));
     }
-
-    const contact_no_others = req.body.contact_no_others.replace(/\s/g, '').split(",").filter(item => item.length > 0);
-
-    const password = await core.getPasswordHash(req.body.password);
-
+    console.log(`req.body.properties_name ${typeof req.body.properties_name}`);
+    const properties_name = typeof req.body.properties_name === 'string' ? [req.body.properties_name] : req.body.properties_name;
+    const properties_value = typeof req.body.properties_value === 'string' ? [req.body.properties_value] : req.body.properties_value;
+    const properties = {};
+    for (let i = 0; i < properties_name.length; i++) {
+        const key = properties_name[i].trim();
+        const value = properties_value[i].trim();
+        if (key.length > 0 && value.length > 0) {
+            properties[key] = value;
+        }
+    }
     const body = {
-        username: req.body.username.toLowerCase(),
-        email: req.body.email.toLowerCase(),
-        name: req.body.name,
-        fullname: req.body.fullname,
-        contact_no: req.body.contact_no,
-        contact_no_others: contact_no_others,
+        name: req.body.name.trim(),
+        description: req.body.description.trim(),
         keys: keys,
-        address_line_1: req.body.address_line_1,
-        address_line_2: req.body.address_line_2,
-        address_line_3: req.body.address_line_3,
-        landmark: req.body.landmark,
-        city: req.body.city,
-        state: req.body.state,
-        pin: req.body.pin,
-        password: password,
+        price: Number.parseInt(req.body.price),
+        price_without_discount: (req.body.price_without_discount && Number.parseInt(req.body.price_without_discount)),
+        mid: req.user.mid,
+        img: undefined,
+        properties,
+        imgs: [],
+        addedDt: Date.now(),
+        modifiedDt: Date.now(),
+        rating: {
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0
+        },
+        sold_units: 0
     }
 
-    await mediaUtils.resizeAndUploadImage(req.file, (info) => {
-        uploaded(info.filename);
+    await mediaUtils.resizeAndUploadImage(req.files["img"][0], async (info) => {
+        body.img = info.filename;
+
+        if (!!req.files["imgs"]) {
+            for (let i = 0; i < req.files["imgs"].length; i++) {
+                await mediaUtils.resizeAndUploadImage(req.files["imgs"][i], (info) => {
+                    body.imgs.push(info.filename);
+                    if (i === (req.files["imgs"].length - 1)) {
+                        uploaded();
+                    }
+                }, (err) => {
+                    if (i === (req.files["imgs"].length - 1)) {
+                        uploaded();
+                    }
+                })
+            }
+        }
     }, (err) => {
-        res.json(getErrorResponse(err));
+        return res.json(getErrorResponse(err));
     })
 
-    const uploaded = (filename) => {
-        body.logo_img = filename;
-        db.insertMerchant(body, (merchant) => {
-            return res.json(getSuccessResponse(merchant));
-        }, (err) => {
-            db.deleteFile(filename);
-            res.json(getErrorResponse(err));
-        })
+    const uploaded = () => {
+        return res.json(body);
+        /*        db.insertProduct(body, (merchant) => {
+                    return res.json(getSuccessResponse(merchant));
+                }, (err) => {
+                    db.deleteFile(filename);
+                    res.json(getErrorResponse(err));
+                }) */
     }
 });
 

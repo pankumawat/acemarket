@@ -1,1 +1,1 @@
-exports.jsxRoutes = ['/home', '/details', '/login', '/search', '/cart', '/logout', '/admin/*'];
+exports.jsxRoutes = ['/home', '/details', '/login', '/search', '/cart', '/logout', '/admin/*', '/merchant/*'];

@@ -91,3 +91,13 @@ exports.getPasswordHash = async (plain_password) => {
 exports.matchPassword = async (plain_password, hash) => {
     return await bcrypt.compare(plain_password, hash);
 }
+
+exports.authCheck = (req, res, next) => {
+    token_master.verifyJwtToken(req, (user) => {
+        console.dir(user);
+        req.user = user;
+        next();
+    }, (err) => {
+        res.status(403).json(getErrorResponse(err));
+    })
+}

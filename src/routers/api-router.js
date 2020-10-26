@@ -1,100 +1,13 @@
 const apiRoute = require('express').Router();
 const imageRoute = require('./image-router');
 const adminRoute = require('./admin-router');
+const merchantRouter = require('./merchant-router');
+
 const tokenMaster = require('../utils/token-master');
 const db = require('../db');
 const core = require('../core');
-const Errors = require('../Errors');
 
-// Functions
-const getSuccessResponse = core.getSuccessResponse;
-const getErrorResponse = core.getErrorResponse;
-const getJwtToken = core.getJwtToken;
-const verifyJwtToken = tokenMaster.verifyJwtToken;
-
-apiRoute.post('/login/status', (req, res) => {
-    const access_token = req.body.access_token;
-    const username = req.body.username;
-    if (access_token && username) {
-        req.headers.authorization = access_token;
-        verifyJwtToken(req, (user) => {
-            return res.json(getSuccessResponse(user));
-        }, (err) => {
-            return res.status(400).json(getErrorResponse(err));
-        });
-    } else {
-        return res.status(400).json(getErrorResponse("access_token and username are required params."));
-    }
-});
-
-apiRoute.post('/login', (req, res) => {
-    const username = req.body.username;
-    const password = req.body.password;
-    if (username && password) {
-        db.getMerchantForLogin(username,
-            async (merchant) => {
-                if (!merchant) {
-                    return res.status(400).json(getErrorResponse(Errors.INVALID_LOGIN_USERNAME));
-                } else {
-                    const user = {
-                        mid: merchant.mid,
-                        username: merchant.username,
-                        name: merchant.name,
-                        fullname: merchant.fullname,
-                        email: merchant.email,
-                        contact_no: merchant.contact_no,
-                    }
-                    if (await core.matchPassword(password, merchant.password)) {
-                        getJwtToken(
-                            {username: username, ...user}
-                        ).then(tokenObj => {
-                            const localUsrObj = {...user}
-                            return res.json(getSuccessResponse({
-                                user: {username: username, ...localUsrObj},
-                                ...tokenObj
-                            }))
-                        }, error => {
-                            console.log(error.stack)
-                            return res.status(500).json(getErrorResponse(error.message));
-                        });
-                    } else {
-                        return res.status(401).json(getErrorResponse(Errors.INVALID_LOGIN_PASSWORD));
-                    }
-                }
-            }
-            ,
-            (error) => res.status(401).json(getErrorResponse(`Incorrect username or password ${error}`))
-        )
-        ;
-    } else {
-        return res.status(400).json({user: username, pass: password});
-    }
-});
-
-apiRoute.get('/merchant/:mid', (req, res) => {
-    const mid = req.params['mid'];
-    db.getMerchant(mid, (data) => res.json(core.getSuccessResponse(data)), (err) => res.json(core.getErrorResponse(err)));
-});
-
-//mid=0, 1, or 0_1_2
-apiRoute.get('/merchants/:mids', (req, res) => {
-    const mids = req.params['mids'];
-    db.getMerchantsMulti(mids.split('_'), (items) => res.json(core.getSuccessResponse(items))
-        , (err) => res.json(core.getErrorResponse(err)));
-});
-
-apiRoute.get('/merchant/:mid/products', (req, res) => {
-    const mid = req.params['mid'];
-    db.getMerchantProducts(mid, (data) => {
-        const _data = data.map(item => {
-            item['rating_number'] = db.getRating(item.rating);
-            return item;
-        });
-        res.json(core.getSuccessResponse(_data));
-    }, (err) => res.json(core.getErrorResponse(err)));
-});
-
-apiRoute.get('/product/:pid', (req, res) => {
+apiRoute.get('/p/:pid', (req, res) => {
     const pid = req.params['pid'];
     db.getProduct(pid, (item) => {
         item['rating_number'] = db.getRating(item.rating);
@@ -103,7 +16,7 @@ apiRoute.get('/product/:pid', (req, res) => {
 });
 
 //pids=100_101_209 or 101
-apiRoute.get('/products/:pids', (req, res) => {
+apiRoute.get('/ps/:pids', (req, res) => {
     const ids = req.params['ids'];
     db.getProductsMulti(ids.split('_'), (items) => {
         const _items = items.map(item => {
@@ -173,7 +86,8 @@ apiRoute.get('/search', (req, res) => {
     }, (err) => res.json(core.getErrorResponse(err)), queryObj);
 });
 
-apiRoute.use("/images/", imageRoute);
-apiRoute.use("/admin/", adminRoute);
+apiRoute.use("/m/", merchantRouter); // merchant
+apiRoute.use("/i/", imageRoute); // images
+apiRoute.use("/a/", adminRoute); // admin
 
 module.exports = apiRoute;

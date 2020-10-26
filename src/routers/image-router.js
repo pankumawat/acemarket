@@ -29,7 +29,7 @@ imageRoute.get('/:filename', function (req, res, next) {
         (stream) => {
             stream.pipe(res);
         }, (error) => {
-        res.status(404).json(getErrorResponse("No such file exists."))
+            res.status(404).json(getErrorResponse("No such file exists."))
         }
     );
 });

@@ -214,7 +214,7 @@ class App extends React.Component {
                 } else {
                     const hasProductButDiffId = !!this.state.product && queryObj.pid !== this.state.product;
                     if (hasProductButDiffId || !this.state.product) {
-                        makeGetCall(`/api/product/${queryObj.pid}`, (response) => {
+                        makeGetCall(`/api/p/${queryObj.pid}`, (response) => {
                             this.updateState({page: page, product: response.data}, false);
 
                             const qs = response.data.keys.reduce((a, c) => `${a}_${c}`);
@@ -226,7 +226,7 @@ class App extends React.Component {
                 }
                 break;
             }
-            case "LOGIN": {
+            case "MERCHANT_LOGIN": {
                 this.state = {...this.state, page: page};
                 break;
             }
@@ -273,7 +273,7 @@ class App extends React.Component {
 
     getMainRenderBody = () => {
         switch (getPageName()) {
-            case "LOGIN": {
+            case "MERCHANT_LOGIN": {
                 return (<div className="box center">
                     <div className="login margin36"><Login data={this.state} functions={this.functions}/></div>
                 </div>)

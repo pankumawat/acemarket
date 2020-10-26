@@ -5,7 +5,7 @@ class Login extends React.Component {
         const username = loginForm.elements.namedItem("username").value;
         const password = loginForm.elements.namedItem("password").value;
 
-        makePostCall('/api/login', {
+        makePostCall('/api/m/login', {
             username,
             password
         }, (response) => {
@@ -13,7 +13,7 @@ class Login extends React.Component {
             localStorage.setItem(MEM_KEYS.ACEM_USER, JSON.stringify(loggedInUser));
             showSuccess('Login successful.', 1000);
             setTimeout(() => {
-                this.props.loginSuccess(loggedInUser);
+                this.props.functions.loginSuccess(loggedInUser);
             }, 1000);
         })
     }

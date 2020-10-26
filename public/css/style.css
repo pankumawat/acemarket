@@ -81,7 +81,7 @@ legend {
     padding-inline-start: 5px;
 }
 
-#merchant-new .form-text-field {
+.form-text-field {
     border-style: none;
     border-radius: 5px;
     background-color: #eeeeee;
@@ -95,11 +95,13 @@ legend {
 }
 
 .left {
+    float: left;
     justify-content: left;
     text-align: left;
 }
 
 .right {
+    float: right;
     justify-content: right;
     text-align: right;
 }

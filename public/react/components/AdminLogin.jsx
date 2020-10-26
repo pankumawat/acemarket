@@ -12,7 +12,7 @@ class AdminLogin extends React.Component {
         const username = loginForm.elements.namedItem("username").value;
         const password = loginForm.elements.namedItem("password").value;
 
-        makePostCall('/api/admin/login', {
+        makePostCall('/api/a/login', {
             username,
             password
         }, (response) => {
@@ -53,7 +53,7 @@ class AdminLogin extends React.Component {
                     </div>
                 </div>
                 <div className="right">
-                    <a href={VALID_PATHS.LOGIN} className="grey">Login as
+                    <a href={VALID_PATHS.MERCHANT_LOGIN} className="grey">Login as
                         Merchant</a>
                 </div>
             </form>

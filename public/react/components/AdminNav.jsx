@@ -22,7 +22,7 @@ class AdminNav extends React.Component {
             <a className="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
                aria-expanded="false">Login</a>
             <div className="dropdown-menu">
-                <a className="dropdown-item"  href={VALID_PATHS.LOGIN} onClick={this.props.functions.silentNav}>Merchant</a>
+                <a className="dropdown-item"  href={VALID_PATHS.MERCHANT_LOGIN} onClick={this.props.functions.silentNav}>Merchant</a>
                 <a className="dropdown-item"  href={VALID_PATHS.ADMIN_LOGIN} onClick={this.props.functions.silentNav}>Admin</a>
             </div>
             </div>

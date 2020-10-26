@@ -34,11 +34,12 @@ const getQueries = (url) => {
 
 const VALID_PATHS = {
     ERROR: "/error.html",
+    ADMIN_LOGIN: "/admin/login",
     ADMIN_HOME: "/admin/home",
     HOME: "/home",
     DETAILS: "/details",
-    LOGIN: "/login",
-    ADMIN_LOGIN: "/admin/login",
+    MERCHANT_LOGIN: "/merchant/login",
+    ADMIN_HOME: "/merchant/home",
     LOGOUT: "/logout",
     ABOUT: "/about",
     CART: "/cart",
@@ -62,14 +63,6 @@ const getPageName = (url) => {
 
 const getLoggedInUser = () => {
     // if(localStorage && localStorage.getItem())
-}
-
-const getWAI = (url) => {
-    const page = getPageName(url)
-    return {
-        "page": page,
-        "query": getQueries(url)
-    }
 }
 
 const MEM_KEYS = {

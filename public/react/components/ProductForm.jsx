@@ -11,6 +11,8 @@ class ProductForm extends React.Component {
 
     submitForm = (e) => {
         e.preventDefault();
+        document.getElementById("product_form_register").setAttribute("disabled", "true");
+        setTimeout(() => document.getElementById("product_form_register").removeAttribute("disabled"), 5000);
         const form = e.target;
         $.ajax({
             url: '/api/m/register/product',
@@ -188,7 +190,9 @@ class ProductForm extends React.Component {
                     <br/>
                     <fieldset>
                         <div className="flex">
-                            <button type="submit" className="btn btn-primary flex-item">Submit</button>
+                            <button type="submit" className="btn btn-primary flex-item"
+                                    id="product_form_register">Submit
+                            </button>
                         </div>
                     </fieldset>
                 </form>

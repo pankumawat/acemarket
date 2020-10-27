@@ -116,7 +116,7 @@ merchantRouter.post('/register/product', core.authCheck, upload.fields([{name: '
 
 merchantRouter.post('/login/status', (req, res) => {
     const access_token = req.body.access_token;
-    const username = req.body.username;
+    const username = req.body.username.toLowerCase();;
     if (access_token && username) {
         req.headers.authorization = access_token;
         verifyJwtToken(req, (user) => {
@@ -130,7 +130,7 @@ merchantRouter.post('/login/status', (req, res) => {
 });
 
 merchantRouter.post('/login', (req, res) => {
-    const username = req.body.username;
+    const username = req.body.username.toLowerCase();;
     const password = req.body.password;
     if (username && password) {
         db.getMerchantForLogin(username,

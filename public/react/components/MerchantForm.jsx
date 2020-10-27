@@ -67,8 +67,7 @@ class MerchantForm extends React.Component {
                             <input type="text" className="flex-item w30p form-text-field" name="contact_no"
                                    placeholder="Primary contact Number" required/>
                             <input type="text" className="flex-item w70p form-text-field" name="contact_no_others"
-                                   placeholder="Other contact Numbers. [Comma separated e.g. 99xxxxxx80,0120-11111111]"
-                                   required/>
+                                   placeholder="Other contact Numbers. [Comma separated e.g. 99xxxxxx80,0120-11111111]"/>
                         </div>
                     </fieldset>
 

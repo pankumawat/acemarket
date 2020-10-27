@@ -108,7 +108,7 @@ class Cart extends React.Component {
                                                                     <div className="col-md-8">
                                                                         <div className="row">
                                                                             <div className="col-md-12">
-                                                                                <h2>{product.merchant.name}</h2>
+                                                                                <h5>{product.merchant.name}</h5>
                                                                                 {!!product.merchant.contact_no ?
                                                                                     <b>{product.merchant.contact_no}<br></br></b> : ''}
                                                                                 {!!product.merchant.email ?

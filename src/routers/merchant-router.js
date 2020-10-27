@@ -24,8 +24,7 @@ merchantRouter.post('/register/product', core.authCheck, upload.fields([{name: '
     if (req.user.username !== req.headers.authorization.split(' ')[0]) {
         return res.status(403).json(this.getErrorResponse("Unauthorized."))
     }
-    console.dir(req.body);
-    const mandatoryKeys = ["name", "description", "keys", "price"];
+    const mandatoryKeys = ["name", "description", "keys"];
     const missingParams = [];
     for (let i = 0; i < mandatoryKeys.length; i++) {
         const key = mandatoryKeys[i];
@@ -42,7 +41,7 @@ merchantRouter.post('/register/product', core.authCheck, upload.fields([{name: '
     if (keys.length === 0) {
         return res.json(getErrorResponse("Keys cannot be empty. This helps in searching."));
     }
-    console.log(`req.body.properties_name ${typeof req.body.properties_name}`);
+
     const properties_name = typeof req.body.properties_name === 'string' ? [req.body.properties_name] : req.body.properties_name;
     const properties_value = typeof req.body.properties_value === 'string' ? [req.body.properties_value] : req.body.properties_value;
     const properties = {};
@@ -57,8 +56,8 @@ merchantRouter.post('/register/product', core.authCheck, upload.fields([{name: '
         name: req.body.name.trim(),
         description: req.body.description.trim(),
         keys: keys,
-        price: Number.parseInt(req.body.price),
-        price_without_discount: (req.body.price_without_discount && Number.parseInt(req.body.price_without_discount)),
+        price: (!!req.body.price ? Number.parseInt(req.body.price) : -1),
+        price_without_discount: (!!req.body.price_without_discount ? Number.parseInt(req.body.price_without_discount) : -1),
         mid: req.user.mid,
         img: undefined,
         properties,
@@ -92,6 +91,8 @@ merchantRouter.post('/register/product', core.authCheck, upload.fields([{name: '
                     }
                 })
             }
+        } else {
+            uploaded();
         }
     }, (err) => {
         return abort(err);

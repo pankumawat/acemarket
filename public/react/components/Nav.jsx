@@ -10,6 +10,15 @@ class Nav extends React.Component {
         }
     }
 
+    getAdminOptions = () => {
+        return (<a className="nav-link" href={VALID_PATHS.ADMIN_HOME}
+                   onClick={this.props.functions.silentNav}>Admin Home</a>)
+    }
+
+    getMerchantOptions = () => {
+        return (<a className="nav-link" href={VALID_PATHS.MERCHANT_HOME}
+                   onClick={this.props.functions.silentNav}>Merchant Home</a>)
+    }
     render = () => (
         <div className="topnav h50">
             <div className="topnavlogo" onClick={this.props.functions.silentNav}>
@@ -21,6 +30,10 @@ class Nav extends React.Component {
                 <span className="badge badge-dark">{this.props.incart}</span> : ''}</sup></a>
             <input type="text" placeholder="Search.." onKeyUp={this.searchProducts}/>
             <div className="right">
+                {!!getLoggedInUser() && getLoggedInUser().isAdmin === true ?
+                    this.getAdminOptions() : ''}
+                {!!getLoggedInUser() && !getLoggedInUser().isAdmin ?
+                    this.getMerchantOptions() : ''}
                 {!!getLoggedInUser() ?
                     <a className="nav-link" href={VALID_PATHS.LOGOUT}
                        onClick={this.props.functions.silentNav}>Logout</a>

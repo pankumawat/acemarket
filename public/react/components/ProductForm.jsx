@@ -2,7 +2,8 @@ class ProductForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            properties: [{key: "", value: ""}]
+            properties: [{key: "", value: ""}],
+            requirePrice: true
         }
         this.addPropertiesPair = this.addPropertiesPair.bind(this);
         this.deletePropertiesPair = this.deletePropertiesPair.bind(this);
@@ -62,6 +63,10 @@ class ProductForm extends React.Component {
         }
     }
 
+    flipPriceRequirement = () => {
+        this.setState({...this.state, requirePrice: !this.state.requirePrice})
+    }
+
     render() {
         const propertiesDivs = this.state.properties.map((item, index) => {
             const isEmpty = (item.key && item.key.length > 0) ? false : true;
@@ -111,15 +116,28 @@ class ProductForm extends React.Component {
                         <div className="flex">
                             <input type="text" className="flex-item w30p form-text-field" name="name" placeholder="Name"
                                    required/>
-                            <input type="number" className="flex-item w20p form-text-field" name="price"
-                                   placeholder="Price (after discount)"
-                                   required/>
-                            <input type="checkbox" className="flex-item w10p form-text-field" name="noprice"
-
-                            />
-                            <input type="number" className="flex-item w30p form-text-field"
-                                   name="price_without_discount" placeholder="Price (before discount)"
-                            />
+                            {this.state.requirePrice ?
+                                (<input type="number" className="flex-item w20p form-text-field" name="price"
+                                        placeholder="Price (after discount)"
+                                        required
+                                        key="sp"
+                                />) : (<input type="number" className="flex-item w20p" name="price"
+                                              placeholder="NA"
+                                              key="sp"
+                                              disabled
+                                />)}
+                            {this.state.requirePrice ?
+                                (<input type="number" className="flex-item w30p form-text-field"
+                                        name="price_without_discount" placeholder="Price (before discount)"
+                                        key="op"
+                                />) : (<input type="number" className="flex-item w30p borderless"
+                                              name="price_without_discount" placeholder="NA"
+                                              key="op"
+                                              disabled
+                                />)}
+                            <input type="button" className="flex-item w150min btn btn-info pointer"
+                                   value={this.state.requirePrice ? "Don't show price" : "Show price"}
+                                   onClick={this.flipPriceRequirement}/>
                         </div>
                         <div className="flex">
                             <textarea className="flex-item form-text-field" name="description"

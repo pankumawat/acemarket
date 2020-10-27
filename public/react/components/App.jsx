@@ -10,8 +10,6 @@ class App extends React.Component {
         this.getMainRenderBody = this.getMainRenderBody.bind(this);
         this.updateState = this.updateState.bind(this);
         this.loginSuccess = this.loginSuccess.bind(this);
-        this.isAdminLoggedIn = this.isAdminLoggedIn.bind(this);
-        this.isMerchantLoggedIn = this.isMerchantLoggedIn.bind(this);
         this.getInitialState = this.getInitialState.bind(this);
         this.logout = this.logout.bind(this);
 
@@ -43,18 +41,6 @@ class App extends React.Component {
     clearMemory = () => {
         if (!!localStorage)
             Object.keys(MEM_KEYS).forEach(memKey => localStorage.removeItem(MEM_KEYS[memKey]));
-    }
-
-    isLoggedIn = () => {
-        return (!!this.state.loggedInUser);
-    }
-
-    isAdminLoggedIn = () => {
-        return (!!this.state.loggedInUser && this.state.loggedInUser.isAdmin === true);
-    }
-
-    isMerchantLoggedIn = () => {
-        return (!!this.state.loggedInUser && !this.state.loggedInUser.isAdmin);
     }
 
     loginSuccess = (loggedInUser) => {
@@ -137,9 +123,7 @@ class App extends React.Component {
         silentNav: this.silentNav,
         updateState: this.updateState,
         loginSuccess: this.loginSuccess,
-        logout: this.logout,
-        isAdminLoggedIn: this.isAdminLoggedIn,
-        isMerchantLoggedIn: this.isMerchantLoggedIn
+        logout: this.logout
     }
 
     handleNavigation = () => {
@@ -157,7 +141,7 @@ class App extends React.Component {
                 break;
             }
             case "MERCHANT_HOME": {
-                if (!this.isMerchantLoggedIn()) {
+                if (!isMerchantLoggedIn()) {
                     this.silentNav(undefined, VALID_PATHS.HOME);
                 }
                 break;
@@ -213,8 +197,21 @@ class App extends React.Component {
                             this.updateState({page: page, product: response.data}, false);
 
                             const qs = response.data.keys.reduce((a, c) => `${a}_${c}`);
+                            this.state = {...this.state, products: []};
                             makeGetCall(`/api/search/?search_strings=${qs}`, (response) => {
-                                this.updateState({products: [...response.data]}, false);
+                                let products = [...response.data];
+                                console.log(`products ${JSON.stringify(products, undefined, 2)}`)
+                                if (products.length < 10) {
+                                    makeGetCall(`/api/search/?limit=10`, (responseAttempt2) => {
+                                        const alreadyInList = [];
+                                        products.forEach(product => alreadyInList.push(product.pid));
+                                        products = [...products, ...responseAttempt2.data.filter(product => !alreadyInList.includes(product.pid))];
+                                        this.updateState({products: products}, false, true);
+                                    });
+                                } else {
+                                    this.updateState({products: products}, false, true);
+                                }
+
                             });
                         });
                     }
@@ -239,24 +236,17 @@ class App extends React.Component {
                 break;
             }
             case "HOME": {
-                if (this.isAdminLoggedIn()) {
-                    this.silentNav(undefined, VALID_PATHS.ADMIN_HOME);
-                    break;
-                }
-
                 this.state = {...this.state, page: page};
-                if (!this.state.products || this.state.products.length === 0) {
-                    let url = "/api/search?";
-                    makeGetCall(url, (response) => {
-                        if (response.data.length === 0) {
-                            showError("No products were received.", 3000)
-                        } else {
-                            delete this.state["product"];
-                            delete this.state["query"];
-                            this.updateState({products: [...response.data]}, false);
-                        }
-                    });
-                }
+                let url = "/api/search?";
+                makeGetCall(url, (response) => {
+                    if (response.data.length === 0) {
+                        showError("No products were received.", 3000)
+                    } else {
+                        delete this.state["product"];
+                        delete this.state["query"];
+                        this.updateState({products: [...response.data]}, false);
+                    }
+                });
                 break;
             }
             default : {
@@ -276,7 +266,7 @@ class App extends React.Component {
             case "MERCHANT_HOME": {
                 return (
                     <div>
-                        <AdminNav functions={this.functions}/>
+                        <Nav functions={this.functions}/>
                         <MerchantHome/>
                     </div>
                 )
@@ -289,7 +279,7 @@ class App extends React.Component {
             case "ADMIN_HOME": {
                 return (
                     <div>
-                        <AdminNav functions={this.functions}/>
+                        <Nav functions={this.functions}/>
                         <AdminHome/>
                     </div>
                 )
@@ -320,6 +310,7 @@ class App extends React.Component {
                             <h3>Similar items</h3>
                             <Shorts functions={this.functions}
                                     products={this.state.products}
+                                    railml={false}
                                     recommended_for={!!this.state.product ? this.state.product.pid : undefined}
                             />
                         </div>

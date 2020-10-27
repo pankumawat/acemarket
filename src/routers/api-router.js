@@ -71,6 +71,7 @@ apiRoute.get('/data/cart', (req, res) => {
  * search_strings e.g. chocolate_pastry_juice
  * rating_minimum e.g.
  * recommended
+ * limit = number or records
  */
 apiRoute.get('/search', (req, res) => {
     let queryObj = {};

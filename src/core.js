@@ -94,7 +94,6 @@ exports.matchPassword = async (plain_password, hash) => {
 
 exports.authCheck = (req, res, next) => {
     token_master.verifyJwtToken(req, (user) => {
-        console.dir(user);
         req.user = user;
         next();
     }, (err) => {

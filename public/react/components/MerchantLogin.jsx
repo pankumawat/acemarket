@@ -1,7 +1,7 @@
 class MerchantLogin extends React.Component {
     constructor(props) {
         super(props);
-        if (this.props.functions.isMerchantLoggedIn()) {
+        if (isMerchantLoggedIn()) {
             this.props.functions.silentNav(undefined, VALID_PATHS.MERCHANT_HOME);
         }
     }

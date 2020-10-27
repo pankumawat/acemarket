@@ -949,15 +949,12 @@
 }
 
 .rail {
-    width: 100%;
     overflow: scroll;
     overflow-x: scroll;
-    display: inline-block;
     white-space: nowrap;
 }
 
 .railml {
-    width: 100%;
     overflow: scroll;
     overflow-x: scroll;
     overflow-y: scroll;

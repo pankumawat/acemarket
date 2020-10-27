@@ -12,7 +12,7 @@ class ProductShort extends React.Component {
 
     render = () => {
         return (
-            <div className="short h300min h400max w400max vflex">
+            <div className="short h300min w400min h400max w400max vflex">
                 <div className="flex-item flex h150min h200max scroll">
                     <div className="flex-item flex pointer" onClick={this.showDetails}>
                         <img src={`/api/i/${this.props.product.img}`} className="img-small flex-item w50p"

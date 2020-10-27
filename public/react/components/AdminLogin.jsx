@@ -1,7 +1,7 @@
 class AdminLogin extends React.Component {
     constructor(props) {
         super(props);
-        if (this.props.functions.isAdminLoggedIn()) {
+        if (isAdminLoggedIn()) {
             this.props.functions.silentNav(undefined, VALID_PATHS.ADMIN_HOME);
         }
     }

@@ -111,7 +111,8 @@ dbo.collection("customers").find().sort(mysort).toArray(function(err, result) {
 // Connection URL
 
 // Create a new MongoClient
-function query(collection_name, query, success, failure, fetchMulti = false) {
+function query(collection_name, queryObj, success, failure, fetchMulti = false) {
+    const query = queryObj.hasOwnProperty("queryStr") ? queryObj.queryStr : queryObj;
     const client = getMongoClient();
     client.connect(function (err) {
         if (err != null) {
@@ -121,7 +122,9 @@ function query(collection_name, query, success, failure, fetchMulti = false) {
         } else {
             const collection = client.db().collection(collection_name);
             if (fetchMulti) {
-                collection.find(query).toArray(function (err, items) {
+                let limit = (!!queryObj.limit ? Number.parseInt(queryObj.limit) : 100);
+                limit = limit <= 0 ? 10 : limit;
+                collection.find(query).limit(limit).toArray(function (err, items) {
                     if (err) {
                         console.error(err);
                         failure(err.message);
@@ -234,6 +237,7 @@ exports.getProducts = (success, failure, queryObj) => {
     const search_strings = queryObj['search_strings'];
     const rating_minimum = queryObj['rating_minimum'] ? parseInt(queryObj['rating_minimum']) : 0;
     const recommended = queryObj['recommended'] ? true : false;
+    const limit = queryObj['limit'];
     const mid = queryObj['mid'];
     if (price_range) {
         const priceParts = price_range.split('_');
@@ -271,7 +275,8 @@ exports.getProducts = (success, failure, queryObj) => {
     if (mid) {
         queryStr["mid"] = mid;
     }
-    query(COLLECTIONS.PRODUCTS, queryStr, (data) => {
+
+    query(COLLECTIONS.PRODUCTS, !!limit ? {limit: limit, queryStr} : queryStr, (data) => {
         let filtered = data;
         if (rating_minimum && Number.isInteger(rating_minimum))
             filtered = filtered.filter(item => {

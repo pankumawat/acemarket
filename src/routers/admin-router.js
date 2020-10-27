@@ -39,8 +39,8 @@ adminRouter.post('/login', (req, res) => {
     if (!username || !password) {
         return res.status(400).json(getErrorResponse(Errors.MISSING_PARAMS_LOGIN));
     } else {
-        if (username == "admin") {
-            if (password == "admin") {
+        if (username == "acemarket") {
+            if (password == "AceMarket@201306") {
                 const admin = {
                     username: username,
                     name: "Admin",

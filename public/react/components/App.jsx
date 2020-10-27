@@ -135,7 +135,7 @@ class App extends React.Component {
                 break;
             }
             case "ADMIN_HOME": {
-                if (!this.isAdminLoggedIn()) {
+                if (!isAdminLoggedIn()) {
                     this.silentNav(undefined, VALID_PATHS.HOME);
                 }
                 break;

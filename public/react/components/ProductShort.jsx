@@ -16,7 +16,7 @@ class ProductShort extends React.Component {
             <div className="short">
                 <div className="row">
                     <div className="col-md-4">
-                        <img src={this.props.product.img} className="img-thumbnail h100"
+                        <img src={`/api/i/${this.props.product.img}`} className="img-medium"
                              alt="Product Image"/>
                     </div>
                     <div className="col-md-8">

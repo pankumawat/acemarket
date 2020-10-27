@@ -86,7 +86,7 @@ class Cart extends React.Component {
                                                             <td>
                                                                 <div className="row">
                                                                     <div className="col-md-4">
-                                                                        <img src={`/api/i/${product.img}`} className="img-thumbnail"
+                                                                        <img src={`/api/i/${product.img}`} className="img-small"
                                                                              alt="Product Image" onClick={() => {
                                                                             this.props.functions.silentNav(undefined, `${VALID_PATHS.DETAILS}?pid=${product.pid}`);
                                                                         }}/>
@@ -112,7 +112,7 @@ class Cart extends React.Component {
                                                                     <div className="col-md-4">
                                                                         <img
                                                                             src={`/api/i/${product.merchant.logo_img}`}
-                                                                            className="img-thumbnail"
+                                                                            className="img-small"
                                                                             alt="Product Image"/>
                                                                     </div>
                                                                     <div className="col-md-8">

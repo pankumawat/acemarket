@@ -17,8 +17,32 @@ img.image-preview {
     margin: 5px;
 }
 
-.img-thumbnail {
-    margin-bottom: 5px  ;
+.img-large {
+    border-radius: 5%;
+    max-height: 400px;
+    min-height: 100px;
+    height: 100%;
+    max-width: 400px;
+    min-width: 100px;
+    height: 100%;
+}
+
+.img-medium {
+    border-radius: 5%;
+    max-height: 150px;
+    max-width: 130px;
+    min-height: 100px;
+    height: 100%;
+    weight: 100%;
+}
+
+.img-small {
+    margin-bottom: 5px;
+    border-radius: 10%;
+    max-height: 100px;
+    height: 100%;
+    max-width: 100px;
+    width: 100%;
 }
 
 .vscroll {
@@ -48,6 +72,13 @@ img.image-preview {
 .flex {
     display: flex;
     justify-content: stretch;
+    flex-direction: row;
+}
+
+.vflex {
+    display: flex;
+    justify-content: stretch;
+    flex-direction: column;
 }
 
 .flex-item {
@@ -234,6 +265,10 @@ form.shortener {
     }
 }
 
+.w5p {
+    width: 5%;
+}
+
 .w10p {
     width: 10%;
 }
@@ -244,6 +279,10 @@ form.shortener {
 
 .w25p {
     width: 25%;
+}
+
+.w30p {
+    width: 30%;
 }
 
 .w33p {

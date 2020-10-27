@@ -45,6 +45,10 @@ class App extends React.Component {
             Object.keys(MEM_KEYS).forEach(memKey => localStorage.removeItem(MEM_KEYS[memKey]));
     }
 
+    isLoggedIn = () => {
+        return (!!this.state.loggedInUser);
+    }
+
     isAdminLoggedIn = () => {
         return (!!this.state.loggedInUser && this.state.loggedInUser.isAdmin === true);
     }

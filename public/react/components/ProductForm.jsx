@@ -111,9 +111,12 @@ class ProductForm extends React.Component {
                         <div className="flex">
                             <input type="text" className="flex-item w30p form-text-field" name="name" placeholder="Name"
                                    required/>
-                            <input type="number" className="flex-item w30p form-text-field" name="price"
+                            <input type="number" className="flex-item w20p form-text-field" name="price"
                                    placeholder="Price (after discount)"
                                    required/>
+                            <input type="checkbox" className="flex-item w10p form-text-field" name="noprice"
+
+                            />
                             <input type="number" className="flex-item w30p form-text-field"
                                    name="price_without_discount" placeholder="Price (before discount)"
                             />

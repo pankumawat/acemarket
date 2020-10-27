@@ -76,103 +76,94 @@ class Cart extends React.Component {
                                     (!!this.state.data) ?
                                         (
                                             Object.keys(this.props.cart.products).map(pid => {
-                                                    const product = this.state.data.products[pid];
-                                                    const merchant = this.state.data.merchants[product.mid];
-                                                    product["merchant"] = {...merchant};
-                                                    product["cart_quantity"] = this.props.cart.quantity[product.pid];
-                                                    product["cart_total_price"] = product.price * product.cart_quantity;
-                                                    return (
-                                                        <tr>
-                                                            <td>
-                                                                <div className="row">
-                                                                    <div className="col-md-4">
-                                                                        <img src={`/api/i/${product.img}`} className="img-small"
-                                                                             alt="Product Image" onClick={() => {
-                                                                            this.props.functions.silentNav(undefined, `${VALID_PATHS.DETAILS}?pid=${product.pid}`);
-                                                                        }}/>
-                                                                    </div>
-                                                                    <div className="col-md-8">
-                                                                        <h2 className="wrap">{product.name}</h2>
-                                                                        <Rating rating={product.rating_number}/>
-                                                                        <br/>
-                                                                        <h5>
-                                                                            {
-                                                                                !!product.price && product.price > 0
-                                                                                    ?
-                                                                                    `${product.price} (₹)`
-                                                                                    :
-                                                                                    'Price on enquiry.'
-                                                                            }
-                                                                        </h5>
-                                                                    </div>
+                                                const product = this.state.data.products[pid];
+                                                const merchant = this.state.data.merchants[product.mid];
+                                                product["merchant"] = {...merchant};
+                                                product["cart_quantity"] = this.props.cart.quantity[product.pid];
+                                                product["cart_total_price"] = product.price * product.cart_quantity;
+                                                return (
+                                                    <tr>
+                                                        <td className="w25p">
+                                                            <div className="flex">
+                                                                <img src={`/api/i/${product.img}`}
+                                                                     className="img-small flex-item"
+                                                                     alt="Product Image" onClick={() => {
+                                                                    this.props.functions.silentNav(undefined, `${VALID_PATHS.DETAILS}?pid=${product.pid}`);
+                                                                }}/>
+                                                                <div className="flex-item h50min scroll">
+                                                                    <h5 className="wrap">{product.name}</h5>
+                                                                    <Rating rating={product.rating_number}/>
+                                                                    <Price price={product.price}
+                                                                           price_without_discount={product.price_without_discount}/>
                                                                 </div>
-                                                            </td>
-                                                            <td>
-                                                                <div className="row">
-                                                                    <div className="col-md-4">
-                                                                        <img
-                                                                            src={`/api/i/${product.merchant.logo_img}`}
-                                                                            className="img-small"
-                                                                            alt="Product Image"/>
-                                                                    </div>
-                                                                    <div className="col-md-8">
-                                                                        <div className="row">
-                                                                            <div className="col-md-12">
-                                                                                <h2>{product.merchant.name}</h2>
-                                                                                {!!product.merchant.contact_no ?
-                                                                                    <b>{product.merchant.contact_no}<br></br></b> : ''}
-                                                                                {!!product.merchant.email ?
-                                                                                    <b>{product.merchant.email}<br></br></b> : ''}
-                                                                                <h6><u>{product.merchant.fullname}</u></h6>
-                                                                            </div>
+                                                            </div>
+                                                        </td>
+                                                        <td className="w25p">
+                                                            <div className="row">
+                                                                <div className="col-md-4">
+                                                                    <img
+                                                                        src={`/api/i/${product.merchant.logo_img}`}
+                                                                        className="img-small"
+                                                                        alt="Product Image"/>
+                                                                </div>
+                                                                <div className="col-md-8">
+                                                                    <div className="row">
+                                                                        <div className="col-md-12">
+                                                                            <h2>{product.merchant.name}</h2>
+                                                                            {!!product.merchant.contact_no ?
+                                                                                <b>{product.merchant.contact_no}<br></br></b> : ''}
+                                                                            {!!product.merchant.email ?
+                                                                                <b>{product.merchant.email}<br></br></b> : ''}
+                                                                            <h6><u>{product.merchant.fullname}</u></h6>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            </td>
-                                                            <td className="fs25">
-                                                                <div className="row">
-                                                                    <div className="col-md-2"> {
-                                                                        product.cart_quantity > 1 ?
-                                                                            <a href="#" role="minus" data_pid={product.pid}
-                                                                               onClick={this.quantityUpdate}><i
-                                                                                className="far fa-minus-square"/></a>
-                                                                            :
-                                                                            <i className="far fa-minus-square grey"/>
-                                                                    }
-                                                                    </div>
-                                                                    <div className="col-md-2">
-                                                                        {product.cart_quantity}
-                                                                    </div>
-                                                                    <div className="col-md-2">
-                                                                        <a href="#" role="plus" data_pid={product.pid}
+                                                            </div>
+                                                        </td>
+                                                        <td className="fs25 w25p">
+                                                            <div className="row">
+                                                                <div className="col-md-2"> {
+                                                                    product.cart_quantity > 1 ?
+                                                                        <a href="#" role="minus" data_pid={product.pid}
                                                                            onClick={this.quantityUpdate}><i
-                                                                            className="far fa-plus-square"/></a>
-                                                                    </div>
-                                                                    <div className="col-md-6" data-toggle="tooltip"
-                                                                         data-placement="top"
-                                                                         title="Remove item from cart.">
-                                                                        <a href="#" role="remove" data_pid={product.pid}
-                                                                           onClick={this.quantityUpdate}><i
-                                                                            className="far fa-trash-alt orange"/></a>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td className="fs25">
-                                                                {
-                                                                    !!product.cart_total_price && product.cart_total_price > 0
-                                                                        ?
-                                                                        `${product.cart_total_price} (₹)`
+                                                                            className="far fa-minus-square"/></a>
                                                                         :
-                                                                        'Price on enquiry.'
+                                                                        <i className="far fa-minus-square grey"/>
                                                                 }
-                                                            </td>
-                                                        </tr>
-                                                    )
-                                                }
-                                            )
-                                        )
-                                        :
-                                        <tr/>
+                                                                </div>
+                                                                <div className="col-md-2">
+                                                                    {product.cart_quantity}
+                                                                </div>
+                                                                <div className="col-md-2">
+                                                                    <a href="#" role="plus" data_pid={product.pid}
+                                                                       onClick={this.quantityUpdate}><i
+                                                                        className="far fa-plus-square"/></a>
+                                                                </div>
+                                                                <div className="col-md-6" data-toggle="tooltip"
+                                                                     data-placement="top"
+                                                                     title="Remove item from cart.">
+                                                                    <a href="#" role="remove" data_pid={product.pid}
+                                                                       onClick={this.quantityUpdate}><i
+                                                                        className="far fa-trash-alt orange"/></a>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td className="fs25 w25p">
+                                                            {
+                                                                !!product.cart_total_price && product.cart_total_price > 0
+                                                                    ?
+                                                                    `${product.cart_total_price} (₹)`
+                                                                    :
+                                                                    'Price on enquiry.'
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            }
+                                )
+                                )
+                                :
+                                <tr/>
                                 }
                                 <tr>
                                     <td/>

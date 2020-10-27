@@ -21,7 +21,13 @@ class Nav extends React.Component {
                 <span className="badge badge-dark">{this.props.incart}</span> : ''}</sup></a>
             <input type="text" placeholder="Search.." onKeyUp={this.searchProducts}/>
             <div className="right">
-                <a className="nav-link"  href={VALID_PATHS.MERCHANT_LOGIN} onClick={this.props.functions.silentNav}>Merchant Login</a>
+                {!!getLoggedInUser() ?
+                    <a className="nav-link" href={VALID_PATHS.LOGOUT}
+                       onClick={this.props.functions.silentNav}>Logout</a>
+                    :
+                    <a className="nav-link" href={VALID_PATHS.MERCHANT_LOGIN} onClick={this.props.functions.silentNav}>Merchant
+                        Login</a>
+                }
             </div>
         </div>
     )

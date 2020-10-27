@@ -9,7 +9,9 @@ class Details extends React.Component {
     }
 
     setCurrentImg = (event) => {
-        this.setState({...this.state, currentImg: event.target.getAttribute("src")})
+        const src = event.target.getAttribute("src");
+        const fileName = src.substr(src.lastIndexOf('/'));
+        this.setState({...this.state, currentImg: fileName})
     }
 
     addToBasket = (event) => {
@@ -37,21 +39,17 @@ class Details extends React.Component {
         if (!!this.props.product)
             return (
                 <div className="row">
-                    <div className="col-md-1 overflow-auto h400">
+                    <div className="col-md-1 vscroll h400">
                         {[this.props.product.img, ...this.props.product.imgs].map((img, key) => (<div className="row">
-                            <div className="row" key={key}>
-                                <div className="col-md-12" key={key}>
-                                    <img src={img} className="img-fluid img-thumbnail"
-                                         alt="Product Image"
-                                         style={(this.state.currentImg == img) ? {border: "5px solid orange"} : {}}
-                                         key={key} onClick={this.setCurrentImg}/>
-                                </div>
-                            </div>
+                            <img src={`/api/i/${img}`} className="img-fluid img-thumbnail"
+                                 alt="Product Image"
+                                 style={(this.state.currentImg == img) ? {border: "5px solid orange"} : {}}
+                                 key={key} onClick={this.setCurrentImg}/>
                         </div>))
                         }
                     </div>
                     <div className="col-md-4">
-                        <img src={this.state.currentImg} className="img-thumbnail h400"
+                        <img src={`/api/i/${this.state.currentImg}`} className="img-thumbnail h400"
                              alt="Product Image"/>
                     </div>
                     <div className="col-md-7">
@@ -62,9 +60,9 @@ class Details extends React.Component {
                             </div>
                         </div>
                         <div className="row">
-                            <div className="col-md-7 overflow-auto h300">
+                            <div className="col-md-7 h300">
                                 <div className="row">
-                                    <div className="col-md-12">
+                                    <div className="col-md-12 vscroll h250">
                                         {this.props.product.description}
                                     </div>
                                 </div>
@@ -87,14 +85,14 @@ class Details extends React.Component {
                                     </div>
                                 </div>
                             </div>
-                            <div className="col-md-5">
-                                <div className="h300 overflow-auto">
+                            <div className="col-md-4">
+                                <div className="h300 vscroll">
                                     <table className="table table-bordered">
                                         <tbody>
                                         {Object.keys(this.props.product.properties).map((key, index) => (
                                             <tr key={index + 'tr'}>
-                                                <th className="right p-1" key={index + 'th'}>{key}</th>
-                                                <td className="left p-1"
+                                                <th className="p-1" key={index + 'th'}>{key}</th>
+                                                <td className="p-1"
                                                     key={index + 'td'}>{this.props.product.properties[key]}</td>
                                             </tr>
                                         ))}

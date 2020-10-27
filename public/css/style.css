@@ -17,6 +17,15 @@ img.image-preview {
     margin: 5px;
 }
 
+.img-thumbnail {
+    margin-bottom: 5px  ;
+}
+
+.vscroll {
+    overflow-y: auto;
+    overflow-y: scroll;
+}
+
 .box {
     display: -webkit-box;
     display: -webkit-flex;

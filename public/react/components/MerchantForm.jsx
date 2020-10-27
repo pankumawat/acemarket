@@ -6,7 +6,7 @@ class MerchantForm extends React.Component {
             showError("Password mismatch.");
         else
             $.ajax({
-                url: '/api/admin/register/merchant',
+                url: '/api/a/register/merchant',
                 type: 'POST',
                 beforeSend: function (xhr) {
                     const loggedInUser = getLoggedInUser();

@@ -139,7 +139,8 @@ const makeGetCall = (url, success, failure) => {
         fetch(url).then((response) => response.json()).then((response) => {
             if (response.success) {
                 success(response);
-                addToGETCache(url, response);
+                if (!url.endsWith('.jpeg'))
+                    addToGETCache(url, response);
             } else {
                 if (failure)
                     failure(response);

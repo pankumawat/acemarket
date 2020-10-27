@@ -30,24 +30,38 @@ exports.saveFile = async (buffer, filename, successCB, failureCB) => {
     const gsUploadStream = new GridFSBucket(client.db()).openUploadStream(filename, {
         contentType: "image/jpeg"
     })
-    gsUploadStream.on("finish", successCB);
-    gsUploadStream.on("error", failureCB || ((error) => console.error(error)));
+    gsUploadStream.on("finish", (info) => {
+        successCB(info);
+        client.close();
+    });
+    gsUploadStream.on("error",
+        (error) => {
+            if (!!failureCB) {
+                failureCB(error);
+            }
+            client.close();
+        }
+    )
     gsUploadStream.end(buffer);
 }
 
-exports.readFile = (filename, success, failure) => {
-    const client = getMongoClient();
-    client.connect(async function (err) {
-        if (err != null) {
-            failure(Errors.MONGO_CONNECTION_FAILURE);
+let getImagesClient = getMongoClient();
+getImagesClient.connect();
+exports.readFile = (filename, success, failure, retryCount) => {
+    if (!getImagesClient.isConnected()) {
+        console.log(`MONGO RECONNECTING FOR IMAGES..`)
+        getImagesClient = getMongoClient();
+        getImagesClient.connect();
+        if (retryCount === 1) {
+            return failure("Please try again. Facing database connectivity issue.");
         } else {
-            const gsDownloadStream = new GridFSBucket(client.db()).openDownloadStreamByName(filename)
-            gsDownloadStream.on('error', err => {
-                failure(err);
-            })
-            return success(gsDownloadStream);
+            readFile(filename, success, failure, !!retryCount ? (retryCount - 1) : 10);
         }
-    });
+    } else {
+        const gsDownloadStream = new GridFSBucket(getImagesClient.db()).openDownloadStreamByName(filename)
+        gsDownloadStream.on('error', failure)
+        success(gsDownloadStream);
+    }
 }
 
 exports.findFiles = async (filenames, successCB) => {
@@ -55,6 +69,7 @@ exports.findFiles = async (filenames, successCB) => {
     await client.connect();
     new GridFSBucket(client.db()).find({filename: {$in: filenames}}).toArray((error, items) => {
         successCB(items);
+        client.close();
     })
 }
 
@@ -102,6 +117,7 @@ function query(collection_name, query, success, failure, fetchMulti = false) {
         if (err != null) {
             console.error(err);
             failure(Errors.MONGO_CONNECTION_FAILURE);
+            client.close();
         } else {
             const collection = client.db().collection(collection_name);
             if (fetchMulti) {
@@ -327,7 +343,7 @@ exports.updateMerchant = async (merchant, success, failure) => {
     const client = getMongoClient();
     await client.connect();
     const collection = client.db().collection(COLLECTIONS.MERCHANT);
-    const existingMerchant = await collection.findOne({username: merchant.username});
+    const existingMerchant = await collection.findOne({_id: merchant.mid});
     if (!existingMerchant) {
         await client.close();
         return failure(`Merchant does not exists: ${merchant.username}`);
@@ -337,6 +353,49 @@ exports.updateMerchant = async (merchant, success, failure) => {
                 console.log(err.message);
                 return failure(err.message);
             } else return success(merchant);
+            client.close();
+        })
+    }
+}
+
+exports.insertProduct = async (product, success, failure) => {
+    const client = getMongoClient();
+    await client.connect();
+    const collection = client.db().collection(COLLECTIONS.PRODUCTS);
+    collection.find().sort({pid: -1}).limit(1).toArray(async (err, result) => {
+            if (err) {
+                client.close();
+                return failure(err.message);
+            } else {
+                const newId = (result.length === 1) ? (result[0]._id + 1) : 1000;
+                product.pid = newId;
+                product._id = newId;
+                await collection.insertOne(product, async (err, result) => {
+                    if (err) {
+                        console.log(err.message);
+                        return failure(err.message);
+                    } else return success(product);
+                    await client.close();
+                })
+            }
+        }
+    )
+}
+
+exports.updateProduct = async (product, success, failure) => {
+    const client = getMongoClient();
+    await client.connect();
+    const collection = client.db().collection(COLLECTIONS.PRODUCTS);
+    const existingProduct = await collection.findOne({_id: product.pid});
+    if (!existingProduct) {
+        await client.close();
+        return failure(`Product does not exists: ${product.pid}`);
+    } else {
+        await collection.updateOne({_id: existingProduct._id}, {$set: {...product}}, async (err, result) => {
+            if (err) {
+                console.log(err.message);
+                return failure(err.message);
+            } else return success(existingProduct);
             await client.close();
         })
     }

@@ -73,14 +73,16 @@ merchantRouter.post('/register/product', core.authCheck, upload.fields([{name: '
         },
         sold_units: 0
     }
-
+    const filesToBeDeleted = [];
     await mediaUtils.resizeAndUploadImage(req.files["img"][0], async (info) => {
         body.img = info.filename;
+        filesToBeDeleted.push(info.filename);
 
         if (!!req.files["imgs"]) {
             for (let i = 0; i < req.files["imgs"].length; i++) {
                 await mediaUtils.resizeAndUploadImage(req.files["imgs"][i], (info) => {
                     body.imgs.push(info.filename);
+                    filesToBeDeleted.push(info.filename);
                     if (i === (req.files["imgs"].length - 1)) {
                         uploaded();
                     }
@@ -92,17 +94,22 @@ merchantRouter.post('/register/product', core.authCheck, upload.fields([{name: '
             }
         }
     }, (err) => {
-        return res.json(getErrorResponse(err));
+        return abort(err);
     })
 
     const uploaded = () => {
-        return res.json(body);
-        /*        db.insertProduct(body, (merchant) => {
-                    return res.json(getSuccessResponse(merchant));
-                }, (err) => {
-                    db.deleteFile(filename);
-                    res.json(getErrorResponse(err));
-                }) */
+        db.insertProduct(body, (merchant) => {
+            return res.json(getSuccessResponse(merchant));
+        }, (err) => {
+            return abort(err);
+        })
+    }
+
+    const abort = (error) => {
+        db.deleteFiles(filesToBeDeleted, (done) => {
+            console.log(`Failed so deleting files. ${JSON.stringify(filesToBeDeleted)}`)
+        })
+        return res.json(getErrorResponse(error));
     }
 });
 

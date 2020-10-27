@@ -245,7 +245,7 @@ class App extends React.Component {
                     let url = "/api/search?";
                     makeGetCall(url, (response) => {
                         if (response.data.length === 0) {
-                            showError("Failed to fetch items.", 3000)
+                            showError("No products were received.", 3000)
                         } else {
                             delete this.state["product"];
                             delete this.state["query"];

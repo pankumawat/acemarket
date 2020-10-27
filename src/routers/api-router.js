@@ -10,7 +10,8 @@ const core = require('../core');
 apiRoute.get('/p/:pid', (req, res) => {
     const pid = req.params['pid'];
     db.getProduct(pid, (item) => {
-        item['rating_number'] = db.getRating(item.rating);
+        if (item)
+            item['rating_number'] = db.getRating(item.rating);
         res.json(core.getSuccessResponse(item));
     }, (err) => res.json(core.getErrorResponse(err)));
 });

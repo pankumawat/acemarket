@@ -92,7 +92,7 @@ class Cart extends React.Component {
                                                                         }}/>
                                                                     </div>
                                                                     <div className="col-md-8">
-                                                                        <h2>{product.name}</h2>
+                                                                        <h2 className="wrap">{product.name}</h2>
                                                                         <Rating rating={product.rating_number}/>
                                                                         <br/>
                                                                         <h5>

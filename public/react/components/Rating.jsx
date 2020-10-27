@@ -18,5 +18,5 @@ const Rating = (props) => {
             </div>
         )
     else
-        return (<div/>)
+        return '';
 }

@@ -35,24 +35,22 @@ class Details extends React.Component {
         }
     }
 
+    getImagesPanel = () => (
+        <div className="flex-item vscroll vflex w20p w150max w100min h450max" key={new Date().getMilliseconds()}>
+            {[this.props.product.img, ...this.props.product.imgs].map((img, key) => (
+                <img src={`/api/i/${img}`} className="img-small flex-item" key={key}
+                     alt="Product Image"
+                     style={(this.state.currentImg == img) ? {border: "5px solid orange"} : {}}
+                     key={key} onClick={this.setCurrentImg}/>))
+            }
+        </div>
+    )
+
     render = () => {
         if (!!this.props.product)
             return (
                 <div className="flex h500 h300min h500max">
-                    <div className="flex-item vscroll vflex w20p w150max w100min">
-                        {[this.props.product.img, ...this.props.product.imgs].map((img, key) => {
-                            console.log(JSON.stringify({
-                                currentImg: this.state.currentImg,
-                                img: img
-                            }, undefined, 2))
-                            return (
-                                <img src={`/api/i/${img}`} className="img-small flex-item"
-                                     alt="Product Image"
-                                     style={(this.state.currentImg == img) ? {border: "5px solid orange"} : {}}
-                                     key={key} onClick={this.setCurrentImg}/>)
-                        })
-                        }
-                    </div>
+                    {this.getImagesPanel()}
                     <div className="flex-item w20p vflex w300min">
                         <img src={`/api/i/${this.state.currentImg}`} className="img-large flex-item"
                              alt="Product Image"/>
@@ -63,7 +61,7 @@ class Details extends React.Component {
                     </div>
                     <div className="flex-item w30p vflex w300min">
                         <div className="flex-item">
-                            <h2>{this.props.product.name}</h2>
+                            <h2 className="wrap">{this.props.product.name}</h2>
                             <Rating rating={this.props.product.rating_number}/>
                         </div>
                         <div className="vscroll flex-item h300max">

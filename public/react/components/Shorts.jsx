@@ -18,13 +18,13 @@ class Shorts extends React.Component {
     render() {
         const hasProducts = !!this.props.products && this.props.products.length > 0;
         return (
-            <div className={`h400 ${!!this.props.railml ? "railml" : "rail"}`}>
+            <div className={`h400max flex left ${!!this.props.railml ? "railml" : "rail"}`}>
                 {hasProducts ?
                     this.props.products.map(product => (!this.props.recommended_for || this.props.recommended_for != product.pid) ?
-                        <ProductShort product={product}
+                        <div className="flex-item"><ProductShort product={product}
                                       functions={{
                                           ...this.props.functions,
-                                      }}/>
+                                      }}/></div>
                         : '')
                     :
                     ''}

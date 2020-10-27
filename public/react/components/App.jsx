@@ -312,17 +312,12 @@ class App extends React.Component {
                     <div>
                         <Nav incart={this.state.cart.total} functions={this.functions}/>
                         <div className="container-fluid margin20">
-                            <div className="row">
-                                <div className="col-md-12">
-                                    <Details product={this.state.product} functions={this.functions}/>
-                                    <hr/>
-                                    <h2><u>Similar items</u></h2>
-                                    <Shorts functions={this.functions}
-                                            products={this.state.products}
-                                            recommended_for={!!this.state.product ? this.state.product.pid : undefined}
-                                    />
-                                </div>
-                            </div>
+                            <Details product={this.state.product} functions={this.functions}/>
+                            <h3>Similar items</h3>
+                            <Shorts functions={this.functions}
+                                    products={this.state.products}
+                                    recommended_for={!!this.state.product ? this.state.product.pid : undefined}
+                            />
                         </div>
                     </div>
                 )

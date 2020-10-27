@@ -3,6 +3,14 @@
     color: #555555
 }
 
+.pointer {
+    cursor: pointer;
+}
+
+.wrap {
+    white-space: pre-wrap;
+}
+
 .error-label {
     color: red;
     font-size: small;
@@ -77,15 +85,15 @@ img.image-preview {
 
 .vflex {
     display: flex;
-    justify-content: stretch;
+    justify-content: flex-start;
     flex-direction: column;
 }
 
 .flex-item {
     flex: initial;
     flex-basis: auto;
-    padding: 10px;
-    margin: 5px;
+    padding: 2px;
+    margin: 2px;
     flex-grow: 1;
 }
 
@@ -140,8 +148,8 @@ legend {
 
 .left {
     float: left;
-    justify-content: left;
     text-align: left;
+    justify-content: flex-start;
 }
 
 .right {

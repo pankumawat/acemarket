@@ -40,7 +40,7 @@ class Details extends React.Component {
             {[this.props.product.img, ...this.props.product.imgs].map((img, key) => (
                 <img src={`/api/i/${img}`} className="img-small flex-item" key={key}
                      alt="Product Image"
-                     style={(this.state.currentImg == img) ? {border: "5px solid orange"} : {}}
+                     style={(this.state.currentImg == img) ? {"box-shadow": "10px 5px 10px grey"} : {}}
                      key={key} onClick={this.setCurrentImg}/>))
             }
         </div>
@@ -73,9 +73,10 @@ class Details extends React.Component {
                                     <span className="badge badge-dark margin6 fs15">{key}</span>
                                 ))}
                             </div>
-                                <button type='button' className="w100min flex-item btn btn-success h40max h40min" onClick={this.addToBasket}>
-                                    Add <i className="fa fa-shopping-cart"></i>
-                                </button>
+                            <button type='button' className="w100min flex-item btn btn-success h40max h40min"
+                                    onClick={this.addToBasket}>
+                                Add <i className="fa fa-shopping-cart"></i>
+                            </button>
                         </div>
                     </div>
 

@@ -27,35 +27,24 @@ div.image-preview {
 }
 
 img.image-preview {
-    border-radius: 10%;
+    border-radius: 2%;
     margin: 5px;
 }
 
 .img-large {
-    border-radius: 5%;
     max-height: 400px;
     min-height: 100px;
-    height: 100%;
     max-width: 400px;
     min-width: 100px;
     height: 100%;
-}
-
-.img-medium {
-    border-radius: 5%;
-    max-height: 100px;
-    max-width: 100px;
-    min-height: 100px;
-    height: 100%;
-    weight: 100%;
+    box-shadow: 15px 15px 10px grey
 }
 
 .img-small {
     margin-bottom: 5px;
-    border-radius: 10%;
     max-height: 100px;
-    height: 100%;
     max-width: 100px;
+    height: 100%;
     width: 100%;
 }
 
@@ -298,6 +287,10 @@ form.shortener {
 
 .red {
     color: red;
+}
+
+.grey-dark {
+    color: #555555;
 }
 
 .green {

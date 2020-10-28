@@ -1,4 +1,4 @@
-class Shorts extends React.Component {
+class Rail extends React.Component {
     // railml ? class railml
     constructor(props) {
         super(props);
@@ -7,10 +7,10 @@ class Shorts extends React.Component {
     render() {
         const hasProducts = !!this.props.products && this.props.products.length > 0;
         return (
-            <div className={`h400max left w100p ${!!this.props.railml ? "flex-multiline" : "flex"}`}>
+            <div className={`rail w90p scroll same-line`}>
                 {hasProducts ?
                     this.props.products.map(product => (!this.props.recommended_for || this.props.recommended_for != product.pid) ?
-                        <div className="flex-item margin6">
+                        <div className="rail-item">
                             <ProductShort product={product}
                                           functions={{
                                               ...this.props.functions,

@@ -2,6 +2,14 @@
     min-height: 25px;
 }
 
+.h30min {
+    min-height: 30px;
+}
+
+.h40min {
+    min-height: 40px;
+}
+
 .h50min {
     min-height: 50px;
 }
@@ -185,6 +193,15 @@
 .h25max {
     max-height: 25px;
 }
+
+.h30max {
+    max-height: 30px;
+}
+
+.h40max {
+    max-height: 40px;
+}
+
 
 .h50max {
     max-height: 50px;
@@ -674,6 +691,10 @@
     font-size: 36px;
 }
 
+.margin-auto {
+    margin: auto;
+}
+
 .margin6 {
     margin: 6px;
 }
@@ -976,4 +997,60 @@
 
 .w100p {
     width: 100%;
+}
+
+.h5p {
+    height: 5%;
+}
+
+.h10p {
+    height: 10%;
+}
+
+.h20p {
+    height: 20%;
+}
+
+.h25p {
+    height: 25%;
+}
+
+.h30p {
+    height: 30%;
+}
+
+.h33p {
+    height: 33.3%
+}
+
+.h40p {
+    height: 60%;
+}
+
+.h50p {
+    height: 50%;
+}
+
+.h60p {
+    height: 60%;
+}
+
+.h70p {
+    height: 70%;
+}
+
+.h75p {
+    height: 75%;
+}
+
+.h80p {
+    height: 80%;
+}
+
+.h90p {
+    height: 90%;
+}
+
+.h100p {
+    height: 100%;
 }

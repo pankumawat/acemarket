@@ -288,7 +288,7 @@ class App extends React.Component {
                 return (
                     <div>
                         <Nav incart={this.state.cart.total} functions={this.functions}/>
-                        <Shorts railml={true} functions={this.functions}
+                        <Rail railml={true} functions={this.functions}
                                 products={(!!this.state.products && this.state.products.length > 0) ? [...this.state.products] : []}/>
                     </div>
                 )
@@ -307,8 +307,7 @@ class App extends React.Component {
                         <Nav incart={this.state.cart.total} functions={this.functions}/>
                         <div className="container-fluid margin20">
                             <Details product={this.state.product} functions={this.functions}/>
-                            <h3>Similar items</h3>
-                            <Shorts functions={this.functions}
+                            <Rail functions={this.functions}
                                     products={this.state.products}
                                     railml={false}
                                     recommended_for={!!this.state.product ? this.state.product.pid : undefined}
@@ -324,7 +323,7 @@ class App extends React.Component {
                 return (
                     <div>
                         <Nav incart={this.state.cart.total} functions={this.functions}/>
-                        <Shorts railml={true} functions={this.functions}
+                        <Rail railml={true} functions={this.functions}
                                 products={!!this.state.products ? [...this.state.products] : []}/>
                     </div>
                 );
@@ -332,5 +331,5 @@ class App extends React.Component {
         }
     }
 
-    render = this.getMainRenderBody;
+    render = () => (<div className="margin-auto">{this.getMainRenderBody()}</div>)
 }

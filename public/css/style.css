@@ -7,6 +7,12 @@
     cursor: pointer;
 }
 
+.ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .wrap {
     white-space: pre-wrap;
 }
@@ -37,8 +43,8 @@ img.image-preview {
 
 .img-medium {
     border-radius: 5%;
-    max-height: 150px;
-    max-width: 130px;
+    max-height: 100px;
+    max-width: 100px;
     min-height: 100px;
     height: 100%;
     weight: 100%;
@@ -90,7 +96,7 @@ img.image-preview {
 
 .vflex {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     flex-direction: column;
 }
 
@@ -297,24 +303,53 @@ form.shortener {
 .green {
     color: green;
 }
-
 .short {
-    border-radius: 10px;
     display: inline-block;
-    border-bottom-style: dotted;
-    border-bottom-width: 1px;
 }
 
 .rail {
+    background-color: #ffff;
     overflow: scroll;
     overflow-x: scroll;
     white-space: nowrap;
 }
 
-.railml {
+.rail-item {
+    position: relative;
+    margin: 20px;
+    border-style: none;
     overflow: scroll;
     overflow-x: scroll;
-    overflow-y: scroll;
+    display: inline-block;
+    white-space: nowrap;
+    align-items: center;
+    justify-content: center;
+}
+
+.rail-image {
+    position: absolute;;
+    top: 0px;
+    max-height: 150px;
+    max-width: 200px;
+}
+
+.rail-item-name {
+    position: absolute;
+    top: 200px;
+    font-weight: bold;
+    max-width: 250px;
+    white-space: nowrap;
+}
+
+.rail-item-key {
+    position: absolute;
+    top: 230px;
+}
+
+.rail-item-footer {
+    position: absolute;
+    top: 270px;
+    max-height: 10px;
 }
 
 .inline {

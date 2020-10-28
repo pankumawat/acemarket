@@ -49,7 +49,7 @@ class Details extends React.Component {
     render = () => {
         if (!!this.props.product)
             return (
-                <div className="flex h500 h300min h500max">
+                <div className="flex h450min h450max">
                     {this.getImagesPanel()}
                     <div className="flex-item w20p vflex w300min">
                         <img src={`/api/i/${this.state.currentImg}`} className="img-large flex-item"
@@ -60,8 +60,8 @@ class Details extends React.Component {
                         </div>
                     </div>
                     <div className="flex-item w30p vflex w300min">
-                        <div className="flex-item">
-                            <h2 className="wrap">{this.props.product.name}</h2>
+                        <div className="flex-item h50max">
+                            <h3 className="wrap">{this.props.product.name}</h3>
                             <Rating rating={this.props.product.rating_number}/>
                         </div>
                         <div className="vscroll flex-item h300max">
@@ -73,11 +73,9 @@ class Details extends React.Component {
                                     <span className="badge badge-dark margin6 fs15">{key}</span>
                                 ))}
                             </div>
-                            <button type='button' className="w30p w150min flex-item btn btn-success h50max"
-                                    onClick={this.addToBasket}>
-                                Add to basket
-                            </button>
-
+                                <button type='button' className="w100min flex-item btn btn-success h40max h40min" onClick={this.addToBasket}>
+                                    Add <i className="fa fa-shopping-cart"></i>
+                                </button>
                         </div>
                     </div>
 

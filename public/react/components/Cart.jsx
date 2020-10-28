@@ -125,9 +125,9 @@ class Cart extends React.Component {
                                                                         product.cart_quantity > 1 ?
                                                                             <a href="#" role="minus" data_pid={product.pid}
                                                                                onClick={this.quantityUpdate}><i
-                                                                                className="far fa-minus-square"/></a>
+                                                                                className="fa fa-minus-square"/></a>
                                                                             :
-                                                                            <i className="far fa-minus-square grey"/>
+                                                                            <i className="fa fa-minus-square grey"/>
                                                                     }
                                                                     </div>
                                                                     <div className="col-md-2">
@@ -136,7 +136,7 @@ class Cart extends React.Component {
                                                                     <div className="col-md-2">
                                                                         <a href="#" role="plus" data_pid={product.pid}
                                                                            onClick={this.quantityUpdate}><i
-                                                                            className="far fa-plus-square"/></a>
+                                                                            className="fa fa-plus-square"/></a>
                                                                     </div>
                                                                     <div className="col-md-6" data-toggle="tooltip"
                                                                          data-placement="top"
@@ -147,7 +147,7 @@ class Cart extends React.Component {
                                                                     </div>
                                                                 </div>
                                                             </td>
-                                                            <td className="fs25 w25p">
+                                                            <td className="fs20 w25p">
                                                                 {
                                                                     !!product.cart_total_price && product.cart_total_price > 0
                                                                         ?

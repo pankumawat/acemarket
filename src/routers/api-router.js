@@ -16,7 +16,7 @@ apiRoute.get('/p/:pid', (req, res) => {
             res.json(core.getSuccessResponse(item));
         }, (err) => res.json(core.getErrorResponse(err)));
     } catch (err) {
-        res.status(500).end(err)
+        res.status(500).send(err.stack)
     }
 });
 
@@ -32,7 +32,7 @@ apiRoute.get('/ps/:pids', (req, res) => {
             res.json(core.getSuccessResponse(_items));
         }, (err) => res.json(core.getErrorResponse(err)));
     } catch (err) {
-        res.status(500).end(err)
+        res.status(500).send(err.stack)
     }
 });
 
@@ -75,7 +75,7 @@ apiRoute.get('/data/cart', (req, res) => {
             }, (err) => res.json(core.getErrorResponse(err)));
         }
     } catch (err) {
-        res.status(500).end(err)
+        res.status(500).send(err.stack)
     }
 })
 
@@ -100,7 +100,8 @@ apiRoute.get('/search', (req, res) => {
             res.json(core.getSuccessResponse(_data));
         }, (err) => res.json(core.getErrorResponse(err)), queryObj);
     } catch (err) {
-        res.status(500).end(err)
+        console.log(err.stack);
+        res.status(500).send(err.stack)
     }
 });
 

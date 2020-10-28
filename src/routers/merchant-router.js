@@ -113,7 +113,7 @@ merchantRouter.post('/register/product', core.authCheck, upload.fields([{name: '
             return res.json(getErrorResponse(error));
         }
     } catch (err) {
-        res.status(500).end(err)
+        res.status(500).send(err.stack)
     }
 });
 
@@ -133,7 +133,7 @@ merchantRouter.post('/login/status', (req, res) => {
             return res.status(400).json(getErrorResponse("access_token and username are required params."));
         }
     } catch (err) {
-        res.status(500).end(err)
+        res.status(500).send(err.stack)
     }
 });
 
@@ -183,7 +183,7 @@ merchantRouter.post('/login', (req, res) => {
             return res.status(400).json({user: username, pass: password});
         }
     } catch (err) {
-        res.status(500).end(err)
+        res.status(500).send(err.stack)
     }
 });
 
@@ -192,7 +192,7 @@ merchantRouter.get('/:mid', (req, res) => {
         const mid = req.params['mid'];
         db.getMerchant(mid, (data) => res.json(core.getSuccessResponse(data)), (err) => res.json(core.getErrorResponse(err)));
     } catch (err) {
-        res.status(500).end(err)
+        res.status(500).send(err.stack)
     }
 });
 
@@ -203,7 +203,7 @@ merchantRouter.get('/multi/:mids', (req, res) => {
         db.getMerchantsMulti(mids.split('_'), (items) => res.json(core.getSuccessResponse(items))
             , (err) => res.json(core.getErrorResponse(err)));
     } catch (err) {
-        res.status(500).end(err)
+        res.status(500).send(err.stack)
     }
 });
 
@@ -218,7 +218,7 @@ merchantRouter.get('/:mid/ps', (req, res) => {
             res.json(core.getSuccessResponse(_data));
         }, (err) => res.json(core.getErrorResponse(err)));
     } catch (err) {
-        res.status(500).end(err)
+        res.status(500).send(err.stack)
     }
 });
 

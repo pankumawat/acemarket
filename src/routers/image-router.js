@@ -20,7 +20,7 @@ imageRoute.get('/:filename', function (req, res, next) {
             }
         );
     } catch (err) {
-        res.status(500).end(err)
+        res.status(500).send(err.stack)
     }
 });
 
@@ -31,7 +31,7 @@ imageRoute.delete('/:filename', function (req, res, next) {
             res.json(obj);
         })
     } catch (err) {
-        res.status(500).end(err)
+        res.status(500).send(err.stack)
     }
 });
 

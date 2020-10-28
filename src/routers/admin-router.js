@@ -28,7 +28,7 @@ adminRouter.get('/health', (req, res) => {
             res.status(200).json(data);
         })
     } catch (err) {
-        res.status(500).end(err)
+        res.status(500).send(err.stack)
     }
 });
 
@@ -68,7 +68,7 @@ adminRouter.post('/login', (req, res) => {
             }
         }
     } catch (err) {
-        res.status(500).end(err)
+        res.status(500).send(err.stack)
     }
 });
 
@@ -134,7 +134,7 @@ adminRouter.post('/register/merchant', upload.single("logo_img"), async (req, re
             })
         }
     } catch (err) {
-        res.status(500).end(err)
+        res.status(500).send(err.stack)
     }
 });
 
@@ -161,7 +161,7 @@ adminRouter.get('/email', (req, res) => {
             res.json(getErrorResponse("[auth] failure. Error: Unauthorized. Code-DD#AY"));
         }
     } catch (err) {
-        res.status(500).end(err)
+        res.status(500).send(err.stack)
     }
 });
 

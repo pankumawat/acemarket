@@ -278,58 +278,44 @@ form.shortener {
     }
 }
 
-.w5p {
-    width: 5%;
+.orange {
+    color: orange;
 }
 
-.w10p {
-    width: 10%;
+.grey {
+    color: grey;
 }
 
-.w20p {
-    width: 20%;
+.white {
+    color: white;
 }
 
-.w25p {
-    width: 25%;
+.red {
+    color: red;
 }
 
-.w30p {
-    width: 30%;
+.green {
+    color: green;
 }
 
-.w33p {
-    width: 33.3%
+.short {
+    border-radius: 20px;
+    display: inline-block;
+    box-shadow: 6px 6px 10px rgba(50, 50, 50, 0.75);
 }
 
-.w40p {
-    width: 60%;
+.rail {
+    overflow: scroll;
+    overflow-x: scroll;
+    white-space: nowrap;
 }
 
-.w50p {
-    width: 50%;
+.railml {
+    overflow: scroll;
+    overflow-x: scroll;
+    overflow-y: scroll;
 }
 
-.w60p {
-    width: 60%;
-}
-
-.w70p {
-    width: 70%;
-}
-
-.w75p {
-    width: 75%;
-}
-
-.w80p {
-    width: 80%;
-}
-
-.w90p {
-    width: 90%;
-}
-
-.w100p {
-    width: 100%;
+.inline {
+    display: inline-block;
 }

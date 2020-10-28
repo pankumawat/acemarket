@@ -299,9 +299,10 @@ form.shortener {
 }
 
 .short {
-    border-radius: 20px;
+    border-radius: 10px;
     display: inline-block;
-    box-shadow: 6px 6px 10px rgba(50, 50, 50, 0.75);
+    border-bottom-style: dotted;
+    border-bottom-width: 1px;
 }
 
 .rail {

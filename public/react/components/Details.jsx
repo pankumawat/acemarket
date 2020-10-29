@@ -60,10 +60,10 @@ class Details extends React.Component {
                         </div>
                     </div>
                     <div className="flex-item w30p vflex w300min">
-                        <div className="flex-item h50max">
-                            <h3 className="wrap">{this.props.product.name}</h3>
-                            <Rating rating={this.props.product.rating_number}/>
+                        <div className="flex-item vscroll h50min h100max">
+                            <h4 className="wrap">{this.props.product.name} {this.props.product.name} {this.props.product.name}</h4>
                         </div>
+                        <Rating rating={this.props.product.rating_number}/>
                         <div className="vscroll flex-item h300max">
                             {this.props.product.description}
                         </div>

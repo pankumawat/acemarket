@@ -16,6 +16,11 @@ showSuccess = (message, timeout) => {
     showSnackbar(true, message, timeout)
 }
 
+ellipsis = (inputStr, len) => {
+    const _len = (!len || (typeof len !== 'number') || len < 1) ? 10 : len;
+    return `${inputStr.substring(0, _len)}${inputStr.length > _len ? '...' : ''}`;
+}
+
 silentUrlChangeTo = (url) => {
     window.history.pushState({}, null, url);
 }

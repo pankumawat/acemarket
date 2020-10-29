@@ -19,18 +19,14 @@ class ProductShort extends React.Component {
                              alt="Product Image"/>
                     </div>
                     <div className="flex-item rail-item-name">
-                        <h6 className="ellipsis">{this.props.product.name}</h6>
-                        <Rating rating={this.props.product.rating_number}/>
+                        <h5 className="wrap">{ellipsis(this.props.product.name, 50)}</h5>
+                        <Rating rating={4 || this.props.product.rating_number}/>
                     </div>
                 </div>
-                <div className="flex-item w300max wrap scroll h100max rail-item-key">
-                    {this.props.product.keys.splice(0,3).map(key => (
-                        <span className="badge badge-dark margin6 fs15">{key}</span>
-                    ))}
-                </div>
-                <div className="flex-item flex rail-item-footer">
-                    <div className="flex-item">
-                        <Price price={this.props.product.price}
+                <div className="rail-item-footer flex-between">
+                    <div className="flex-item center">
+                        <Price shortPrice="true"
+                               price={this.props.product.price}
                                price_without_discount={this.props.product.price_without_discount}/>
                     </div>
                     <div className="flex-item float-right">

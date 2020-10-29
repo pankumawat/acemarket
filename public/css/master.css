@@ -14,6 +14,14 @@
     min-height: 50px;
 }
 
+.h50min {
+    min-height: 80px;
+}
+
+.h80min {
+    min-height: 80px;
+}
+
 .h100min {
     min-height: 100px;
 }
@@ -205,6 +213,10 @@
 
 .h50max {
     max-height: 50px;
+}
+
+.h80max {
+    max-height: 80px;
 }
 
 .h100max {

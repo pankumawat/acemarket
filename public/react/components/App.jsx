@@ -200,7 +200,6 @@ class App extends React.Component {
                             this.state = {...this.state, products: []};
                             makeGetCall(`/api/search/?search_strings=${qs}`, (response) => {
                                 let products = [...response.data];
-                                console.log(`products ${JSON.stringify(products, undefined, 2)}`)
                                 if (products.length < 10) {
                                     makeGetCall(`/api/search/?limit=10`, (responseAttempt2) => {
                                         const alreadyInList = [];

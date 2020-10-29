@@ -194,15 +194,6 @@ window.onerror = function (msg, path, line) {
         url: getUrlPath(),
         line,
     }, undefined, 4))
-
-    const url = (!!path && path.length > 0) ? path : "/home";
-    if (getUrlPath(window.location.href) !== VALID_PATHS.HOME) {
-        showError(`Something went wrong ${msg}`, 3000);
-        //setTimeout(() => window.location.href = VALID_PATHS.HOME, 3000);
-    } else {
-        showError(`Something went wrong ${msg}`, 3000);
-        //setTimeout(() => window.location.href = VALID_PATHS.ERROR, 3000);
-    }
 }
 
 $(function () {

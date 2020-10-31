@@ -12,6 +12,7 @@
 db.products.createIndex( { id: -1}, {unique:true} )
 db.merchant.createIndex( { mid: -1}, {unique:true} )
 
+Separate section for Services.
 
 DELETE files incase of api failure..
 

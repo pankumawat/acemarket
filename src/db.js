@@ -7,8 +7,9 @@ let db;
 let gridFSBucket;
 
 const COLLECTIONS = {
-    MERCHANT: "merchant",
+    MERCHANTS: "merchants",
     PRODUCTS: "products",
+    SERVICES: "services",
     ADMIN: "admins",
 }
 
@@ -138,11 +139,11 @@ exports.getRating = (ratingObj) => {
 }
 
 exports.getMerchant = (mid, success, failure) => {
-    const _mid = /^\d+$/.test(mid.trim()) ? Number.parseInt(mid) : undefined;
+    const _mid = typeof mid === 'number' ? mid : /^\d+$/.test(mid.trim()) ? Number.parseInt(mid) : undefined;
     if (_mid === undefined)
         failure(Errors.INVALID_PARAM_MID);
     else
-        query(COLLECTIONS.MERCHANT, {mid: _mid}, (item) => {
+        query(COLLECTIONS.MERCHANTS, {mid: _mid}, (item) => {
             if (item)
                 delete item["password"];
             success(item)
@@ -153,11 +154,11 @@ exports.getMerchantForLogin = (username, success, failure) => {
     if (username === undefined)
         failure(Errors.INVALID_PARAM_USERNAME);
     else
-        query(COLLECTIONS.MERCHANT, {username: username}, success, failure);
+        query(COLLECTIONS.MERCHANTS, {username: username}, success, failure);
 }
 
 exports.getMerchantProducts = (mid, success, failure) => {
-    const _mid = /^\d+$/.test(mid.trim()) ? Number.parseInt(mid) : undefined;
+    const _mid = typeof mid === 'number' ? mid : /^\d+$/.test(mid.trim()) ? Number.parseInt(mid) : undefined;
     if (_mid === undefined)
         failure(Errors.INVALID_PARAM_MID);
     else
@@ -165,7 +166,7 @@ exports.getMerchantProducts = (mid, success, failure) => {
 }
 
 exports.getProduct = (id, success, failure) => {
-    const _id = /^\d+$/.test(id.trim()) ? Number.parseInt(id) : undefined;
+    const _id = typeof id === 'number' ? id : /^\d+$/.test(id.trim()) ? Number.parseInt(id) : undefined;
     if (_id === undefined)
         failure(Errors.INVALID_PARAM_ID);
     else
@@ -193,7 +194,7 @@ exports.getMerchantsMulti = (IdArr, success, failure) => {
         if (!intArr || intArr.length === 0) {
             failure(Errors.INVALID_PARAM_MIDS);
         } else {
-            query(COLLECTIONS.MERCHANT, {mid: {$in: intArr}},
+            query(COLLECTIONS.MERCHANTS, {mid: {$in: intArr}},
                 (items) => {
                     let _items = [...items];
                     if (!!_items && _items.length > 0)
@@ -295,7 +296,7 @@ exports.getProducts = (success, failure, queryObj) => {
 }
 
 exports.insertMerchant = async (merchant, success, failure) => {
-    const collection = db.collection(COLLECTIONS.MERCHANT);
+    const collection = db.collection(COLLECTIONS.MERCHANTS);
 
     if (!!(await collection.findOne({username: merchant.username}))) {
         return failure(`Merchant already exists with username: ${merchant.username}`);
@@ -319,7 +320,7 @@ exports.insertMerchant = async (merchant, success, failure) => {
 }
 
 exports.updateMerchant = async (merchant, success, failure) => {
-    const collection = db.collection(COLLECTIONS.MERCHANT);
+    const collection = db.collection(COLLECTIONS.MERCHANTS);
     const existingMerchant = await collection.findOne({_id: merchant.mid});
     if (!existingMerchant) {
         return failure(`Merchant does not exists: ${merchant.username}`);
@@ -329,7 +330,6 @@ exports.updateMerchant = async (merchant, success, failure) => {
                 console.log(err.message);
                 return failure(err.message);
             } else return success(merchant);
-
         })
     }
 }
@@ -360,7 +360,7 @@ exports.updateProduct = async (product, success, failure) => {
     if (!existingProduct) {
         return failure(`Product does not exists: ${product.pid}`);
     } else {
-        await collection.updateOne({_id: existingProduct._id}, {$set: {...product}}, async (err, result) => {
+        await collection.updateOne({_id: existingProduct.pid}, {$set: {...product}}, async (err, result) => {
             if (err) {
                 console.log(err.message);
                 return failure(err.message);

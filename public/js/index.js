@@ -128,7 +128,7 @@ const addToGETCache = (url, data) => {
 
 setInterval(() => {
     Object.keys(GETcache).forEach(url => {
-        if ((Date.now() - GETcache[url].ts) >= 10000) {
+        if ((Date.now() - GETcache[url].ts) >= 100) {
             delete GETcache[url];
         }
     })

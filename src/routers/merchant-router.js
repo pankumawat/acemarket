@@ -14,108 +14,185 @@ const multer = require('multer');
 const mediaUtils = require('../utils/mediaUtils');
 const upload = multer({storage: multer.memoryStorage()})
 
-// const cpUpload = upload.fields([{ name: 'avatar', maxCount: 1 }, { name: 'gallery', maxCount: 8 }])
-// req.files is an object (String -> Array) where fieldname is the key, and the value is array of files
-merchantRouter.post('/register/product', core.authCheck, upload.fields([{name: 'img', maxCount: 1}, {
-    name: 'imgs',
-    maxCount: 15
-}]), async (req, res) => {
-    try {// Sanitize input
-        if (req.user.username !== req.headers.authorization.split(' ')[0]) {
-            return res.status(403).json(this.getErrorResponse("Unauthorized."))
-        }
-        const mandatoryKeys = ["name", "description", "keys"];
-        const missingParams = [];
-        for (let i = 0; i < mandatoryKeys.length; i++) {
-            const key = mandatoryKeys[i];
-            if (!req.body[key] || req.body[key].length === 0) {
-                missingParams.push(key);
+merchantRouter.post('/product',
+    core.authCheck,
+    upload.fields([
+            {
+                name: 'img', maxCount: 1
+            }, {
+                name: 'imgs',
+                maxCount: 15
             }
-        }
+        ]
+    ), async (req, res) => {
+        try {
+            const pid = (!!req.body.pid && String(Number(req.body.pid)) === req.body.pid) ? Number.parseInt(req.body.pid) : undefined;
+            const isNew = !pid;
 
-        if (missingParams.length > 0) {
-            return res.json(getErrorResponse(`Missing mandatory params: ${missingParams}`));
-        }
-
-        const keys = req.body.keys.replace(/\s/g, '').toLowerCase().split(",").filter(item => item.length > 0);
-        if (keys.length === 0) {
-            return res.json(getErrorResponse("Keys cannot be empty. This helps in searching."));
-        }
-
-        const properties_name = typeof req.body.properties_name === 'string' ? [req.body.properties_name] : req.body.properties_name;
-        const properties_value = typeof req.body.properties_value === 'string' ? [req.body.properties_value] : req.body.properties_value;
-        const properties = {};
-        for (let i = 0; i < properties_name.length; i++) {
-            const key = properties_name[i].trim();
-            const value = properties_value[i].trim();
-            if (key.length > 0 && value.length > 0) {
-                properties[key] = value;
+            // Sanitize input
+            if (req.user.username !== req.headers.authorization.split(' ')[0]) {
+                return res.status(403).json(this.getErrorResponse("Unauthorized."))
             }
-        }
-        const body = {
-            name: req.body.name.trim(),
-            description: req.body.description.trim(),
-            keys: keys,
-            price: (!!req.body.price ? Number.parseInt(req.body.price) : -1),
-            price_without_discount: (!!req.body.price_without_discount ? Number.parseInt(req.body.price_without_discount) : -1),
-            mid: req.user.mid,
-            img: undefined,
-            properties,
-            imgs: [],
-            addedDt: Date.now(),
-            modifiedDt: Date.now(),
-            rating: {
-                "1": 0,
-                "2": 0,
-                "3": 0,
-                "4": 0
-            },
-            sold_units: 0
-        }
-        const filesToBeDeleted = [];
-        await mediaUtils.resizeAndUploadImage(req.files["img"][0], async (info) => {
-            body.img = info.filename;
-            filesToBeDeleted.push(info.filename);
-
-            if (!!req.files["imgs"]) {
-                for (let i = 0; i < req.files["imgs"].length; i++) {
-                    await mediaUtils.resizeAndUploadImage(req.files["imgs"][i], (info) => {
-                        body.imgs.push(info.filename);
-                        filesToBeDeleted.push(info.filename);
-                        if (i === (req.files["imgs"].length - 1)) {
-                            uploaded();
-                        }
-                    }, (err) => {
-                        if (i === (req.files["imgs"].length - 1)) {
-                            uploaded();
-                        }
-                    })
+            if (isNew) {
+                const mandatoryKeys = ["name", "description", "keys"];
+                const missingParams = [];
+                for (let i = 0; i < mandatoryKeys.length; i++) {
+                    const key = mandatoryKeys[i];
+                    if (!req.body[key] || req.body[key].length === 0) {
+                        missingParams.push(key);
+                    }
                 }
-            } else {
-                uploaded();
+
+                if (missingParams.length > 0) {
+                    return res.json(getErrorResponse(`Missing mandatory params: ${missingParams}`));
+                }
             }
-        }, (err) => {
-            return abort(err);
-        })
 
-        const uploaded = () => {
-            db.insertProduct(body, (merchant) => {
-                return res.json(getSuccessResponse(merchant));
-            }, (err) => {
-                return abort(err);
-            })
-        }
+            const keys = req.body.keys.replace(/\s/g, '').toLowerCase().split(",").filter(item => item.length > 0);
+            if (keys.length === 0) {
+                if (isNew)
+                    return res.json(getErrorResponse("Keys cannot be empty. This helps in searching."));
+            }
 
-        const abort = (error) => {
-            db.deleteFiles(filesToBeDeleted, (done) => {
-                console.log(`Failed so deleting files. ${JSON.stringify(filesToBeDeleted)}`)
-            })
-            return res.json(getErrorResponse(error));
+            const properties_name = typeof req.body.properties_name === 'string' ? [req.body.properties_name] : req.body.properties_name;
+            const properties_value = typeof req.body.properties_value === 'string' ? [req.body.properties_value] : req.body.properties_value;
+            const properties = {};
+            for (let i = 0; i < properties_name.length; i++) {
+                const key = properties_name[i].trim();
+                const value = properties_value[i].trim();
+                if (key.length > 0 && value.length > 0) {
+                    properties[key] = value;
+                }
+            }
+
+            const getFilteredVal = (val) => {
+                if (!!val) {
+                    switch (typeof val) {
+                        case "string":
+                            return val.trim().length > 0 ? val.trim() : undefined;
+                        case "number":
+                            return val;
+                        case "object": {
+                            if (Array.isArray(val) && val.length > 0)
+                                return val;
+                            else if (val.size > 0)
+                                return val;
+                            else
+                                return undefined;
+                        }
+                        default:
+                            return undefined;
+                    }
+                } else {
+                    return undefined;
+                }
+            }
+
+            const body = {
+                pid: pid,
+                name: getFilteredVal(req.body.name),
+                description: getFilteredVal(req.body.description),
+                keys: getFilteredVal(keys),
+                price: ((!!req.body.price && req.body.price > 0) ? Number.parseInt(req.body.price) : 0),
+                price_without_discount: ((!!req.body.price && !!req.body.price_without_discount && req.body.price_without_discount > req.body.price) ? Number.parseInt(req.body.price_without_discount) : 0),
+                mid: req.user.mid,
+                img: undefined,
+                properties: getFilteredVal(properties),
+                imgs: undefined,
+                addedDt: isNew ? Date.now() : undefined,
+                modifiedDt: Date.now(),
+                rating: isNew ? {
+                    "1": 0,
+                    "2": 0,
+                    "3": 0,
+                    "4": 0
+                } : undefined,
+                sold_units: isNew ? 0 : undefined
+            }
+
+            const uploadOtherImages = async () => {
+                if (!!req.files["imgs"]) {
+                    body.imgs = [];
+                    for (let i = 0; i < req.files["imgs"].length; i++) {
+                        await mediaUtils.resizeAndUploadImage(req.files["imgs"][i], (info) => {
+                            body.imgs.push(info.filename);
+                            filesToBeDeleted.push(info.filename);
+                            if (i === (req.files["imgs"].length - 1)) {
+                                uploaded();
+                            }
+                        }, (err) => {
+                            if (i === (req.files["imgs"].length - 1)) {
+                                uploaded();
+                            }
+                        })
+                    }
+                } else {
+                    uploaded();
+                }
+            }
+
+            const uploaded = () => {
+                if (isNew)
+                    db.insertProduct(body, (product) => {
+                        return res.json(getSuccessResponse(product));
+                    }, (err) => {
+                        return abort(err);
+                    })
+                else {
+                    Object.keys(body).forEach(key => {
+                        if (body[key] === undefined)
+                            delete body[key];
+                    })
+                    if (!!body.img || !!body.imgs) {
+                        db.getProduct(pid, (existingBody) => {
+                            if (!!body.img) {
+                                filesToBeDeleted.push(existingBody.img);
+                            }
+                            if (!!body.imgs && body.imgs.length > 0) {
+                                filesToBeDeleted.push(...existingBody.imgs);
+                            }
+                            updateExistingProduct();
+                        }, (err) => {
+                            return abort(err);
+                        })
+                    } else {
+                        updateExistingProduct();
+                    }
+                }
+            }
+
+            const updateExistingProduct = () => {
+                db.updateProduct(body, (product) => {
+                    return res.json(getSuccessResponse(product));
+                }, (err) => {
+                    console.log(`Failed so deleting files. ${JSON.stringify(filesToBeDeleted)}`)
+                    return res.json(getErrorResponse(error));
+                })
+            }
+
+            const abort = (error) => {
+                db.deleteFiles(filesToBeDeleted, (done) => {
+                    console.log(`Failed so deleting files. ${JSON.stringify(filesToBeDeleted)}`)
+                })
+                return res.json(getErrorResponse(error));
+            }
+
+            const filesToBeDeleted = [];
+            if (isNew || (!!req.files["img"] && req.files["img"].length > 0)) {
+                await mediaUtils.resizeAndUploadImage(req.files["img"][0], async (info) => {
+                    body.img = info.filename;
+                    filesToBeDeleted.push(info.filename);
+                    await uploadOtherImages();
+                }, (err) => {
+                    return abort(err);
+                })
+            } else {
+                await uploadOtherImages();
+            }
+        } catch (err) {
+            res.status(500).send(err.stack)
         }
-    } catch (err) {
-        res.status(500).send(err.stack)
-    }
-});
+    });
 
 merchantRouter.post('/login/status', (req, res) => {
     try {

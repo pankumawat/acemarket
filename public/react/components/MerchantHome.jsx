@@ -1,5 +1,5 @@
 class MerchantHome extends React.Component {
     render() {
-        return <ProductForm fuctions={this.props.function}/>
+        return <ProductForm pid="1000" fuctions={this.props.function}/>
     }
 }

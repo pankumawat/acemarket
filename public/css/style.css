@@ -22,10 +22,6 @@
     font-size: small;
 }
 
-div.image-preview {
-    display: none;
-}
-
 img.image-preview {
     border-radius: 2%;
     margin: 5px;

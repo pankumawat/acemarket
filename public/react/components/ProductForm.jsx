@@ -10,28 +10,32 @@ class ProductForm extends React.Component {
         this.propertiesDivs = this.propertiesDivs.bind(this);
         this.getDefaultValue = this.getDefaultValue.bind(this);
         this.getProduct = this.getProduct.bind(this);
-        if (!this.state.product)
-            this.getProduct(this.props.pid);
+        if (!!getQueries().pid)
+            this.getProduct(getQueries().pid);
     }
 
     getProduct = (pid) => {
         makeGetCall(`/api/p/${pid}`, (response) => {
             if (response.success) {
                 const product = response.data;
-                const state = {
-                    editMode: true,
-                    product,
-                    properties: [...Object.keys(product.properties).map(
-                        (key) => {
-                            return {
-                                key,
-                                value: product.properties[key]
+                const loggedInUser = getLoggedInUser();
+                console.dir(loggedInUser);
+                if (!!loggedInUser && !!loggedInUser.user && !!loggedInUser.user.mid && (loggedInUser.user.mid === product.mid)) {
+                    const state = {
+                        editMode: true,
+                        product,
+                        properties: [...Object.keys(product.properties).map(
+                            (key) => {
+                                return {
+                                    key,
+                                    value: product.properties[key]
+                                }
                             }
-                        }
-                    ), {key: "", value: ""}],
-                    requirePrice: true
+                        ), {key: "", value: ""}],
+                        requirePrice: true
+                    }
+                    this.setState(state);
                 }
-                this.setState(state);
             }
         })
     }
@@ -140,7 +144,7 @@ class ProductForm extends React.Component {
             <div className="div-form w80p">
                 <div className="center w100p">
                     <h1>
-                        Product Registration
+                        Product {this.state.editMode ? "Modification" : "Registration"}
                     </h1>
                     <br/>
                 </div>

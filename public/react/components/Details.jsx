@@ -35,9 +35,16 @@ class Details extends React.Component {
         }
     }
 
+    getImgsList = () => {
+        const imgs = [this.props.product.img];
+        if (!!this.props.product.imgs && this.props.product.imgs.length > 0)
+            imgs.push(...this.props.product.imgs)
+        return imgs;
+    }
+
     getImagesPanel = () => (
-        <div className="flex-item vscroll vflex w20p w150max w100min h450max" key={new Date().getMilliseconds()}>
-            {[this.props.product.img, ...this.props.product.imgs].map((img, key) => (
+        <div className="flex-item vscroll vflex w20p w150max w100min h450max">
+            {this.getImgsList().map((img, key) => (
                 <img src={`/api/i/${img}`} className="img-small flex-item" key={key}
                      alt="Product Image"
                      style={(this.state.currentImg == img) ? {"box-shadow": "10px 5px 10px grey"} : {}}
@@ -83,13 +90,13 @@ class Details extends React.Component {
                     <div className="flex-item vscroll h300min h500max w200min">
                         <table className="table table-bordered">
                             <tbody>
-                            {Object.keys(this.props.product.properties).map((key, index) => (
+                            {!!this.props.product.properties ? Object.keys(this.props.product.properties).map((key, index) => (
                                 <tr key={index + 'tr'}>
                                     <th className="p-1" key={index + 'th'}>{key}</th>
                                     <td className="p-1"
                                         key={index + 'td'}>{this.props.product.properties[key]}</td>
                                 </tr>
-                            ))}
+                            )) : ''}
                             </tbody>
                         </table>
                     </div>

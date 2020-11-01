@@ -129,6 +129,19 @@ function query(collection_name, queryObj, success, failure, fetchMulti = false) 
     }
 }
 
+function dbDelete(collection_name, queryObj, success, failure, deleteMulti = false) {
+    const collection = db.collection(collection_name);
+    console.log(queryObj);
+    collection[deleteMulti ? "deleteOne" : "deleteMany"](queryObj, (err, data) => {
+        if (err) {
+            console.error(err);
+            failure(err);
+        } else {
+            success(data);
+        }
+    });
+}
+
 exports.getRating = (ratingObj) => {
     const i1 = (!!ratingObj && ratingObj[1]) || 0;
     const i2 = (!!ratingObj && ratingObj[2]) || 0;
@@ -163,6 +176,14 @@ exports.getMerchantProducts = (mid, success, failure) => {
         failure(Errors.INVALID_PARAM_MID);
     else
         query(COLLECTIONS.PRODUCTS, {mid: _mid}, success, failure, true);
+}
+
+exports.deleteProduct = (id, success, failure) => {
+    const _id = typeof id === 'number' ? id : /^\d+$/.test(id.trim()) ? Number.parseInt(id) : undefined;
+    if (_id === undefined)
+        failure(Errors.INVALID_PARAM_ID);
+    else
+        dbDelete(COLLECTIONS.PRODUCTS, {pid: _id}, success, failure, false);
 }
 
 exports.getProduct = (id, success, failure) => {

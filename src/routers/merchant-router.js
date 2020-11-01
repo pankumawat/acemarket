@@ -14,6 +14,23 @@ const multer = require('multer');
 const mediaUtils = require('../utils/mediaUtils');
 const upload = multer({storage: multer.memoryStorage()})
 
+//core.authCheck
+merchantRouter.delete('/product/:pid'
+    , (req, res) => {
+        try {
+            console.log('HERE');
+            const pid = req.params.pid;
+            db.deleteProduct(pid, (data) => {
+                res.json(getSuccessResponse(data));
+            }, (err) => {
+                res.json(getErrorResponse(err));
+            });
+        } catch (err) {
+            res.status(500).send(err.stack)
+        }
+    });
+
+
 merchantRouter.post('/product',
     core.authCheck,
     upload.fields([
@@ -75,7 +92,7 @@ merchantRouter.post('/product',
                         case "object": {
                             if (Array.isArray(val) && val.length > 0)
                                 return val;
-                            else if (val.size > 0)
+                            else if (Object.keys(val).length > 0)
                                 return val;
                             else
                                 return undefined;
@@ -146,10 +163,10 @@ merchantRouter.post('/product',
                     })
                     if (!!body.img || !!body.imgs) {
                         db.getProduct(pid, (existingBody) => {
-                            if (!!body.img) {
+                            if (!!body.img && !!existingBody.body) {
                                 filesToBeDeleted.push(existingBody.img);
                             }
-                            if (!!body.imgs && body.imgs.length > 0) {
+                            if (!!body.imgs && body.imgs.length > 0 && !!existingBody.body && existingBody.body.length > 0) {
                                 filesToBeDeleted.push(...existingBody.imgs);
                             }
                             updateExistingProduct();

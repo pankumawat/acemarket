@@ -143,7 +143,7 @@ class Cart extends React.Component {
                                                                          title="Remove item from cart.">
                                                                         <a href="#" role="remove" data_pid={product.pid}
                                                                            onClick={this.quantityUpdate}><i
-                                                                            className="far fa-trash-alt orange"/></a>
+                                                                            className="fa fa-trash-alt"></i></a>
                                                                     </div>
                                                                 </div>
                                                             </td>

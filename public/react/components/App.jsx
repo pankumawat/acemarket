@@ -97,8 +97,8 @@ class App extends React.Component {
         const preSwitchPage = getPageName();
         silentUrlChangeTo(url);
         const postSwitchPage = getPageName();
-        if (this.state.url != url || preSwitchPage !== postSwitchPage) {
-            if (preSwitchPage == "SEARCH" && postSwitchPage != "SEARCH") {
+        if (this.state.url !== url || preSwitchPage !== postSwitchPage) {
+            if (preSwitchPage === "SEARCH" && postSwitchPage !== "SEARCH") {
                 delete this.state["products"];
             }
             setTimeout(() => {
@@ -129,11 +129,8 @@ class App extends React.Component {
     handleNavigation = () => {
         const page = getPageName();
         console.log(`handleNavigation(${page})`);
+        this.state = {...this.state, page, url: getUrlPath()};
         switch (page) {
-            case "ROOT": {
-                this.silentNav(undefined, VALID_PATHS.HOME);
-                break;
-            }
             case "ADMIN_HOME": {
                 if (!isAdminLoggedIn()) {
                     this.silentNav(undefined, VALID_PATHS.HOME);
@@ -160,13 +157,12 @@ class App extends React.Component {
                 } else {
                     const stateHasQuery = !!this.state.query;
                     const areUrlAdStateQueryDifferent = !_.isEqual(this.state.query, getQueries());
-                    const doNotHaveProducts = !this.state.products || this.state.products.length == 0;
+                    const doNotHaveProducts = !this.state.products || this.state.products.length === 0;
                     if (!stateHasQuery || (stateHasQuery && areUrlAdStateQueryDifferent) || doNotHaveProducts) {
                         let url = "/api/search?";
                         Object.keys(queryObj).forEach(key => {
                             url = `${url}${key}=${queryObj[key]}&`
                         });
-                        this.state = {...this.state, page: page};
                         makeGetCall(url, (response) => {
                             if (response.data.length === 0) {
                                 showError("No items found matching your query.", 3000)
@@ -191,7 +187,7 @@ class App extends React.Component {
                 if (queryObj.size === 0 || !queryObj.pid) {
                     this.silentNav(undefined, VALID_PATHS.HOME);
                 } else {
-                    const hasProductButDiffId = !!this.state.product && queryObj.pid !== this.state.product;
+                    const hasProductButDiffId = !!this.state.product && (String(queryObj.pid) !== String(this.state.product.pid));
                     if (hasProductButDiffId || !this.state.product) {
                         makeGetCall(`/api/p/${queryObj.pid}`, (response) => {
                             this.updateState({page: page, product: response.data}, false);
@@ -217,25 +213,12 @@ class App extends React.Component {
                 }
                 break;
             }
-            case "MERCHANT_LOGIN": {
-                this.state = {...this.state, page: page};
-                break;
-            }
-            case "ADMIN_LOGIN": {
-                this.state = {...this.state, page: page};
-                break;
-            }
             case "LOGOUT": {
                 this.logout();
                 this.silentNav(undefined, VALID_PATHS.HOME, true);
                 break;
             }
-            case "ABOUT": {
-                this.silentNav(undefined, VALID_PATHS.HOME);
-                break;
-            }
             case "HOME": {
-                this.state = {...this.state, page: page};
                 let url = "/api/search?";
                 makeGetCall(url, (response) => {
                     if (response.data.length === 0) {
@@ -248,8 +231,26 @@ class App extends React.Component {
                 });
                 break;
             }
+            case "MERCHANT_ITEM": {
+                const queryObj = getQueries();
+                if (!!queryObj.pid) {
+                    const hasProductButDiffId = !!this.state.product && (String(queryObj.pid) !== String(this.state.product.pid));
+                    if (hasProductButDiffId || !this.state.product) {
+                        makeGetCall(`/api/p/${queryObj.pid}`, (response) => {
+                            this.updateState({product: response.data}, false);
+                        });
+                    }
+                } else {
+                    delete this.state.product;
+                    this.updateState({}, false);
+                }
+                break;
+            }
             default : {
-                this.silentNav(undefined, VALID_PATHS.HOME);
+                // Not yet defined: "ABOUT", "ROOT"
+                const doNothingPages = ["MERCHANT_LOGIN", "ADMIN_LOGIN"];
+                if (!doNothingPages.includes(page))
+                    this.silentNav(undefined, VALID_PATHS.HOME);
                 break;
             }
         }
@@ -261,6 +262,14 @@ class App extends React.Component {
                 return (<div className="box center">
                     <div className="login margin36"><MerchantLogin data={this.state} functions={this.functions}/></div>
                 </div>)
+            }
+            case "MERCHANT_ITEM": {
+                return (
+                    <div>
+                        <Nav product={this.state.product} functions={this.functions}/>
+                        <ProductForm product={this.state.product} fuctions={this.props.function}/>
+                    </div>
+                )
             }
             case "MERCHANT_HOME": {
                 return (
@@ -288,7 +297,7 @@ class App extends React.Component {
                     <div>
                         <Nav incart={this.state.cart.total} functions={this.functions}/>
                         <Rail railml={true} functions={this.functions}
-                                products={(!!this.state.products && this.state.products.length > 0) ? [...this.state.products] : []}/>
+                              products={(!!this.state.products && this.state.products.length > 0) ? [...this.state.products] : []}/>
                     </div>
                 )
             }
@@ -303,27 +312,24 @@ class App extends React.Component {
             case "DETAILS": {
                 return (
                     <div>
-                        <Nav incart={this.state.cart.total} functions={this.functions}/>
+                        <Nav product={this.state.product} incart={this.state.cart.total} functions={this.functions}/>
                         <div className="container-fluid margin20">
                             <Details product={this.state.product} functions={this.functions}/>
                             <Rail functions={this.functions}
-                                    products={this.state.products}
-                                    railml={false}
-                                    recommended_for={!!this.state.product ? this.state.product.pid : undefined}
+                                  products={this.state.products}
+                                  railml={false}
+                                  recommended_for={!!this.state.product ? this.state.product.pid : undefined}
                             />
                         </div>
                     </div>
                 )
-            }
-            case "ABOUT": {
-                break;
             }
             case "HOME" : {
                 return (
                     <div>
                         <Nav incart={this.state.cart.total} functions={this.functions}/>
                         <Rail railml={true} functions={this.functions}
-                                products={!!this.state.products ? [...this.state.products] : []}/>
+                              products={!!this.state.products ? [...this.state.products] : []}/>
                     </div>
                 );
             }

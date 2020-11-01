@@ -16,8 +16,24 @@ class Nav extends React.Component {
     }
 
     getMerchantOptions = () => {
-        return (<a className="nav-link" href={VALID_PATHS.MERCHANT_HOME}
-                   onClick={this.props.functions.silentNav}>Merchant Home</a>)
+        return (
+            <div>
+                {(getPageName() !== "MERCHANT_ITEM" && !!this.props.product && !!this.props.product.mid && this.props.product.mid === getLoggedInUser().user.mid) ?
+                    <a className="nav-link" href={`${VALID_PATHS.MERCHANT_ITEM}?pid=${this.props.product.pid}`}
+                       onClick={this.props.functions.silentNav}>Edit</a>
+                    :
+                    ''
+                }
+                {(getPageName() !== "MERCHANT_ITEM" || !!getQueries().pid) ?
+                    <a className="nav-link" href={VALID_PATHS.MERCHANT_ITEM}>New</a>
+                    :
+                    ''
+                }
+                <a className="nav-link" href={VALID_PATHS.MERCHANT_HOME}
+                   onClick={this.props.functions.silentNav}>Product List</a>
+
+            </div>
+        )
     }
     render = () => (
         <div className="topnav h50">

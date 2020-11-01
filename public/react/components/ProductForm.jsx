@@ -9,35 +9,6 @@ class ProductForm extends React.Component {
         this.deletePropertiesPair = this.deletePropertiesPair.bind(this);
         this.propertiesDivs = this.propertiesDivs.bind(this);
         this.getDefaultValue = this.getDefaultValue.bind(this);
-        this.getProduct = this.getProduct.bind(this);
-        if (!!getQueries().pid)
-            this.getProduct(getQueries().pid);
-    }
-
-    getProduct = (pid) => {
-        makeGetCall(`/api/p/${pid}`, (response) => {
-            if (response.success) {
-                const product = response.data;
-                const loggedInUser = getLoggedInUser();
-                console.dir(loggedInUser);
-                if (!!loggedInUser && !!loggedInUser.user && !!loggedInUser.user.mid && (loggedInUser.user.mid === product.mid)) {
-                    const state = {
-                        editMode: true,
-                        product,
-                        properties: [...Object.keys(product.properties).map(
-                            (key) => {
-                                return {
-                                    key,
-                                    value: product.properties[key]
-                                }
-                            }
-                        ), {key: "", value: ""}],
-                        requirePrice: true
-                    }
-                    this.setState(state);
-                }
-            }
-        })
     }
 
     submitForm = (e) => {
@@ -45,6 +16,7 @@ class ProductForm extends React.Component {
         document.getElementById("product_form_register").setAttribute("disabled", "true");
         setTimeout(() => document.getElementById("product_form_register").removeAttribute("disabled"), 5000);
         const form = e.target;
+
         $.ajax({
             url: `/api/m/product`,
             type: 'POST',
@@ -101,7 +73,7 @@ class ProductForm extends React.Component {
     }
 
     getDefaultValue = (key) => {
-        const val = this.state.editMode ? this.state.product[key] : '';
+        const val = this.props.product ? this.props.product[key] : '';
         return val;
     }
 
@@ -140,16 +112,17 @@ class ProductForm extends React.Component {
     });
 
     render() {
+        console.dir(this.props.product);
         return (
             <div className="div-form w80p">
                 <div className="center w100p">
                     <h1>
-                        Product {this.state.editMode ? "Modification" : "Registration"}
+                        Product {!!this.props.product ? "Modification" : "Registration"}
                     </h1>
                     <br/>
                 </div>
-                <form id="product-form" onSubmit={this.submitForm}>
-                    {this.state.editMode ?
+                <form id="product-form" onSubmit={this.submitForm} key={`key_${Date.now()}`}>
+                    {!!this.props.product ?
                         <input type="hidden" name="pid" value={this.getDefaultValue("pid")}/>
                         : ''}
                     <fieldset>
@@ -157,12 +130,12 @@ class ProductForm extends React.Component {
                         <div className="flex">
                             <input type="text" className="flex-item w30p form-text-field" name="name"
                                    placeholder="Name"
-                                   required={!this.state.editMode} defaultValue={this.getDefaultValue('name')}/>
+                                   required={!this.props.product} defaultValue={this.getDefaultValue('name')}/>
                             {this.state.requirePrice ?
                                 (<input type="number" className="flex-item w20p form-text-field" name="price"
                                         placeholder="Price (after discount)"
                                         defaultValue={this.getDefaultValue('price')}
-                                        required={!this.state.editMode}
+                                        required={!this.props.product}
                                         key="sp"
                                 />) : (<input type="number" className="flex-item w20p" name="price"
                                               placeholder="NA"
@@ -184,12 +157,21 @@ class ProductForm extends React.Component {
                             <input type="button" className="flex-item w150min btn btn-info pointer"
                                    value={this.state.requirePrice ? "Don't show price" : "Show price"}
                                    onClick={this.flipPriceRequirement}/>
+
+                            <label className="flex-item w10p right">Status: </label>
+                            <label className="switch w100min">
+                                <input className="switch-input" type="checkbox"
+                                name="status"
+                                defaultChecked={!!this.getDefaultValue("status") && this.getDefaultValue("status").toLowerCase() === 'inactive' ? false : true}
+                                />
+                                <span className="switch-label" data-on="Active" data-off="Inactive"></span>
+                                <span className="switch-handle"></span></label>
                         </div>
                         <div className="flex">
                             <textarea className="flex-item form-text-field" name="description"
                                       placeholder="Product Description"
                                       defaultValue={this.getDefaultValue('description')}
-                                      required={!this.state.editMode}/>
+                                      required={!this.props.product}/>
                         </div>
                     </fieldset>
                     <br/>
@@ -199,7 +181,7 @@ class ProductForm extends React.Component {
                             <input type="text" className="flex-item w30p form-text-field" name="keys"
                                    placeholder="Associated words.  [Comma separated e.g. cake,birthday,celebration]"
                                    defaultValue={[...this.getDefaultValue('keys')].join(',')}
-                                   required={!this.state.editMode}/>
+                                   required={!this.props.product}/>
                         </div>
                     </fieldset>
                     <br/>
@@ -215,11 +197,11 @@ class ProductForm extends React.Component {
                                 Product Primary Image</label>
                             <input type="file" className="flex-item w80p" id="img" name="img" accept="image/*"
                                    onChange={previewImg}
-                                   required={!this.state.editMode}/>
+                                   required={!this.props.product}/>
                         </div>
                         <div className="flex">
                             <div className="image-preview flex-item" id="img_preview">
-                                {this.state.editMode ?
+                                {!!this.props.product ?
                                     <img src={`/api/i/${this.getDefaultValue('img')}`}
                                          height="120px" className="image-preview"/>
                                     : ''
@@ -237,7 +219,7 @@ class ProductForm extends React.Component {
                         </div>
                         <div className="flex">
                             <div className="image-preview flex-item" id="imgs_preview">
-                                {this.state.editMode ?
+                                {!!this.props.product ?
                                     this.getDefaultValue('imgs').map(img => <img src={`/api/i/${img}`}
                                                                                  height="120px"
                                                                                  className="image-preview"/>)

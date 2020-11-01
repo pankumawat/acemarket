@@ -90,6 +90,7 @@ merchantRouter.post('/product',
 
             const body = {
                 pid: pid,
+                status: (!!req.body.status ? 'active' : 'inactive'),
                 name: getFilteredVal(req.body.name),
                 description: getFilteredVal(req.body.description),
                 keys: getFilteredVal(keys),

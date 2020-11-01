@@ -38,13 +38,18 @@ const getQueries = (url) => {
 }
 
 const VALID_PATHS = {
+    NULL: "/home/NULL",
     ERROR: "/error.html",
     ADMIN_LOGIN: "/admin/login",
     ADMIN_HOME: "/admin/home",
     HOME: "/home",
     DETAILS: "/details",
+
     MERCHANT_LOGIN: "/merchant/login",
+    MERCHANT_ITEM: "/merchant/item",
+    MERCHANT_LIST_ITEMS: "/merchant/items",
     MERCHANT_HOME: "/merchant/home",
+
     LOGOUT: "/logout",
     ABOUT: "/about",
     CART: "/cart",

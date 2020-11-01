@@ -253,24 +253,29 @@ exports.getProducts = (success, failure, queryObj) => {
         }
     }
     const queryStr = {
-        "$or": [
+        "$and": [
             {
-                "$and": [
+                "$or": [
                     {
-                        "price": {
-                            "$gte": parseInt(low)
-                        }
+                        "$and": [
+                            {
+                                "price": {
+                                    "$gte": parseInt(low)
+                                }
+                            },
+                            {
+                                "price": {
+                                    "$lte": parseInt(high)
+                                }
+                            }
+                        ]
                     },
                     {
-                        "price": {
-                            "$lte": parseInt(high)
-                        }
+                        "price": -1
                     }
                 ]
             },
-            {
-                "price": -1
-            }
+            {status: 'active'}
         ]
     }
     if (mid) {

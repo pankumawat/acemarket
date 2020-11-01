@@ -183,7 +183,8 @@ exports.deleteProduct = (id, success, failure) => {
     if (_id === undefined)
         failure(Errors.INVALID_PARAM_ID);
     else
-        dbDelete(COLLECTIONS.PRODUCTS, {pid: _id}, success, failure, false);
+        failure("Though Delete is working, I will wait for some time before I allow it. I do not wish to let all hell lose, remember this is mighty DELETE.");
+        //dbDelete(COLLECTIONS.PRODUCTS, {pid: _id}, success, failure, false);
 }
 
 exports.getProduct = (id, success, failure) => {

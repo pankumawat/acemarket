@@ -79,7 +79,7 @@ class ProductForm extends React.Component {
     }
 
     getDefaultValue = (key) => {
-        const val = this.props.product ? this.props.product[key] : '';
+        const val = !!this.props.product ? this.props.product[key] : '';
         return val;
     }
 
@@ -173,7 +173,7 @@ class ProductForm extends React.Component {
                         <label className="switch w100min">
                             <input className="switch-input" type="checkbox"
                                    name="status"
-                                   defaultChecked={!!this.getDefaultValue("status") && this.getDefaultValue("status").toLowerCase() === 'inactive' ? false : true}
+                                   defaultChecked={this.getDefaultValue("status").toLowerCase() === 'inactive' ? false : true}
                             />
                             <span className="switch-label" data-on="Active" data-off="Inactive"></span>
                             <span className="switch-handle"></span></label>

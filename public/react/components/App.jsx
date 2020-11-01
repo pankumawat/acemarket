@@ -233,15 +233,12 @@ class App extends React.Component {
             }
             case "MERCHANT_ITEM": {
                 const queryObj = getQueries();
+                delete this.state.product;
                 if (!!queryObj.pid) {
-                    const hasProductButDiffId = !!this.state.product && (String(queryObj.pid) !== String(this.state.product.pid));
-                    if (hasProductButDiffId || !this.state.product) {
-                        makeGetCall(`/api/p/${queryObj.pid}`, (response) => {
-                            this.updateState({product: response.data}, false);
-                        });
-                    }
+                    makeGetCall(`/api/p/${queryObj.pid}`, (response) => {
+                        this.updateState({product: response.data}, false);
+                    });
                 } else {
-                    delete this.state.product;
                     this.updateState({}, false);
                 }
                 break;

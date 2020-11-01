@@ -116,51 +116,20 @@ MEM_KEYS = {
     ACEM_ERROR: "acemarket_error"
 }
 
-/*
- * { "url" : { "ts", "data" }
- */
-const GETcache = (localStorage && localStorage.getItem(MEM_KEYS.ACEM_GET_CACHE)) ? JSON.parse(localStorage.getItem(MEM_KEYS.ACEM_GET_CACHE)) : {};
-
-const addToGETCache = (url, data) => {
-    GETcache[url] = {
-        ts: Date.now(),
-        data: data
-    }
-    if (localStorage) {
-        localStorage.setItem(MEM_KEYS.ACEM_GET_CACHE, JSON.stringify(GETcache));
-    }
-}
-
-setInterval(() => {
-    Object.keys(GETcache).forEach(url => {
-        if ((Date.now() - GETcache[url].ts) >= 100) {
-            delete GETcache[url];
-        }
-    })
-}, 5000);
-
 makeGetCall = (url, success, failure) => {
-    const backupObj = {...GETcache[url]};
-    if (GETcache[url]) {
-        setTimeout(() => success(backupObj.data), 200);
-        console.debug(`GET ${url} served from Cache`);
-    } else {
-        console.debug(`GET ${url}`);
-        fetch(url).then((response) => response.json()).then((response) => {
-            if (response.success) {
-                success(response);
-                if (!url.endsWith('.jpeg') && !url.includes('/search'))
-                    addToGETCache(url, response);
-            } else {
-                if (failure)
-                    failure(response);
-                else
-                    showError(`Something went wrong. ${response.error}`, 3000);
-            }
-        }).catch((error) => {
-            showError(`Something is not right... ${error.message}`, 5000);
-        });
-    }
+    console.debug(`GET ${url}`);
+    fetch(url).then((response) => response.json()).then((response) => {
+        if (response.success) {
+            success(response);
+        } else {
+            if (failure)
+                failure(response);
+            else
+                showError(`Something went wrong. ${response.error}`, 3000);
+        }
+    }).catch((error) => {
+        showError(`Something is not right... ${error.message}`, 5000);
+    });
 }
 
 makePostCall = (url, body, success, failure) => {

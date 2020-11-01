@@ -79,7 +79,7 @@ class ProductForm extends React.Component {
     }
 
     getDefaultValue = (key) => {
-        const val = !!this.props.product ? this.props.product[key] : '';
+        const val = (!!this.props.product && !!this.props.product[key]) ? this.props.product[key] : '';
         return val;
     }
 
